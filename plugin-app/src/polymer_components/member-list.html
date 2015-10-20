@@ -1,0 +1,38 @@
+<dom-module id="member-list">
+
+    <template>
+        <template is="dom-repeat" items="{{talkers}}">
+            <paper-card heading="{{item.talker}}">
+                <div class="card-content">{{item.talker}}</div>
+                <div class="card-actions">
+                </div>
+            </paper-card>
+        </template>
+    </template>
+
+    <script>
+     Polymer({
+         is: "member-list",
+
+         properties: {
+             talkers: {
+                 type: Array,
+                 notify: true,
+             },
+         },
+         
+         ready: function() {
+             this.conn = new Asteroid(window.meteorURL, true);
+             this.conn.subscribe('talkers');
+             this.talkers = [];
+             this.results = this.conn.getCollection('talkers').reactiveQuery({});
+             var _this = this;
+
+             this.results.on('change', function() {
+                 _this.talkers = _this.results.result;
+                 console.log("[polymer] results changed:", _this.talkers);
+             });
+         },
+     });
+    </script>
+</dom-module>

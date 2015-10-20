@@ -1,0 +1,24 @@
+{
+  "name": "breakout",
+  "version": "0.0.0",
+  "authors": [
+    "Dan Calacci <dan@dcalacci.net>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.1.0",
+    "paper-card": "PolymerElements/paper-card#~1.0.6"
+  }
+}
