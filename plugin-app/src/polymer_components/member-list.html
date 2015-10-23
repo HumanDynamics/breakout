@@ -2,7 +2,7 @@
 
     <template>
         <template is="dom-repeat" items="{{talkers}}">
-            <paper-card heading="{{item.talker}}">
+            <paper-card heading="{{item.talker}}" image="{{item.image}}">
                 <div class="card-content">{{item.talker}}</div>
                 <div class="card-actions">
                 </div>
@@ -25,14 +25,43 @@
              this.conn = new Asteroid(window.meteorURL, true);
              this.conn.subscribe('talkers');
              this.talkers = [];
-             this.results = this.conn.getCollection('talkers').reactiveQuery({});
-             var _this = this;
+             this.talkerCollection = this.conn.getCollection('talkers');
+             this.talkerRQ = this.talkerCollection.reactiveQuery({});
 
-             this.results.on('change', function() {
-                 _this.talkers = _this.results.result;
-                 console.log("[polymer] results changed:", _this.talkers);
+             var _this = this;
+             
+             // make the talkers array reactive
+             this.talkerRQ.on("change", function () {
+                 _this.talkers = _this.talkerRQ.result;
              });
+
+             // hangout api
+             gapi.hangout.onApiReady.add(function(eventObj) {
+                 // initialize users for this hangout
+                 var users = gapi.hangout.getParticipants();
+                 _this.updateUsers(gapi.hangout.getParticipants());
+
+                 // update when they change
+                 gapi.hangout.onEnabledParticipantsChanged.add(function() {
+                     _this.updateUsers(gapi.hangout.getParticipants());
+                 });
+             });
+
          },
+
+         updateUsers: function(users) {
+             var _this = this;
+             for (var i = 0; i < users.length; i++) {
+                 var u = users[i];
+                 _this.talkerCollection.insert({
+                     "talker": u.person.displayName,
+                     "image": u.person.image.url,
+                     "hangout_id": gapi.hangout.getHangoutId(),
+                     "gid": u.person.id
+                 });
+             }
+         },
+         
      });
     </script>
 </dom-module>

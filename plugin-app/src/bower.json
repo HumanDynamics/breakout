@@ -19,6 +19,8 @@
   ],
   "dependencies": {
     "polymer": "Polymer/polymer#^1.1.0",
-    "paper-card": "PolymerElements/paper-card#~1.0.6"
+    "paper-card": "PolymerElements/paper-card#~1.0.6",
+    "iron-flex-layout": "PolymerElements/iron-flex-layout#~1.0.4",
+    "paper-item": "PolymerElements/paper-item#~1.0.5"
   }
 }
