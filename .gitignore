@@ -1,3 +1,4 @@
 bower_components
-.meteor/local
-.meteor/meteorite
+app/.meteor/local
+app/.meteor/meteorite
+plugin-app/bower_components
