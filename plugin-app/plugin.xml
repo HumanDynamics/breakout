@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+  <ModulePrefs title="Hangout Starter">
+    <Require feature="rpc" />
+    <Require feature="views" />
+    <Require feature="locked-domain" />
+  </ModulePrefs>
+  <Content type="html"><![CDATA[
+<html>
+    <head>
+        <title>Limelight</title>
+    </head>
+    <body>
+        <div class="container">
+          <!-- <member-list></member-list> -->
+          <h1>Hi</h1>
+        </div>
+    </body>
+    
+
+</html>
+]]>
+  </Content>
+</Module>
