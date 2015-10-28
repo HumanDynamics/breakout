@@ -10,7 +10,19 @@ state['conn'] = new Asteroid(window.meteorURL, true);
 gapi.hangout.onApiReady.add(function(eventObj) {
 
     // get this hangout ID
-    var hangoutRes = state.conn.call('getHangout', [gapi.hangout.getHangoutUrl()]);
+    var participantIds = _.each(gapi.hangout.getParticipants,
+                                function(p) {
+                                    return p.id;
+                                });
+
+    var hangout_id; 
+    state.conn.call('getHangout',
+                    gapi.hangout.getHangoutId(),
+                    gapi.hangout.getHangoutUrl()
+                    participantIds,
+                    function(error, result) {
+                        hangout_id = result;    
+                    });
     var hangoutId = hangoutRes.result;
     console.log("[global] got hangout ID:", hangoutId);
     

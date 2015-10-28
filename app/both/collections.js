@@ -5,6 +5,7 @@
 // 'start_time':   timestamp of start of hangout
 // 'end_time':     timestamp of end of hangout, or null
 // 'url':          URL of hangout
+// 'hangout_id':   ID of hangout
 // 'active':       boolean whether hangout is currently active
 Hangouts = new Mongo.Collection("hangouts");
 
