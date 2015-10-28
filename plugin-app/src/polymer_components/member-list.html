@@ -37,6 +37,10 @@
 
              // hangout api
              gapi.hangout.onApiReady.add(function(eventObj) {
+
+                 // create hangout object in server
+                 
+                 
                  // initialize users for this hangout
                  var users = gapi.hangout.getParticipants();
                  _this.updateUsers(gapi.hangout.getParticipants());
@@ -45,10 +49,13 @@
                  gapi.hangout.onEnabledParticipantsChanged.add(function() {
                      _this.updateUsers(gapi.hangout.getParticipants());
                  });
+
              });
 
          },
 
+         // udpate the users in this hangout
+         // gets called when users enter or leave.
          updateUsers: function(users) {
              var _this = this;
              for (var i = 0; i < users.length; i++) {
@@ -56,7 +63,7 @@
                  _this.talkerCollection.insert({
                      "talker": u.person.displayName,
                      "image": u.person.image.url,
-                     "hangout_id": gapi.hangout.getHangoutId(),
+                     "hangout_url": gapi.hangout.getHangoutURL(),
                      "gid": u.person.id
                  });
              }
