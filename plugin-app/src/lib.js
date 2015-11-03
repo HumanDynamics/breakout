@@ -158,6 +158,8 @@ gapi.hangout.onApiReady.add(function(eventObj) {
         }
     );
 
+    // check if it's been over TALK_TIMEOUT ms since we last got an
+    // event. If so, then they're not talking.
     setInterval(function() {
         if (talkState.talking) {
             var now = Date.now()

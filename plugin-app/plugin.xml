@@ -1,34 +1,38 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
-  <ModulePrefs title="Hangout Starter">
+  <ModulePrefs title="Breakout">
     <Require feature="rpc" />
     <Require feature="views" />
-    <Require feature="locked-domain" />
   </ModulePrefs>
-  <Content type="html"><![CDATA[
-<html>
-    <head>
-        <title>Limelight</title>
-    </head>
-    <body>
-        <div class="container">
-          <!-- <member-list></member-list> -->
-          <h1>Hi</h1>
-        </div>
-    </body>
+  <Content type="html">
+    <![CDATA[
+             
+<script src="https://plus.google.com/hangouts/_/api/v1/hangout.js"></script>
 
-    <script src="https://www.google.com/jsapi"></script>
-    <script src="https://breakout.media.mit.edu/plugin/src/lib.js"></script>
-    <script src="https://breakout.media.mit.edu/plugin/src/bower_components/ddp.js/src/ddp.js"></script>
-    <script src="https://breakout.media.mit.edu/plugin/src/bower_components/q/q.js"></script>
-    <script src="https://breakout.media.mit.edu/plugin/src/bower_components/asteroid/dist/asteroid.browser.js"></script>
-    <script src="https://breakout.media.mit.edu/plugin/src/bower_components/webcomponentsjs/webcomponents.js"></script>
+<head>
+  <title>Limelight</title>
+</head>
+<body>
+  <div class="container center-justified">
+    <member-list></member-list>
+  </div>
+</body>
 
-    <link rel="import" href="https://breakout.media.mit.edu/plugin/src/bower_components/polymer/polymer.html">
-    <link rel="import" href="https://breakout.media.mit.edu/plugin/src/bower_components/paper-card/paper-card.html">
-    <link rel="import" href="https://breakout.media.mit.edu/plugin/src/polymer_components/member-list.html">
+<link rel="stylesheet" type="text/css" href="https://breakout.media.mit.edu/plugin/src/style.css"
 
-</html>
+
+<script src="https://breakout.media.mit.edu/plugin/src/bower_components/ddp.js/src/ddp.js"></script>
+<script src="https://breakout.media.mit.edu/plugin/src/bower_components/q/q.js"></script>
+<script src="https://breakout.media.mit.edu/plugin/src/bower_components/asteroid/dist/asteroid.browser.js"></script>
+<script src="https://breakout.media.mit.edu/plugin/src/bower_components/webcomponentsjs/webcomponents.js"></script>
+<script src="https://breakout.media.mit.edu/plugin/src/bower_components/underscore/underscore-min.js"></script>
+<script src="https://breakout.media.mit.edu/plugin/src/lib.js"></script>
+
+<link rel="import" href="https://breakout.media.mit.edu/plugin/src/bower_components/iron-flex-layout/iron-flex-layout.html"
+<link rel="import" href="https://breakout.media.mit.edu/plugin/src/bower_components/polymer/polymer.html">
+<link rel="import" href="https://breakout.media.mit.edu/plugin/src/bower_components/paper-card/paper-card.html">
+<link rel="import" href="https://breakout.media.mit.edu/plugin/src/bower_components/paper-item/paper-item.html">
+<link rel="import" href="https://breakout.media.mit.edu/plugin/src/polymer_components/member-list.html">
 ]]>
   </Content>
 </Module>
