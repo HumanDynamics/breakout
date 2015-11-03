@@ -58,9 +58,17 @@ gapi.hangout.onApiReady.add(function(eventObj) {
     var talkState = {'talking': false, 'time': null}
 
     // constants for talking 'algorithm'
-    var MIN_VOLUME = 3;
-    var MIN_SILENCE_LENGTH = 500;
-    var MIN_TALK_LENGTH = 500;
+    var MIN_VOLUME = 2; // minimum volume to count
+    // if at least this amount of time happens between a talk signal
+    // and a null signal, they are considered to have stopped talking.
+    var MIN_SILENCE_LENGTH = 1000;
+    // if at least this amount of time happens between a null signal
+    // and a talk signal, they are considered to have started talking.
+    var MIN_TALK_LENGTH = 1000;
+
+    // If we get no signal for this amount of time, consider them no
+    // longer talking.
+    var TALK_TIMEOUT = 1500;
 
 
     // returns the number of ms between index i and the most recent
@@ -149,4 +157,18 @@ gapi.hangout.onApiReady.add(function(eventObj) {
             });
         }
     );
+
+    setInterval(function() {
+        if (talkState.talking) {
+            var now = Date.now()
+            var lastEventTime = volumes[volumes.length - 1].timestamp;
+            if ((now - lastEventTime) > TALK_TIMEOUT) {
+                console.log("stopped talking...");
+                talkState.talking = false;
+                lastTime = volumes[volumes.length - 1].timestamp - timeSinceLastTalk(volumes.length - 1);
+                console.log("new talk event (timeout):", talkState.time, lastTime);
+                volumes = [];
+            }
+        }
+    }, 500);
 });
