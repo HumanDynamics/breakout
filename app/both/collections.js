@@ -24,6 +24,7 @@ Participants = new Mongo.Collection("participants");
 // 'hangout_id':     meteor hangout ID of talk event
 // 'start_time':     timestamp of beginning of talking period
 // 'end_time':       tiemstamp of end of talking period
+//? 'volumes':        raw volume data of this talk event from the google hangout
 TalkingHistory = new Mongo.Collection("talking_history");
 
 

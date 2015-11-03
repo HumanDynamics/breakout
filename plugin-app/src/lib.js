@@ -58,7 +58,7 @@ gapi.hangout.onApiReady.add(function(eventObj) {
     var talkState = {'talking': false, 'time': null}
 
     // constants for talking 'algorithm'
-    var MIN_VOLUME = 2;
+    var MIN_VOLUME = 3;
     var MIN_SILENCE_LENGTH = 500;
     var MIN_TALK_LENGTH = 500;
 
@@ -67,79 +67,85 @@ gapi.hangout.onApiReady.add(function(eventObj) {
     // last talk event
     // TODO: These two can be abstracted out
     function timeSinceLastTalk(i) {
-        _.each(volumes, function(e, i, l) {
-            if (e.vol > MIN_VOLUME) {
-                return volumes[i].timestamp - e.timestamp;
-            } else {
-                continue;
+        for (var j = i - 1; j >= 0; j--) {
+            if (volumes[j].vol > MIN_VOLUME) {
+                return volumes[i].timestamp - volumes[j].timestamp;
             }
-        });
+        }
     }
 
     // TODO: abstract out
     function timeSinceLastQuiet(i) {
-        _.each(volumes, function(e, i, l) {
-            if (e.vol < MIN_VOLUME) {
-                return volumes[i].timestamp - e.timestamp;
-            } else {
-                continue;
+        for (var j = i - 1; j >= 0; j--) {
+            if (volumes[j].vol < MIN_VOLUME) {
+                return volumes[i].timestamp - volumes[j].timestamp;
             }
-        });
+        }
     }
 
     // returns true if the user has stopped talking.  defines 'stopped
     // talking' as the user not having a volume event greater than
     // MIN_VOLUME for over MIN_SILENCE_LENGTH milliseconds.
     function stoppedTalking() {
-        if (volumes[volumes.length].vol <= MIN_VOLUME) {
-            return timeSinceLastTalk(volumes.length) > MIN_SILENCE_LENGTH;
+        if (volumes[volumes.length - 1].vol <= MIN_VOLUME) {
+            return timeSinceLastTalk(volumes.length - 1) > MIN_SILENCE_LENGTH;
         }
         return false;
     }
-
+    
     function startedTalking() {
-        if (volumes[volumes.length].vol > MIN_VOLUME) {
-            return timeSinceLastQuiet(volumes.length) > MIN_TALK_LENGTH;
+        if (volumes[volumes.length - 1].vol > MIN_VOLUME) {
+            console.log("over min volume threshold, testing time..");
+            var res = timeSinceLastQuiet(volumes.length - 1) > MIN_TALK_LENGTH;
+            console.log("time since quiet:", timeSinceLastQuiet(volumes.length - 1));
+            return res;
         }
     }
 
-    function getTalkTime() {
-        // use startedTalking here
-        // to get the talk time if an event is in the volumes buffer
-    }
-    
     // if the current value of `volumes` contains a distinct talk
     // event, send it to the server and remove it from the list.
     function checkTalkEvent() {
+        if (volumes.length < 3) {
+            console.log("no volumes to examine, continuing...");
+            return;
+        }
         if (talkState.talking) {
+            console.log("currently talking...");
+            // Talking -> not talking
             if (stoppedTalking()) {
                 talkState.talking = false;
-                lastTime = volumes[volumes.length].timestamp - timeSinceLastTalk(volumes.length);
-
+                // get the last time talking
+                lastTime = volumes[volumes.length - 1].timestamp - timeSinceLastTalk(volumes.length - 1);
                 // start and end of talking!
                 console.log("new talk event:", talkState.time, lastTime);
+                volumes = [];
+                
             }
-        }
-        if (_.last(volumes) > 0) {
-            talkState.talking = True
+        } else if (!talkState.talking) {
+            console.log("not talking...");
+            if (startedTalking()) {
+                console.log("just started talking!");
+                talkState.time = Date.now();
+                talkState.talking = true;
+            }
         }
     }
 
     gapi.hangout.av.onVolumesChanged.add(
         function(evt) {
             console.log("volumes changed...", evt.volumes);
-            var volumes = evt.volumes;
-            _.each(volumes, function(v, k, l) {
-                
-                // if it's below 2, map it to 0.
+            var eventVolumes = evt.volumes;
+            _.each(eventVolumes, function(v, k, l) {
                 if (k == thisParticipant) {
+                    console.log(v, k, thisParticipant);
                     var time = Date.now();
-                    volumes.push({'val': v,
+                    volumes.push({'vol': v,
                                   'timestamp': time});
+                    console.log(volumes[volumes.length - 1]);
+                    console.log(volumes.length);
                 }
                 checkTalkEvent();
                 
-                console.log(v, k);
             });
         }
     );
