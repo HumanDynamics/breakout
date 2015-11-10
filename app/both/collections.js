@@ -49,4 +49,12 @@ Volumes = new Mongo.Collection("volume_events");
 // TODO
 Followers = new Mongo.Collection("followers");
 
+// Herfindahl index records for hangouts
+// of the form:
+// 'timestamp':     timestamp of this event
+// 'hangout_id':    meteor ID of the event
+// 'h_index':       herfindahl index at this timestamp
+// 'second_window': the length of the window being examined. if 'all', is the entire hangout up to that point.
+HIndices = new Mongo.Collection('h_indices');
+
 

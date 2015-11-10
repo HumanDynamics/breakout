@@ -7,6 +7,13 @@ window.googleLoaded = false;
 
 state['conn'] = new Asteroid(window.meteorURL, true);
 
+state.conn.subscribe('talking_history');
+state['talkingHistoryCollection'] = state.conn.getCollection('talking_history')
+
+
+state.conn.subscribe('h_indices');
+state['herfindahlIndexCollection'] = state.conn.getCollection('h_indices');
+
 
 // returns a promise that is the meteor ID of this hangout.  If there
 // is no appropriate hangout, meteor will creates a new one and
@@ -28,6 +35,12 @@ function getHangoutId() {
                               participantIds);
 
     return res.result;
+}
+
+function getHerfindahlIndex(hangoutId) {
+    return state.herfindahlIndexCollection.findOne({
+        'hangout_id': hangoutId
+    });
 }
 
 
@@ -64,7 +77,7 @@ gapi.hangout.onApiReady.add(function(eventObj) {
     var MIN_SILENCE_LENGTH = 1000;
     // if at least this amount of time happens between a null signal
     // and a talk signal, they are considered to have started talking.
-    var MIN_TALK_LENGTH = 1000;
+    var MIN_TALK_LENGTH = 500;
 
     // If we get no signal for this amount of time, consider them no
     // longer talking.
@@ -110,6 +123,16 @@ gapi.hangout.onApiReady.add(function(eventObj) {
         }
     }
 
+    function insertTalkEvent(startTime, endTime, volumeData) {
+        state.talkingHistoryCollection.insert({
+            'participant_id': thisParticipant,
+            'hangout_id': hangoutId,
+            'start_time': new Date(startTime),
+            'end_time': new Date(endTime),
+            //'volumes': volumeData
+        });
+    }
+
     // if the current value of `volumes` contains a distinct talk
     // event, send it to the server and remove it from the list.
     function checkTalkEvent() {
@@ -126,6 +149,7 @@ gapi.hangout.onApiReady.add(function(eventObj) {
                 lastTime = volumes[volumes.length - 1].timestamp - timeSinceLastTalk(volumes.length - 1);
                 // start and end of talking!
                 console.log("new talk event:", talkState.time, lastTime);
+                insertTalkEvent(talkState.time, lastTime, volumes);
                 volumes = [];
                 
             }
@@ -158,6 +182,10 @@ gapi.hangout.onApiReady.add(function(eventObj) {
         }
     );
 
+    setInterval(function() {
+        console.log("h-index: ", getHerfindahlIndex(hangoutId));
+    }, 11000);
+
     // check if it's been over TALK_TIMEOUT ms since we last got an
     // event. If so, then they're not talking.
     setInterval(function() {
@@ -169,8 +197,9 @@ gapi.hangout.onApiReady.add(function(eventObj) {
                 talkState.talking = false;
                 lastTime = volumes[volumes.length - 1].timestamp - timeSinceLastTalk(volumes.length - 1);
                 console.log("new talk event (timeout):", talkState.time, lastTime);
+                insertTalkEvent(talkState.time, lastTime, volumes);
                 volumes = [];
             }
         }
-    }, 500);
+    }, 50);
 });

@@ -25,6 +25,7 @@
              this.conn = new Asteroid(window.meteorURL, true);
              this.conn.subscribe('talkers');
              this.talkers = [];
+             //TODO: needs to use the computed hangoutId from lib.js
              this.talkerCollection = this.conn.getCollection('talkers');
              this.talkerRQ = this.talkerCollection.reactiveQuery({});
 
@@ -37,9 +38,7 @@
 
              // hangout api
              gapi.hangout.onApiReady.add(function(eventObj) {
-
                  // create hangout object in server
-                 
                  
                  // initialize users for this hangout
                  var users = gapi.hangout.getParticipants();

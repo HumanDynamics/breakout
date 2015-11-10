@@ -17,6 +17,7 @@ Meteor.methods({
             return {'id': possible_hangout._id,
                     'isnew': false};
         } else {
+            console.log("no existing hangout found, creating a new one in meteor...");
             // no existing hangout, let's make another
             return {'id': Hangouts.insert({'hangout_id': hangoutId,
                                            'url': hangoutUrl,
