@@ -1,5 +1,5 @@
 class window.Herfindahl
-  constructor: (hangoutId, participants, color, width, height, start, end, chartLength) ->
+  constructor: (hangoutId, width, height) ->
     @hangoutId = hangoutId
 
 
@@ -10,8 +10,10 @@ class window.Herfindahl
     @herfindahlRQ = @herfindahlCollection.reactiveQuery({'hangout_id': hangoutId});
     @data = @herfindahlRQ.result
 
+    console.log "initial data:", @data
+
     # get the most recent entry
-    @newDataRQ = @herfindahlCollection.reactiveQuery({}, {sort: {timestamp: -1, limit: 1}})
+    @newDataRQ = @herfindahlCollection.reactiveQuery({})
     @newDataRQ.on "change", () =>
       @updateData @newDataRQ.result
 
@@ -24,7 +26,7 @@ class window.Herfindahl
     [first, ..., last] = @data
 
     @time = d3.time.scale()
-      .domain [@start, @end]
+      .domain [Date.now() - 30000, Date.now()]
       .range [0, @width]
 
     @y = d3.scale.linear()
@@ -47,18 +49,18 @@ class window.Herfindahl
 
   renderAxes: (svg, id="#herfindahl-chart") ->
     @xAxisG = svg.append("g")
-      .attr "class" "herfindahl x axis"
-      .attr "id" "herfindahl-axis"
-      .attr "transform", "translate(" + (@width + 10) + ",0)"
+      .attr "class", "herfindahl x axis"
+      .attr "id", "herfindahl-axis"
+      .attr "transform", "translate(0," + (@height + 10) + ")"
       .style "fill", '#82858B'
       .call(@xAxis)
 
     @yAxisG = svg.append("g")
       .attr("class", "herfindahl y axis")
       .attr("id", "herfindahl-time-axis")
-      .attr("transform", "translate(0," + (@height - 10) + ")")
+      .attr("transform", "translate(" + (@width + 10) + ")")
       .style "fill", '#82858B'
-      .call(@yAxis)
+      .call(@timeAxis)
 
 
   render: (id="#herfindahl-chart") ->
@@ -94,6 +96,7 @@ class window.Herfindahl
     this.renderAxes @chart
 
 
-  updateData: (newData) ->
+  updateData: (newData) =>
+    console.log("got new data!", newData);
     @data.push newData
     @data.shift()
