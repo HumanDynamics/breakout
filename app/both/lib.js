@@ -7,5 +7,7 @@ if(Meteor.isClient) {
     Meteor.connection = DDPConnection;
     
     // And then you subscribe like this:
-    DDPConnection.subscribe("talkers");   
+    DDPConnection.subscribe("talkers");
+    DDPConnection.subscribe("h_indices");
+    DDPConnection.subscribe("hangouts");
 }
