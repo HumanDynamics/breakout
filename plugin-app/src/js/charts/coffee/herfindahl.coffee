@@ -27,11 +27,11 @@ class window.Herfindahl
 
     @time = d3.time.scale()
       .domain [Date.now() - 30000, Date.now()]
-      .range [0, @width]
+      .range [@height, 0]
 
     @y = d3.scale.linear()
       .domain([0, d3.max([@maxAmplitude, 1000])])
-      .range([@height, 0])
+      .range([0, @width])
 
     @timeAxis = d3.svg.axis()
       .scale @time
