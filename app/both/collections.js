@@ -10,14 +10,6 @@
 Hangouts = new Mongo.Collection("hangouts");
 
 
-// Participants in hangouts
-// of the form:
-// 'name':  display name of this participant
-// 'image': image URL for participant
-// 'gid':   google ID of participant
-Participants = new Mongo.Collection("participants");
-
-
 // Speaking history item for a particular hangout.
 // of the form:
 // 'participant_id': meteor participant ID
@@ -28,11 +20,15 @@ Participants = new Mongo.Collection("participants");
 TalkingHistory = new Mongo.Collection("talking_history");
 
 
-// Snapshot of all users that are talking at a given point in time
-// of the form:
-// 'talkers':   [participant_id1, participant_id2, ...]
-// 'timestamp': timestamp of time of record
+// TODO: refactor to 'Participants'
+// Participants in hangouts
+// 'talker':      Name of talker
+// 'image':       Google profile image url
+// 'hangout_id':  Meteor hangout id for this participant
+// 'hangout_url': the URL for the hangout this participant is in.
+// 'gid':         Google ID for this participant.
 Talkers = new Mongo.Collection("talkers");
+Talkers._ensureIndex({gid: 1, hangout_id: 1}, {unique: true});
 
 
 // Volume changed events for hangouts
@@ -56,5 +52,3 @@ Followers = new Mongo.Collection("followers");
 // 'h_index':       herfindahl index at this timestamp
 // 'second_window': the length of the window being examined. if 'all', is the entire hangout up to that point.
 HIndices = new Mongo.Collection('h_indices');
-
-

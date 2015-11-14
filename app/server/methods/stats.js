@@ -5,6 +5,7 @@
 function getSecondsInWindow(talkingRecord, start, end) {
     talkingRecord.end_time = new Date(talkingRecord.end_time);
     talkingRecord.start_time = new Date(talkingRecord.start_time);
+    console.log("> computing second window, talkingrecord:", talkingRecord);
     var ms;
     var base_duration = talkingRecord.end_time.getTime() - talkingRecord.start_time.getTime();
     if (talkingRecord.start_time >= start && talkingRecord.end_time <= end) {
@@ -28,12 +29,15 @@ Meteor.methods({
     'secondsSpokenByParticipants': function getSecondsSpoken(meteorHangoutId, secondWindow) {
         var now = new Date();
         var secondsAgo = new Date(now.getTime() - (secondWindow * 1000));
+        console.log("> seconds ago: ", secondsAgo);
+        console.log("> meteor hangout id: ", meteorHangoutId);
         var records = TalkingHistory.find({'hangout_id': meteorHangoutId,
-                                           'end_time': {'$gt': secondsAgo.getTime()}}).fetch();
+                                           'end_time': {'$gt': secondsAgo}}).fetch();
 
         console.log("records: ", records, "for hangout id: ", meteorHangoutId, "greater than time: ", secondsAgo);
         //  of'participantid: <list of talking records>'
         participantRecords = _.groupBy(records, 'participant_id');
+        console.log("> participantRecords: ", participantRecords);
 
         var secondsSpoken = {};
         for (participantId in participantRecords) {
@@ -66,29 +70,37 @@ Meteor.methods({
     'getHerfindahl': function getHerfindahl(meteorHangoutId, secondWindow) {
         var secondsSpoken = Meteor.call('secondsSpokenByParticipants', meteorHangoutId, secondWindow);
         var seconds = _.values(secondsSpoken);
+        
         var totalSeconds = _.reduce(secondsSpoken, function(memo, num) {
             return memo + num; 
         }, 0);
+        console.log("> total s talking: ", totalSeconds);
         
         var fractions = _.map(seconds, function(secondsSpoken) {
             return secondsSpoken / totalSeconds;
         });
+        console.log("> fractions: ", fractions);
         
         var h_index =  _.reduce(fractions, function(memo, num) {
             return memo + (num * num);
         }, 0);
+        console.log("> computed index: ", h_index);
 
         return h_index
             
     },
 
 
+    // TODO: for now, this will be called by the client in a setInterval.
+    // (because if we insert on the server, it doesn't update...)
     'computeHerfindahl': function(meteorHangoutId, secondWindow) {
+        console.log("computing herfindahl index...");
         var h_index = Meteor.call('getHerfindahl', meteorHangoutId, secondWindow);
         HIndices.insert({'hangout_id': meteorHangoutId,
                          'timestamp': Date.now(),
                          'h_index': h_index,
                          'second_window': secondWindow});
+        return h_index;
     },
         
 });
@@ -96,18 +108,18 @@ Meteor.methods({
 // how often (seconds) to compute herfindahl index
 var herfindahlFrequency = 10;
 
-Meteor.setInterval(function() {
-    console.log("computing herfindahl indices..");
-    var activeHangouts = Hangouts.find({'active': true});
+// Meteor.setInterval(function() {
+//     console.log("computing herfindahl indices..");
+//     var activeHangouts = Hangouts.find({'active': true});
     
-    if (activeHangouts.count() == 0) {
-        console.log("no active hangouts...");
-        return;
-    }
+//     if (activeHangouts.count() == 0) {
+//         console.log("no active hangouts...");
+//         return;
+//     }
 
-    activeHangouts = activeHangouts.fetch();
-    _.each(activeHangouts, function(hangout, index, list) {
-        console.log("computing herfindahl for hangout: ", hangout);
-        Meteor.call('computeHerfindahl', hangout._id, herfindahlFrequency);
-    });
-}, herfindahlFrequency * 1000);
+//     activeHangouts = activeHangouts.fetch();
+//     _.each(activeHangouts, function(hangout, index, list) {
+//         console.log("computing herfindahl for hangout: ", hangout._id);
+//         Meteor.call('computeHerfindahl', hangout._id, herfindahlFrequency);
+//     });
+// }, herfindahlFrequency * 1000);

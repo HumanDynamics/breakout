@@ -54,20 +54,36 @@ define(["scripts/volumeCollector"], function(volumeCollector) {
     // called after the hangoutID promise has been hit.
     function setupSubscriptions(hangoutId) {
         console.log("setting up subscriptions for hangout: ", hangoutId);
+        
         state['herfindahlRQ'] = state.hIndexCollection.reactiveQuery(function(item) {
             return item.hangout_id == hangoutId;
         });
+
         console.log('hindex for hangout id:', hangoutId, state.herfindahlRQ.result);
 
         console.log("herfindahl RQ:", state.herfindahlRQ.result);
 
         state.herfindahlRQ.on("change", function(id) {
             console.log("herfindahl on changed!");
-            //        state['hIndex'] = state.herfindahlRQ.result;
+            console.log("changed result:", state.herfindahlRQ.result);
+        });
+
+        state.hIndexCollection.insert({'timestamp': new Date(),
+                                       'hangout_id': hangoutId,
+                                       'h_index': 0.1,
+                                       'second_window': 10});
+
+        state['talkingHistoryRQ'] = state.talkingHistoryCollection.reactiveQuery(function(item) {
+            return true;
+        });
+        
+        state.talkingHistoryRQ.on("change", function(id) {
+            console.log("talking history changed!");
         });
     }
 
 
+    // var volumeCollector = volumeCollector;
     // Events and code for hangout API, after it's ready.
     gapi.hangout.onApiReady.add(function(eventObj) {
         // first, get the meteor ID for this hangout

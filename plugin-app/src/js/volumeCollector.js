@@ -1,8 +1,7 @@
-// TODO: clean up after new requirejs stuff
 define(function() {
 
     // closure for collecting volume data from the hangout.
-    startVolumeCollection: function () {
+    function startVolumeCollection () {
         // change collecting state
         if (state.collectingVolumes)
             return;
@@ -141,12 +140,12 @@ define(function() {
                 }
             }
         }, 50);
-    },
+    }
 
-    stopVolumeCollection: function() {
+    function stopVolumeCollection() {
         clearInterval(state.silenceDetector); // clear silence setInterval
         state.collectingVolumes = false;
-    },
+    }
 
     return {
         startVolumeCollection: startVolumeCollection,
