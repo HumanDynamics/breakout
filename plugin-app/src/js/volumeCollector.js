@@ -86,7 +86,7 @@ define(function() {
         function timeSinceLastTalk(participantId, i) {
             var volumes = allVolumes[participantId];
             for (var j = i - 1; j >= 0; j--) {
-                if (volumes[j].vol > MIN_VOLUME) {
+                if (volumes[j].vol >= MIN_VOLUME) {
                     return volumes[i].timestamp - volumes[j].timestamp;
                 }
             }
@@ -124,11 +124,12 @@ define(function() {
         }
 
         function insertTalkEvent(participantId, startTime, endTime, volumeData) {
+            console.log("inserting talk event:", startTime, endTime);
             state.talkingHistoryCollection.insert({
                 'participant_id': participantId,
                 'hangout_id': state.hangoutId,
-                'start_time': new Date(startTime),
-                'end_time': new Date(endTime),
+                'start_time': new Date(startTime).toISOString(),
+                'end_time': new Date(endTime).toISOString(),
                 //'volumes': volumeData  // TODO: remove to collect raw data
             });
         }
@@ -148,6 +149,13 @@ define(function() {
                     talkState[participantId].talking = false;
                     // get the last time talking
                     lastTime = volumes[volumes.length - 1].timestamp - timeSinceLastTalk(participantId, volumes.length - 1);
+
+                    //TODO:
+                    // we don't want to register a talk event that is
+                    // duration == 0s  -- (or negative) -- why are we getting negative values??
+                    if (lastTime == talkState[participantId].time) {
+                        return;
+                    }
                     // start and end of talking!
                     console.log("new talk event:", talkState[participantId].time, lastTime);
                     insertTalkEvent(participantId, talkState[participantId].time, lastTime, volumes);

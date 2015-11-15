@@ -18,7 +18,7 @@ define(["scripts/volumeCollector"], function(volumeCollector) {
     state.conn.subscribe('h_indices');
     state['hIndexCollection'] = state.conn.getCollection('h_indices');
 
-    state['collectingVolumes'] = false; // true if we're currently collecting data
+    state['collectingVolumes'] = true; // true if we're currently collecting data
     state['silenceDetector'] = null; // interval ID of the silence detector.
 
 
@@ -102,7 +102,7 @@ define(["scripts/volumeCollector"], function(volumeCollector) {
         });
 
         // start the volume collector
-        state['collectingVolumes'] = false;
+        state['collectingVolumes'] = true;
         volumeCollector.startVolumeCollection(hangoutId);
     });
 
