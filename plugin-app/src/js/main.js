@@ -4,8 +4,9 @@
 requirejs.config({
     baseUrl: 'https://breakout.media.mit.edu/plugin/src/js',
     paths: {
-        scripts: '.'
+        scripts: '.',
+        charts: './charts/js'
     }
 });
 
-requirejs(["scripts/lib"]);
+requirejs(["scripts/lib", "charts/pieChart", "charts/all"]);

@@ -15,14 +15,13 @@ setInterval(() =>
     talkTimePromise = window.state.conn.call('getTotalTimeSpoken', state.hangoutId, 60 * 10).result
 
     talkTimePromise.then( ((result) =>
-      console.log("[charts] in talktime promise")
       if window.pie
-        console.log("[charts] pie chart already exists!")
         console.log("blah:", d3.select('#pie-chart'))
         #window.pie.updateData
       else
         console.log("[charts] rendering!")
         window.pie = new PieChart result, pieWidth, pieHeight
+        console.log("render:", window.pie)
         window.pie.render('#pie-chart')
       ),
       (error) =>

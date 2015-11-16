@@ -2,6 +2,8 @@ class window.PieChart
   constructor: (data, width, height) ->
     
     @data = data
+             
+    console.log("[pieChart] data:", @data);
 
     @margin = {top: 10, right: 10, bottom: 10, left: 10}
 
@@ -18,25 +20,30 @@ class window.PieChart
       .value (d) -> d.secondsSpoken
       .sort(null);
 
+    @color = (pid) ->
+      "#B2B2B2"
 
-    render: (id="#pie-chart") =>
+      
+  render: (id="#pie-chart") ->
+    
+    @chart = d3.select(id)
+    .append "svg"
+    .attr "class", "pieChart"
+    .attr "width", @width + @margin.left + @margin.right
+    .attr "height", @height + @margin.top + @margin.bottom
+    .append "g"
+    .attr "transform", "translate(" + (@width / 2) + "," + (@height / 2) + ")"
 
-      @chart = d3.select id
-        .append "svg"
-        .attr "class", "pieChart"
-        .attr "width", @width + @margin.left + @margin.right
-        .attr "height", @height + @margin.top + @margin.bottom
-        .append "g"
-        .attr "transform", "translate(" + @margin.left + "," + @margin.top + ")"
+    @chartBody = @chart.append "g"
 
-      @chartBody = @chart.append "g"
+    @path = @chartBody
+    .selectAll "path"
+    .data @pie(@data)
+    .enter().append "path"
+    .attr "fill", (d, i) => "#B2B2B2"
+    .attr "d", @arc
+    .each (d) => @current = d
 
-      @path = @chartBody.selectAll "path"
-        .data @pie
-        .enter().append "path"
-        .attr "fill", (d, i) => @color(i) # or whatever
-        .attr "d", @arc
-        .each (d) => @current = d
 
   arcTween: (a) ->
     i = d3.interpolate @current, a
