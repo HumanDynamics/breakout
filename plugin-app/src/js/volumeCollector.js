@@ -21,6 +21,14 @@ define(function() {
                                           function(p) {
                                               return {'gid': p.person.id, 'hid': p.id};
                                           });
+                console.log("old participants:", participantIds);
+                console.log("new participants:", newParticipantIds);
+
+                if (_.isEqual(participantIds, newParticipantIds)) {
+                    return;
+                }
+                
+                
                 participantIds = newParticipantIds;
 
 
@@ -181,7 +189,21 @@ define(function() {
 
                 var eventVolumes = evt.volumes;
                 _.each(eventVolumes, function(v, hangoutId, l) {
+                    
+                    // if broadcast is there, trash it. doesn't seem to be real people.
+                    if (s.include(hangoutId, 'broadcast')) {
+                        return;
+                    }
+                    
+                    if (participantIds.length == 0) {
+                        console.log("haven't loaded participants yet");
+                        return;
+                    }
+
+                    // find the participant that spoke
                     var participantId = _.find(participantIds, function(participant) {
+                        console.log(participant.hid, hangoutId);
+                        console.log(participant.hid == hangoutId);
                         return participant.hid == hangoutId;
                     });
 
