@@ -21,9 +21,6 @@ define(["scripts/volumeCollector"], function(volumeCollector) {
     state['collectingVolumes'] = true; // true if we're currently collecting data
     state['silenceDetector'] = null; // interval ID of the silence detector.
 
-
-
-
     // returns a promise that is the meteor ID of this hangout.  If there
     // is no appropriate hangout, meteor will creates a new one and
     // returns that ID.
@@ -90,6 +87,8 @@ define(["scripts/volumeCollector"], function(volumeCollector) {
         var hangoutIdPromise = state.getHangoutId()
         var hangoutId;
         var isHangoutNew;
+
+        state['localParticipant'] = gapi.hangout.getLocalParticipant().person.id;
 
         hangoutIdPromise.then(function(result) {
             console.log("got hangout id:", result);
