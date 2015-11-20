@@ -5,11 +5,17 @@
 function getSecondsInWindow(talkingRecord, end, start) {
     talkingRecord.end_time = new Date(talkingRecord.end_time);
     talkingRecord.start_time = new Date(talkingRecord.start_time);
+
+    // shouldn't have to do this, but make sure. been having issues with dates
+    // in meteor.
+    end = new Date(end);
+    start = new Date(start);
+
 //    console.log("> computing second window, talkingrecord:", talkingRecord);
-    console.log("window:", start, end);
+//    console.log("window:", start, end);
     var ms;
     var base_duration = talkingRecord.end_time.getTime() - talkingRecord.start_time.getTime();
-    console.log("base duration", base_duration);
+//    console.log("base duration", base_duration);
     if (talkingRecord.start_time >= start && talkingRecord.end_time <= end) {
         ms = base_duration;
     } else if (talkingRecord.start_time <= start && talkingRecord.end_time <= end) {
@@ -27,11 +33,11 @@ function getSecondsInWindow(talkingRecord, end, start) {
         console.log("impossible talk event, vomiting everywhere");
         return 0;
     }
+
     // if it's less than 0, it means there's no overlap at all.
     if (ms < 0) {
         return 0;
     }
-    console.log("seconds:", ms / 1000);
     return ms / 1000;
 }
 
@@ -56,10 +62,10 @@ function getSecondsSpoken(meteorHangoutId, secondWindow) {
         var talkingRecords = participantRecords[participantId];
         //console.log("talkingRecords", talkingRecords);
         var speakingLengths = _.map(talkingRecords, function(record) {
-            return getSecondsInWindow(record, now, new Date(secondsAgo));
+            return getSecondsInWindow(record, now, (new Date(secondsAgo)));
         });
 
-        console.log("speakingLenghts:", speakingLengths);
+        //console.log("speakingLenghts:", speakingLengths);
         secondsSpoken[participantId] = _.reduce(speakingLengths, function(memo, num) {
             return memo + num;
         }, 0);
@@ -98,7 +104,7 @@ function getHerfindahl(meteorHangoutId, secondWindow) {
     var fractions = _.map(seconds, function(secondsSpoken) {
         return secondsSpoken / totalSeconds;
     });
-    console.log("> fractions: ", fractions);
+    //console.log("> fractions: ", fractions);
 
     var h_index =  _.reduce(fractions, function(memo, num) {
         return memo + (num * num);
@@ -120,6 +126,7 @@ Meteor.methods({
         if (!h_index) {
           var lastIndex = HIndices.findOne({'hangout_id': meteorHangoutId},
                                            {'sort': {'timestamp': -1, 'limit': 1}});
+          console.log("lastIndex:", lastIndex);
           // if that one's garbage, just return 1.
           if (!lastIndex) {
             h_index = 1;
@@ -148,6 +155,7 @@ Meteor.methods({
 
 // how often (seconds) to compute herfindahl index
 var herfindahlFrequency = 10;
+var herfindahlWindow = 3 * 60;
 
 Meteor.setInterval(function() {
     console.log("computing herfindahl indices..");
@@ -161,6 +169,6 @@ Meteor.setInterval(function() {
     activeHangouts = activeHangouts.fetch();
     _.each(activeHangouts, function(hangout, index, list) {
         console.log("computing herfindahl for hangout: ", hangout._id);
-        Meteor.call('computeHerfindahl', hangout._id, herfindahlFrequency);
+        Meteor.call('computeHerfindahl', hangout._id, herfindahlWindow);
     });
 }, herfindahlFrequency * 1000);

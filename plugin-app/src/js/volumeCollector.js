@@ -229,6 +229,7 @@ define(function() {
         // check if it's been over TALK_TIMEOUT ms since we last got an
         // event. If so, then they're not talking.
         _.each(participantIds, function(participant) {
+            console.log("participant:", participant);
             var googleId = participant.gid;
             var volumes = allVolumes[googleId];
             state['volumeCollector'] = setInterval(function() {

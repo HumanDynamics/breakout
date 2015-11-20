@@ -1,11 +1,10 @@
 # window.herfindahl = new Herfindahl window.state.hangoutId, 300, 400
 # window.herfindahl.render('#herfindahl-chart')
 
+pieWidth = $(window).width()
+pieHeight = pieWidth
 
-pieWidth = 300
-pieHeight = 300
-
-herfWidth = 300
+herfWidth = $(window).width()
 herfHeight = 300
 
 #console.log $(window).width
@@ -52,7 +51,7 @@ setInterval(() =>
   #TODO: herfindahl is always null here, not sure why.
   herfindahlPromise.then( ((result) =>
     #TODO: What the hell is this?
-    result.h_index = result.h_index['$InfNaN'];
+#    result.h_index = result.h_index['$InfNaN'];
 
     result.timestamp = (new Date(result.timestamp)).getTime()
       # if we have less than 3 buffered data points, just wait for more.
@@ -73,4 +72,4 @@ setInterval(() =>
     ), (error) =>
       console.log("[charts] error with herfindahl promise")
     )
-, 1000)
+, 10000)

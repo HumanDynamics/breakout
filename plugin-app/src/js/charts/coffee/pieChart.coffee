@@ -1,6 +1,8 @@
 class window.PieChart
   constructor: (data, width, height) ->
 
+    @fontFamily = "Futura,Helvetica Neue,Helvetica,Arial,sans-serif"
+
     @data = data
     @prevData = data  # to keep track of previous data step. same at first.
 
@@ -60,7 +62,7 @@ class window.PieChart
 
     @text = @chartBody.append("text")
      .style "text-anchor", "middle"
-     .attr "font-family", "Futura,Helvetica Neue,Helvetica,Arial,sans-serif"
+     .attr "font-family", @fontFamily
      .attr "font-size", "30px"
      .text d3.format("%") @localPercentageOfTime()
 
@@ -69,7 +71,7 @@ class window.PieChart
       .style "text-anchor", "middle"
       .attr "x", 0
       .attr "y", -30
-      .attr "font-family", "Futura,Helvetica Neue,Helvetica,Arial,sans-serif"
+      .attr "font-family", @fontFamily
       .attr "font-size", "12px"
       .text "You've been speaking for"
 
@@ -77,7 +79,7 @@ class window.PieChart
       .style "text-anchor", "middle"
       .attr "x", 0
       .attr "y", 20
-      .attr "font-family", "Futura,Helvetica Neue,Helvetica,Arial,sans-serif"
+      .attr "font-family", @fontFamily
       .attr "font-size", "12px"
       .text "of this hangout."
 
