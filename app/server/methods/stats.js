@@ -1,27 +1,24 @@
-// TODO: I broke this in last changes.
-
-
 // start and end in date, same with talkingRecord.start_time and
 // talkingRecord.end_time
-// just returns the number of seconds overlap.
-
+// just returns the number of seconds overlap between end and start in
+// talkingRecord.
 function getSecondsInWindow(talkingRecord, end, start) {
     talkingRecord.end_time = new Date(talkingRecord.end_time);
     talkingRecord.start_time = new Date(talkingRecord.start_time);
-    console.log("> computing second window, talkingrecord:", talkingRecord);
+//    console.log("> computing second window, talkingrecord:", talkingRecord);
     console.log("window:", start, end);
     var ms;
     var base_duration = talkingRecord.end_time.getTime() - talkingRecord.start_time.getTime();
     console.log("base duration", base_duration);
     if (talkingRecord.start_time >= start && talkingRecord.end_time <= end) {
         ms = base_duration;
-    } else if (talkingRecord.start_time < start && talkingRecord.end_time <= end) {
+    } else if (talkingRecord.start_time <= start && talkingRecord.end_time <= end) {
         var sub = start.getTime() - talkingRecord.start_time.getTime();
         ms = base_duration - sub;
-    } else if (talkingRecord.start_time >= start && talkingRecord.end_time > end) {
+    } else if (talkingRecord.start_time >= start && talkingRecord.end_time >= end) {
         var sub = talkingRecord.end_time.getTime() - end.getTime();
         ms = base_duration - sub;
-    } else if (talkingRecord.start_time < start && talkingRecord.end_time > end) {
+    } else if (talkingRecord.start_time <= start && talkingRecord.end_time >= end) {
         var sub1 = start.getTime() - talkingRecord.start_time.getTime();
         var sub2 = talkingRecord.end_time.getTime() - end.getTime();
         ms = base_duration - sub1 - sub2;
@@ -30,9 +27,6 @@ function getSecondsInWindow(talkingRecord, end, start) {
         console.log("impossible talk event, vomiting everywhere");
         return 0;
     }
-
-    // this is here right now because I'm having difficulty querying
-    // mongodb correctly for items between a start and end date.
     // if it's less than 0, it means there's no overlap at all.
     if (ms < 0) {
         return 0;
@@ -44,6 +38,7 @@ function getSecondsInWindow(talkingRecord, end, start) {
 function getSecondsSpoken(meteorHangoutId, secondWindow) {
     var now = new Date();
     var secondsAgo = new Date(now.getTime() - (secondWindow * 1000)).toISOString();
+    now = now.toISOString();
     console.log("> seconds ago: ", secondsAgo);
     console.log("> now: ", now);
     console.log("> meteor hangout id: ", meteorHangoutId);
@@ -53,15 +48,13 @@ function getSecondsSpoken(meteorHangoutId, secondWindow) {
                                        // 'end_time': {'$gte': new Date(secondsAgo),
                                        //              '$lt': new Date(now)}}).fetch();
 
-    console.log("records: ", records, "for hangout id: ", meteorHangoutId, "greater than time: ", new Date(secondsAgo));
     //  of'participantid: <list of talking records>'
     participantRecords = _.groupBy(records, 'participant_id');
-    console.log("> participantRecords: ", participantRecords);
 
     var secondsSpoken = {};
     for (participantId in participantRecords) {
         var talkingRecords = participantRecords[participantId];
-        console.log("talkingRecords", talkingRecords);
+        //console.log("talkingRecords", talkingRecords);
         var speakingLengths = _.map(talkingRecords, function(record) {
             return getSecondsInWindow(record, now, new Date(secondsAgo));
         });
@@ -72,7 +65,7 @@ function getSecondsSpoken(meteorHangoutId, secondWindow) {
         }, 0);
     }
     console.log(">> seconds spoken:", secondsSpoken);
-    
+
     // var secondsSpoken = _.mapObject(participantRecords, function(talkingRecords, participantId) {
     //     var speakingLengths = _.map(talkingRecords, function(record) {
     //         return getSecondsInWindow(record, now, secondsAgo);
@@ -82,7 +75,7 @@ function getSecondsSpoken(meteorHangoutId, secondWindow) {
     //         return memo + num;
     //     }, 0);
     // });
-    
+
     return secondsSpoken;
 }
 
@@ -92,17 +85,21 @@ function getHerfindahl(meteorHangoutId, secondWindow) {
     var secondsSpoken = getSecondsSpoken(meteorHangoutId, secondWindow);
     var seconds = _.values(secondsSpoken);
     console.log("secondsSpoken:", secondsSpoken);
-    
+
     var totalSeconds = _.reduce(secondsSpoken, function(memo, num) {
-        return memo + num; 
+        return memo + num;
     }, 0);
     console.log("> total s talking: ", totalSeconds);
-    
+
+    if (totalSeconds == 0) {
+      return null;
+    }
+
     var fractions = _.map(seconds, function(secondsSpoken) {
         return secondsSpoken / totalSeconds;
     });
     console.log("> fractions: ", fractions);
-    
+
     var h_index =  _.reduce(fractions, function(memo, num) {
         return memo + (num * num);
     }, 0);
@@ -118,13 +115,35 @@ Meteor.methods({
     'computeHerfindahl': function(meteorHangoutId, secondWindow) {
         console.log("computing herfindahl index...");
         var h_index = getHerfindahl(meteorHangoutId, secondWindow);
+        // if it's garbage (like if nobody's been talking), return the last one
+        // computed.
+        if (!h_index) {
+          var lastIndex = HIndices.findOne({'hangout_id': meteorHangoutId},
+                                           {'sort': {'timestamp': -1, 'limit': 1}});
+          // if that one's garbage, just return 1.
+          if (!lastIndex) {
+            h_index = 1;
+          } else {
+            h_index = lastIndex.h_index;
+            console.log("using last computed index:", h_index);
+          }
+        }
+        console.log("h_index reported as:", h_index);
         HIndices.insert({'hangout_id': meteorHangoutId,
-                         'timestamp': new Date(),
+                         'timestamp': (new Date()).toISOString(),
                          'h_index': h_index,
                          'second_window': secondWindow});
         return h_index;
     },
-        
+
+    'getHerfindahl': function(meteorHangoutId, secondWindow) {
+      console.log("getting herfindahl...");
+      var res =  HIndices.findOne({'hangout_id': meteorHangoutId},
+                                  {'sort': {'timestamp': -1, 'limit': 1}});
+      console.log("returning hindex object:", res);
+      return res;
+    },
+
 });
 
 // how often (seconds) to compute herfindahl index
@@ -133,7 +152,7 @@ var herfindahlFrequency = 10;
 Meteor.setInterval(function() {
     console.log("computing herfindahl indices..");
     var activeHangouts = Hangouts.find({'active': true});
-    
+
     if (activeHangouts.count() == 0) {
         console.log("no active hangouts...");
         return;

@@ -27,8 +27,8 @@ define(function() {
                 if (_.isEqual(participantIds, newParticipantIds)) {
                     return;
                 }
-                
-                
+
+
                 participantIds = newParticipantIds;
 
 
@@ -51,7 +51,7 @@ define(function() {
                         allVolumes[participant] = []
                         talkState[googleId] = {'talking': false, 'time': null};
                     });
-                    
+
                 });
 
             }, 5000);
@@ -71,7 +71,7 @@ define(function() {
 
 
         //////////////////////////////////////////
-        
+
         // constants for talking 'algorithm'
         var MIN_VOLUME = 2; // minimum volume to count
         // if at least this amount of time happens between a talk signal
@@ -87,7 +87,7 @@ define(function() {
 
 
         //////////////////////////////////////////
-        
+
         // returns the number of ms between index i and the most recent
         // last talk event
         // TODO: These two can be abstracted out
@@ -168,7 +168,7 @@ define(function() {
                     console.log("new talk event:", talkState[participantId].time, lastTime);
                     insertTalkEvent(participantId, talkState[participantId].time, lastTime, volumes);
                     volumes = [];
-                    
+
                 }
             } else if (!talkState[participantId].talking) {
                 if (startedTalking(participantId)) {
@@ -189,12 +189,12 @@ define(function() {
 
                 var eventVolumes = evt.volumes;
                 _.each(eventVolumes, function(v, hangoutId, l) {
-                    
+
                     // if broadcast is there, trash it. doesn't seem to be real people.
                     if (s.include(hangoutId, 'broadcast')) {
                         return;
                     }
-                    
+
                     if (participantIds.length == 0) {
                         console.log("haven't loaded participants yet");
                         return;
@@ -202,8 +202,8 @@ define(function() {
 
                     // find the participant that spoke
                     var participantId = _.find(participantIds, function(participant) {
-                        console.log(participant.hid, hangoutId);
-                        console.log(participant.hid == hangoutId);
+                        //console.log(participant.hid, hangoutId);
+                        //console.log(participant.hid == hangoutId);
                         return participant.hid == hangoutId;
                     });
 
@@ -258,5 +258,5 @@ define(function() {
         startVolumeCollection: startVolumeCollection,
         stopVolumeCollection: stopVolumeCollection
     }
-    
+
 });

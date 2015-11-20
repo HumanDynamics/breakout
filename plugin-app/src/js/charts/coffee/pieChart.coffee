@@ -1,9 +1,9 @@
 class window.PieChart
   constructor: (data, width, height) ->
-    
+
     @data = data
     @prevData = data  # to keep track of previous data step. same at first.
-             
+
     console.log("[pieChart] data:", @data);
 
     @margin = {top: 10, right: 10, bottom: 10, left: 10}
@@ -14,7 +14,7 @@ class window.PieChart
     @radius = d3.min([@width, @height]) / 2
 
     @arc = d3.svg.arc()
-      .innerRadius(@radius - 100)
+      .innerRadius(@radius - 50)
       .outerRadius(@radius - 20)
 
     # key function to access arc/data identifiers
@@ -29,11 +29,11 @@ class window.PieChart
 
     @color = (d) ->
       if (d.data.participantId == window.state.localParticipant)
-        "#C51B25"
+        "#22A7F0"
       else
-        "#aaaaa"
+        "#D2D7D3"
 
-        
+
   render: (id="#pie-chart") =>
 
     @chart = d3.select(id)
@@ -52,18 +52,41 @@ class window.PieChart
       .selectAll "path"
       .data @pie(@data)
       .enter().append "path"
-      
+
     @path .transition()
       .duration(500)
       .attr "fill", @color
       .attr "d", @arc
+
+    @text = @chartBody.append("text")
+     .style "text-anchor", "middle"
+     .attr "font-family", "Futura,Helvetica Neue,Helvetica,Arial,sans-serif"
+     .attr "font-size", "30px"
+     .text d3.format("%") @localPercentageOfTime()
+
+
+    @chartBody.append("text")
+      .style "text-anchor", "middle"
+      .attr "x", 0
+      .attr "y", -30
+      .attr "font-family", "Futura,Helvetica Neue,Helvetica,Arial,sans-serif"
+      .attr "font-size", "12px"
+      .text "You've been speaking for"
+
+    @chartBody.append("text")
+      .style "text-anchor", "middle"
+      .attr "x", 0
+      .attr "y", 20
+      .attr "font-family", "Futura,Helvetica Neue,Helvetica,Arial,sans-serif"
+      .attr "font-size", "12px"
+      .text "of this hangout."
 
 
   change: (data) ->
     console.log "[pieChart] updating data: ", @data, " to: ", data
     # don't lose keys, just put them to 0
     data = @setLostKeysToZero data
-    
+
     # keep track of previous data state
     @prevData = @data
     @data = data
@@ -73,11 +96,28 @@ class window.PieChart
       .enter().append "path"
       .attr "fill", @color
       .attr "d", @arc
-      
+
     # transition to make the update pretty
     @path.transition()
       .duration 750
       .attrTween "d", @arcTween
+
+    @text.text d3.format("%") @localPercentageOfTime()
+
+
+  localParticipantRecord: () =>
+    _.find @data, (d) => d.participantId == window.state.localParticipant
+
+  # returns the number of seconds the local participant has spoken
+  localSecondsSpoken: () =>
+    @localParticipantRecord().secondsSpoken
+
+  localPercentageOfTime: () =>
+    localRecord = @localParticipantRecord().secondsSpoken
+    totalSpoken = d3.sum(_.map(@data, (d) => d.secondsSpoken))
+    console.log "[pieChart] localRecord: ", localRecord
+    console.log "[pieChart] totalSpoken: ", totalSpoken
+    return (localRecord / totalSpoken)
 
 
   # convenience function to set keys that were lost between @data and
@@ -110,6 +150,6 @@ class window.PieChart
     # new
     oldAngles = @orderData(@pie(@prevData))
     i = d3.interpolate(oldAngles[@key(d)], d)
-    
+
     # function to give interpolation step for each tween step
     return (t) => @arc(i(t))

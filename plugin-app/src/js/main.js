@@ -9,4 +9,4 @@ requirejs.config({
     }
 });
 
-requirejs(["scripts/lib", "charts/pieChart", "charts/all"]);
+requirejs(["scripts/lib", "charts/pieChart", "charts/herfindahl", "charts/all"]);
