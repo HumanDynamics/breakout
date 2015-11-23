@@ -9,7 +9,7 @@ Meteor.methods({
     // returns an object of the form:
     // {'id': probable meteor ID for the hangout.
     //  'isnew': true if this call created a new hangout in meteor}
-    'getHangout': function getHangoutId(hangoutId, hangoutUrl, participants) {
+    'getHangout': function getHangoutId(hangoutId, hangoutUrl, participants, hangoutTopic) {
         possible_hangout = Hangouts.findOne({'hangout_id': hangoutId});
         console.log("finding hangout with id: ", hangoutId);
         console.log("found possible hangout: ", possible_hangout);
@@ -24,6 +24,7 @@ Meteor.methods({
                                            'url': hangoutUrl,
                                            'participants': participants,
                                            'start_time': new Date(),
+                                           'hangoutTopic': hangoutTopic,
                                            'end_time': null,
                                            'active': true,
                                           }),

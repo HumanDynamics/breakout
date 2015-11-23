@@ -1,5 +1,5 @@
 define(["scripts/volumeCollector"], function(volumeCollector) {
-    
+
     // setting meteor server URL
     window.meteorURL = "breakout.media.mit.edu";
 
@@ -36,11 +36,12 @@ define(["scripts/volumeCollector"], function(volumeCollector) {
                                    function(p) {
                                        return p.person.id;
                                    });
-        var hangoutId; 
+        var hangoutId;
         var res = state.conn.call('getHangout',
                                   gapi.hangout.getHangoutId(),
                                   gapi.hangout.getHangoutUrl(),
-                                  participantIds);
+                                  participantIds,
+                                  gapi.hangout.getTopic());
         return res.result;
     }
 
@@ -51,7 +52,7 @@ define(["scripts/volumeCollector"], function(volumeCollector) {
     // called after the hangoutID promise has been hit.
     function setupSubscriptions(hangoutId) {
         console.log("setting up subscriptions for hangout: ", hangoutId);
-        
+
         state['herfindahlRQ'] = state.hIndexCollection.reactiveQuery(function(item) {
             return item.hangout_id == hangoutId;
         });
@@ -65,15 +66,10 @@ define(["scripts/volumeCollector"], function(volumeCollector) {
             console.log("changed result:", state.herfindahlRQ.result);
         });
 
-        state.hIndexCollection.insert({'timestamp': new Date(),
-                                       'hangout_id': hangoutId,
-                                       'h_index': 0.1,
-                                       'second_window': 10});
-
         state['talkingHistoryRQ'] = state.talkingHistoryCollection.reactiveQuery(function(item) {
             return true;
         });
-        
+
         state.talkingHistoryRQ.on("change", function(id) {
             console.log("talking history changed!");
         });
@@ -99,6 +95,15 @@ define(["scripts/volumeCollector"], function(volumeCollector) {
         }, function(error) {
             console.log("Couldn't get hangout ID: ", error);
         });
+
+
+        // gapi.hangout.onEnabledParticipantsChanged.add(function() {
+        //   var users = gapi.hangout.onParticipantsChanged.add(function(evt) {
+        //     console.log"participants changed:",
+        //     function(ParticipantsChangedEvent)
+        //
+        //   });
+        // });
 
         // start the volume collector
         state['collectingVolumes'] = true;

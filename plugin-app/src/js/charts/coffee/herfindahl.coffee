@@ -7,7 +7,7 @@ class window.Herfindahl
 
     @fontFamily = "Futura,Helvetica Neue,Helvetica,Arial,sans-serif"
 
-    @margin = {top: 10, right: 30, bottom: 50, left: 0}
+    @margin = {top: 10, right: 20, bottom: 50, left: 5}
     @width = width - @margin.right - @margin.left
     @height = height - @margin.bottom - @margin.top
 

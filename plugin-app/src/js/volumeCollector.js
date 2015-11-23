@@ -138,7 +138,7 @@ define(function() {
                 'hangout_id': state.hangoutId,
                 'start_time': new Date(startTime).toISOString(),
                 'end_time': new Date(endTime).toISOString(),
-                //'volumes': volumeData  // TODO: remove to collect raw data
+                'volumes': volumeData  // TODO: remove to collect raw data
             });
         }
 

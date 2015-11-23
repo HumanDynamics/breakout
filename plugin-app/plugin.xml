@@ -10,16 +10,19 @@
 <script src="https://plus.google.com/hangouts/_/api/v1/hangout.js"></script>
 
 <head>
-  <title>Limelight</title>
+    <title>Breakout</title>
 </head>
 <body>
-  <div class="container center-justified">
-    <div id="herfindahl-chart"></div>
-    <member-list></member-list>
-  </div>
+    <div class="container center-justified">
+        <div id="herfindahl-chart"></div>
+        <div id="pie-chart"></div>
+        <member-list></member-list>
+    </div>
 </body>
 
-<link rel="stylesheet" type="text/css" href="https://breakout.media.mit.edu/plugin/src/style.css"
+<link rel="stylesheet" type="text/css" href="https://breakout.media.mit.edu/plugin/src/style.css">
+
+<!-- external bower libs -->
 
 
 <script src="https://breakout.media.mit.edu/plugin/src/bower_components/ddp.js/src/ddp.js"></script>
@@ -28,15 +31,29 @@
 <script src="https://breakout.media.mit.edu/plugin/src/bower_components/webcomponentsjs/webcomponents.js"></script>
 <script src="https://breakout.media.mit.edu/plugin/src/bower_components/underscore/underscore-min.js"></script>
 <script src="https://breakout.media.mit.edu/plugin/src/bower_components/d3/d3.min.js"></script>
-<script src="https://breakout.media.mit.edu/plugin/src/lib.js"></script>
-<script src="https://breakout.media.mit.edu/plugin/src/charts/js/herfindahl.js"></script>
-<script src="https://breakout.media.mit.edu/plugin/src/charts/js/all.js"></script>
+<script src="https://breakout.media.mit.edu/plugin/src/bower_components/moment/moment.js"></script>
+<script src="https://breakout.media.mit.edu/plugin/src/bower_components/underscore.string/dist/underscore.string.js"></script>
+<script src="https://breakout.media.mit.edu/plugin/src/bower_components/jquery/dist/jquery.min.js"></script>
 
+<!-- <script src="https://breakout.media.mit.edu/plugin/src/js/charts/js/pieChart.js"></script>
+     <script src="https://breakout.media.mit.edu/plugin/src/js/charts/js/all.js"></script> -->
+
+<script data-main="https://breakout.media.mit.edu/plugin/src/js/main" src="https://breakout.media.mit.edu/plugin/src/bower_components/requirejs/require.js"></script>
+
+<!-- custom js -->
+<!-- <script src="https://breakout.media.mit.edu/plugin/src/js/volumeCollector.js"></script>
+     <script src="https://breakout.media.mit.edu/plugin/src/lib.js"></script>
+     <script src="https://breakout.media.mit.edu/plugin/src/charts/js/herfindahl.js"></script>
+     <script src="https://breakout.media.mit.edu/plugin/src/charts/js/all.js"></script> -->
+
+
+<!-- polymer -->
 <link rel="import" href="https://breakout.media.mit.edu/plugin/src/bower_components/iron-flex-layout/iron-flex-layout.html"
 <link rel="import" href="https://breakout.media.mit.edu/plugin/src/bower_components/polymer/polymer.html">
 <link rel="import" href="https://breakout.media.mit.edu/plugin/src/bower_components/paper-card/paper-card.html">
 <link rel="import" href="https://breakout.media.mit.edu/plugin/src/bower_components/paper-item/paper-item.html">
 <link rel="import" href="https://breakout.media.mit.edu/plugin/src/polymer_components/member-list.html">
+<link rel="import" href="https://breakout.media.mit.edu/plugin/src/polymer_components/herfindahl-index.html">
 ]]>
   </Content>
 </Module>
