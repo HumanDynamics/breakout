@@ -1,3 +1,4 @@
+var mongodb = require('feathers-mongodb');
 // Each item in Hangouts is of the form:
 // 'participants': [user_id1, user_id2, ...]
 // 'start_time':   timestamp of start of hangout
@@ -5,7 +6,7 @@
 // 'url':          URL of hangout
 // 'hangout_id':   ID of hangout
 // 'active':       boolean whether hangout is currently active
-var hangoutsService = mongodb({
+var hangoutService = mongodb({
     collection: 'hangouts',
 });
 
@@ -47,6 +48,6 @@ var volumeService = mongodb({
 // 'hangout_id':    meteor ID of the event
 // 'h_index':       herfindahl index at this timestamp
 // 'second_window': the length of the window being examined. if 'all', is the entire hangout up to that point.
-var hIndicesService = mongodb({
+var hIndexService = mongodb({
     collection: 'h_indices',
 });
