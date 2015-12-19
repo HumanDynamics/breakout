@@ -21,7 +21,10 @@ setInterval(() =>
     talkTimePromise = window.state.conn.call('getTotalTimeSpoken', state.hangoutId, 60 * 1).result
 
     talkTimePromise.then( ((result) =>
-      if window.state.pie
+      if result.length < 1
+        console.log result
+        console.log "got empty result, waiting..."
+      else if window.state.pie
         if !_.isEqual(window.state.pie.data, result)
           console.log("[charts] update data:", result);
           window.state.pie.change(result)
