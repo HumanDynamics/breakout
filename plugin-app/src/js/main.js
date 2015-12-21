@@ -5,7 +5,8 @@ requirejs.config({
     baseUrl: 'https://breakout.media.mit.edu/plugin/src/js',
     paths: {
         scripts: '.',
-        charts: './charts/js'
+        charts: './charts/js',
+        libs: './bower_components'
     }
 });
 

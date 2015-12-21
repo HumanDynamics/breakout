@@ -1,7 +1,9 @@
-define(["scripts/volumeCollector"], function(volumeCollector) {
+define(["libs/primus/primus"], function(Primus) {
 
+    window.state = {};
+    window.state.url = "breakout.media.mit.edu";
+    var primus = new Primus(window.state.url);
     // setting meteor server URL
-    window.meteorURL = "breakout.media.mit.edu";
 
     // global state object
     window.state = {};

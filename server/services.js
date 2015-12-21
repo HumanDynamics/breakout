@@ -7,7 +7,7 @@ var mongodb = require('feathers-mongodb');
 // 'hangout_id':   ID of hangout
 // 'active':       boolean whether hangout is currently active
 var hangoutService = mongodb({
-    collection: 'hangouts',
+    collection: 'hangouts'
 });
 
 // Speaking history item for a particular hangout.
@@ -18,7 +18,7 @@ var hangoutService = mongodb({
 // 'end_time':       tiemstamp of end of talking period
 //? 'volumes':        raw volume data of this talk event from the google hangout
 var talkingHistoryService = mongodb({
-    collection: 'talking_history',
+    collection: 'talking_history'
 });
 
 // Participants in hangouts
@@ -28,7 +28,7 @@ var talkingHistoryService = mongodb({
 // 'hangout_url': the URL for the hangout this participant is in.
 // 'gid':         Google ID for this participant.
 var participantService = mongodb({
-    collection: 'participants',
+    collection: 'participants'
 });
 
 // Volume changed events for hangouts
@@ -38,7 +38,7 @@ var participantService = mongodb({
 // 'hangout_id':  meteor hangout ID of the event
 // 'volume':      volume of the volumechanged event.
 var volumeService = mongodb({
-    collection: 'volume_events',
+    collection: 'volume_events'
 });
 
 
@@ -49,5 +49,5 @@ var volumeService = mongodb({
 // 'h_index':       herfindahl index at this timestamp
 // 'second_window': the length of the window being examined. if 'all', is the entire hangout up to that point.
 var hIndexService = mongodb({
-    collection: 'h_indices',
+    collection: 'h_indices'
 });
