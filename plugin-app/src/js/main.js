@@ -1,13 +1,11 @@
-// require(["lib.js"], function(lib) {
-// });
-
 requirejs.config({
-    baseUrl: 'https://breakout.media.mit.edu/plugin/src/js',
+    baseUrl: 'https://breakout.media.mit.edu/dev/plugin/src/js',
     paths: {
         scripts: '.',
-        charts: './charts/js',
+        // charts: './charts/js',
         libs: './bower_components'
     }
 });
 
-requirejs(["scripts/lib", "charts/pieChart", "charts/herfindahl", "charts/all"]);
+// requirejs(["scripts/lib", "charts/pieChart", "charts/herfindahl", "charts/all"]);
+requirejs(["scripts/lib"]);
