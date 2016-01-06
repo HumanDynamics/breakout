@@ -1,4 +1,34 @@
 var mongodb = require('feathers-mongodb');
+var Proto = require('uberproto');
+
+// Custom, extended hangouts service -- adding created & updated
+// fields.
+var HangoutService = mongodb.Service.extend({
+    
+    create: function(data, params, callback) {
+        data.createdAt = new Date();
+        return this._super(data, params, callback);
+    },
+
+    patch: function(id, data, params, callback) {
+        data.updatedAt = new Date();
+        return this._super(id, data, params, callback);
+    },
+
+    find: function(params, callback) {
+        console.log("example params:", this._super);
+        return this._super(params, callback);
+        // console.log("possible hangouts: ", possible_hangouts);
+        // if (possible_hangouts) {
+        //     return possible_hangouts;
+        // } else {
+        //     console.log("no existing hangout was found, creating a new one.");
+        //     return possible_hangouts;
+        //     // return this.create({
+        //     // });
+        // }
+    }
+});
 
 module.exports = {
     // Each item in Hangouts is of the form:
@@ -8,9 +38,7 @@ module.exports = {
     // 'url':          URL of hangout
     // 'hangout_id':   ID of hangout
     // 'active':       boolean whether hangout is currently active
-    hangoutService: mongodb({
-        collection: 'hangouts'
-    }),
+    hangoutService: Proto.create.call(HangoutService, {collection: 'hangouts'}),
 
     // Speaking history item for a particular hangout.
     // of the form:
