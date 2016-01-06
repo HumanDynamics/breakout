@@ -31,15 +31,6 @@ define(["primus",  "underscore", "gapi", "hangoutUtils"], function(Primus, _, ga
         console.log('hangoutid:', window.state.hangoutId);
     });
 
-    
-
-    // primus.send('hangouts::create', {title: 'HangoutTitle'}, {}, function() {
-    //     primus.send('hangouts::find', {}, function(error, hangouts) {
-    //         console.log(error);
-    //         console.log(hangouts);
-    //     });
-    // });
-
     return {
         primus: primus
     };
