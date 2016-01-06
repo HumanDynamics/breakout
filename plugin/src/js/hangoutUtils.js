@@ -1,4 +1,4 @@
-define(["primus", "gapi"], function(Primus, gapi) {
+define(["primus"], function(Primus) {
     var primus = new Primus("breakout.media.mit.edu");
     function getHangout(hangoutId, hangoutUrl, participants, hangoutTopic) {
         // if we've already cached it

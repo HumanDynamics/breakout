@@ -1,4 +1,4 @@
-define(["primus", "gapi", "_", "hangoutUtils"], function(Primus, gapi, _, hangoutUtils) {
+define(["primus",  "_", "hangoutUtils"], function(Primus, _, hangoutUtils) {
 
     // initialize global state object
     window.state = {};
@@ -14,6 +14,7 @@ define(["primus", "gapi", "_", "hangoutUtils"], function(Primus, gapi, _, hangou
     });
 
 
+    console.log("gapi:", window.gapi);
     
     console.log(gapi.hangout.getParticipants());
 

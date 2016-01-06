@@ -1,4 +1,4 @@
-define(["_", "gapi"], function(_, gapi) {
+define(["_"], function(_) {
 
     function startVolumeCollection () {
 
@@ -13,12 +13,12 @@ define(["_", "gapi"], function(_, gapi) {
         // check for new participants every 5s
         var participantIds = [];
         
-        gapi.hangout.onApiReady.add(function(eventObj) {
+        window.gapi.hangout.onApiReady.add(function(eventObj) {
             console.log("what?");
             window.setInterval(function() {
                 // get the most recent participant list
                 var newParticipantIds;
-                newParticipantIds = _.map(gapi.hangout.getParticipants(),
+                newParticipantIds = _.map(window.gapi.hangout.getParticipants(),
                                           function(p) {
                                               return {'gid': p.person.id, 'hid': p.id};
                                           });
@@ -134,9 +134,9 @@ define(["_", "gapi"], function(_, gapi) {
 
         function insertTalkEvent(participantId, startTime, endTime, volumeData) {
             console.log("inserting talk event:", startTime, endTime);
-            state.talkingHistoryCollection.insert({
+            window.state.talkingHistoryCollection.insert({
                 'participant_id': participantId,
-                'hangout_id': state.hangoutId,
+                'hangout_id': window.state.hangoutId,
                 'start_time': new Date(startTime).toISOString(),
                 'end_time': new Date(endTime).toISOString(),
                 'volumes': volumeData  // TODO: remove to collect raw data
@@ -180,7 +180,7 @@ define(["_", "gapi"], function(_, gapi) {
             }
         }
 
-        gapi.hangout.av.onVolumesChanged.add(
+        window.gapi.hangout.av.onVolumesChanged.add(
             function(evt) {
                 // don't do anything if we're not collecting volumes
                 if (!state.collectingVolumes) {
@@ -233,7 +233,7 @@ define(["_", "gapi"], function(_, gapi) {
             console.log("participant:", participant);
             var googleId = participant.gid;
             var volumes = allVolumes[googleId];
-            state['volumeCollector'] = setInterval(function() {
+            window.state['volumeCollector'] = setInterval(function() {
                 if (talkState[googleId]['talking']) {
                     var now = Date.now()
                     var lastEventTime = volumes[volumes.length - 1].timestamp;
@@ -251,8 +251,8 @@ define(["_", "gapi"], function(_, gapi) {
     }
 
     function stopVolumeCollection() {
-        //TODO: also need to stop the gapi onVolumesChanged
-        clearInterval(state.silenceDetector); // clear silence setInterval
+        //TODO: also need to stop the window.gapi onVolumesChanged
+        clearInterval(window.state.silenceDetector); // clear silence setInterval
         state.collectingVolumes = false;
     }
 
