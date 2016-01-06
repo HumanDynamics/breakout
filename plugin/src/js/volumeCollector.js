@@ -1,4 +1,4 @@
-define(["_"], function(_) {
+define(["underscore"], function(_) {
 
     function startVolumeCollection () {
 

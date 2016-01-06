@@ -1,4 +1,4 @@
-define(["primus",  "_", "hangoutUtils"], function(Primus, _, hangoutUtils) {
+define(["primus",  "underscore", "gapi", "hangoutUtils"], function(Primus, _, gapi, hangoutUtils) {
 
     // initialize global state object
     window.state = {};
@@ -15,20 +15,22 @@ define(["primus",  "_", "hangoutUtils"], function(Primus, _, hangoutUtils) {
 
 
     console.log("gapi:", window.gapi);
-    
-    console.log(gapi.hangout.getParticipants());
+    window.gapi.hangout.onApiReady.add(function(eventObj) {
+        console.log("gapi:", window.gapi);
+        
+        console.log(window.gapi.hangout.getParticipants());
 
-    var participantIds = _.map(gapi.hangout.getParticipants(),
-                               function(p) {
-                                   return p.person.id;
-                               });
-    var hangoutId;
-    console.log("hangoututils:", hangoutUtils);
-    var res = hangoutUtils.getHangout(gapi.hangout.getHangoutId(),
-                                      gapi.hangout.getHangoutUrl(),
-                                      participantIds,
-                                      gapi.hangout.getTopic());
-    hangoutId = res.id;
+        var participantIds = _.map(window.gapi.hangout.getParticipants(),
+                                   function(p) {
+                                       return p.person.id;
+                                   });
+        hangoutUtils.getHangoutId(window.gapi.hangout.getHangoutId(),
+                                  window.gapi.hangout.getHangoutUrl(),
+                                  participantIds,
+                                  window.gapi.hangout.getTopic());
+        console.log('hangoutid:', window.state.hangoutId);
+    });
+
     
 
     // primus.send('hangouts::create', {title: 'HangoutTitle'}, {}, function() {
