@@ -1,4 +1,4 @@
-define(function() {
+define(["_", "gapi"], function(_, gapi) {
 
     function startVolumeCollection () {
 
@@ -8,13 +8,14 @@ define(function() {
 
         // {participantId: {'talking': <boolean>, 'time': <time of last
         // start talking event>}
-        var talkState = {}
+        var talkState = {};
 
         // check for new participants every 5s
-        var participantIds = []
+        var participantIds = [];
+        
         gapi.hangout.onApiReady.add(function(eventObj) {
             console.log("what?");
-            setInterval(function() {
+            window.setInterval(function() {
                 // get the most recent participant list
                 var newParticipantIds;
                 newParticipantIds = _.map(gapi.hangout.getParticipants(),
@@ -258,6 +259,6 @@ define(function() {
     return {
         startVolumeCollection: startVolumeCollection,
         stopVolumeCollection: stopVolumeCollection
-    }
+    };
 
 });

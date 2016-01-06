@@ -14,17 +14,18 @@ requirejs.config({
         }
     },
     paths: {
-        scripts: './js',
+        src: './js',
         // charts: './charts/js',
         libs: './bower_components',
         jquery: './bower_components/jquery/dist/jquery',
         d3: './bower_components/d3/d3',
         _: './bower_components/underscore/underscore',
         primus: 'https://breakout.media.mit.edu/primus/primus',
-        gapi: 'https://plus.google.com/hangouts/_/api/v1/hangout'
+        gapi: 'https://plus.google.com/hangouts/_/api/v1/hangout',
+        hangoutUtils: './js/hangoutUtils'
     }
 });
 
 // Main function / js injection point
 // requirejs(["scripts/lib", "charts/pieChart", "charts/herfindahl", "charts/all"]);
-requirejs(["scripts/lib"]);
+requirejs(["src/lib"]);
