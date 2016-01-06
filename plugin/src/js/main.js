@@ -24,6 +24,7 @@ requirejs.config({
         jquery: './bower_components/jquery/dist/jquery',
         d3: './bower_components/d3/d3',
         underscore: './bower_components/underscore/underscore',
+        underscore_string: './bower_components/underscore.string/dist/underscore.string',
         primus: 'https://breakout.media.mit.edu/primus/primus',
         gapi: 'https://plus.google.com/hangouts/_/api/v1/hangout',
         hangoutUtils: './js/hangoutUtils'

@@ -1,4 +1,4 @@
-define(["underscore"], function(_) {
+define(["underscore", 'underscore_string'], function(_, s) {
 
     function startVolumeCollection () {
 
@@ -157,7 +157,7 @@ define(["underscore"], function(_) {
                 if (stoppedTalking(participantId)) {
                     talkState[participantId].talking = false;
                     // get the last time talking
-                    lastTime = volumes[volumes.length - 1].timestamp - timeSinceLastTalk(participantId, volumes.length - 1);
+                    var lastTime = volumes[volumes.length - 1].timestamp - timeSinceLastTalk(participantId, volumes.length - 1);
 
                     //TODO:
                     // we don't want to register a talk event that is
@@ -183,7 +183,7 @@ define(["underscore"], function(_) {
         window.gapi.hangout.av.onVolumesChanged.add(
             function(evt) {
                 // don't do anything if we're not collecting volumes
-                if (!state.collectingVolumes) {
+                if (!window.state.collectingVolumes) {
                     console.log("not collecting...");
                     return;
                 }
@@ -233,14 +233,14 @@ define(["underscore"], function(_) {
             console.log("participant:", participant);
             var googleId = participant.gid;
             var volumes = allVolumes[googleId];
-            window.state['volumeCollector'] = setInterval(function() {
+            window.state['volumeCollector'] = window.setInterval(function() {
                 if (talkState[googleId]['talking']) {
-                    var now = Date.now()
+                    var now = Date.now();
                     var lastEventTime = volumes[volumes.length - 1].timestamp;
                     if ((now - lastEventTime) > TALK_TIMEOUT) {
                         console.log("stopped talking...");
                         talkState[googleId].talking = false;
-                        lastTime = volumes[volumes.length - 1].timestamp - timeSinceLastTalk(googleId, volumes.length - 1);
+                        var lastTime = volumes[volumes.length - 1].timestamp - timeSinceLastTalk(googleId, volumes.length - 1);
                         console.log("new talk event (timeout):", talkState[googleId].time, lastTime);
                         insertTalkEvent(talkState[googleId].time, lastTime, volumes);
                         allVolumes[googleId] = [];
@@ -252,8 +252,8 @@ define(["underscore"], function(_) {
 
     function stopVolumeCollection() {
         //TODO: also need to stop the window.gapi onVolumesChanged
-        clearInterval(window.state.silenceDetector); // clear silence setInterval
-        state.collectingVolumes = false;
+        window.clearInterval(window.state.silenceDetector); // clear silence setInterval
+        window.state.collectingVolumes = false;
     }
 
     return {
