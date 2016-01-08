@@ -1,0 +1,56 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Breakout</title>
+  <meta name="description" content="Breakout - analyze videochat conversations">
+  <meta name=viewport content="width=device-width, initial-scale=1">
+
+  <link href="https://fonts.googleapis.com/css?family=Josefin+Slab:300" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Raleway:300" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div id="navbar" class="no-select">
+        <div id="navbar-body">
+            <ul id="left links">
+                <li><a class="nav-link" data-target="pane-1" href="#">Breakout</a></li><li><a class="nav-link" data-target="pane-2" href="#">About</a></li>
+            </ul>
+        </div>
+    </div>
+    <div id="page">
+        <div id="pane-1" class="pane">
+            <div class="pane-content">
+                <div class="vspace"></div>
+                <h1 id="page-title">breakout</h1>
+                <h3 id="tagline">Quantify your conversations.</h3>
+
+                <p class="blurb">A project from the MIT Media Lab Human Dynamics Group</p>
+
+                <div id="hangout-button" class="no-select"></div>
+            </div>
+        </div>
+        <div id="pane-2" class="pane">
+            <div class="pane-content">
+                <div class="row">
+                    <div class="col m6 l7">
+                        <img class="image" src="/static/ss1.png">
+                    </div>
+                    <div class="col m6 l5">
+                    <p class="blurb">Team performance is driven by communication patterns: how people respond to one another, how ideas flow between individuals, and the balance of conversation. Breakout actively measures these social signals, transforming data into real-time insight for online learners.</p>
+                    </div>
+                </div>
+            </div>
+         </div>
+    </div>
+    <div id="footer" class="pane">
+        <a href="http://hd.media.mit.edu" target="_blank">Human Dynamics Lab</a> &middot; <a href="https://github.com/dcalacci/breakout" target="_blank">Github</a>
+     </div>
+    <script src="https://apis.google.com/js/platform.js"></script>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="/static/script.js"></script>
+</body>
+</html>
