@@ -1,37 +1,39 @@
-define(["primus",  "underscore", "gapi", "hangoutUtils"], function(Primus, _, gapi, hangoutUtils) {
+define(["feathers","socketio", "underscore", "gapi"], function(feathers, io, underscore, gapi) {
 
     // initialize global state object
     window.state = {};
-    window.state.url = "breakout.media.mit.edu";
+    window.state.url = "breakout-dev.media.mit.edu";
 
-    // initialize primus with the server url
-    var primus = new Primus(window.state.url);
-    console.log("primus started on url:", window.state.url);
+    // var s = io();
+    // var app = feathers().configure(feathers.socketio(s));
+    // var hangouts = app.service('hangouts');
 
-    
-    primus.on('hangouts created', function(hangout) {
-        console.log('Someone created a hangout', hangout);
-    });
+    // set up raw socket for custom events.
+    var socket = io.connect(window.state.url, {'transports': [
+        'websocket',
+        'flashsocket',
+        'jsonp-polling',
+        'xhr-polling',
+        'htmlfile'
+    ]});
 
 
-    console.log("gapi:", window.gapi);
+    // once the google api is ready...
     window.gapi.hangout.onApiReady.add(function(eventObj) {
-        console.log("gapi:", window.gapi);
-        
-        console.log(window.gapi.hangout.getParticipants());
-
+        console.log('hangout object:',  window.gapi.hangout);
+        var thisHangout = window.gapi.hangout;
         var participantIds = _.map(window.gapi.hangout.getParticipants(),
                                    function(p) {
                                        return p.person.id;
                                    });
-        hangoutUtils.getHangoutId(window.gapi.hangout.getHangoutId(),
-                                  window.gapi.hangout.getHangoutUrl(),
-                                  participantIds,
-                                  window.gapi.hangout.getTopic());
-        console.log('hangoutid:', window.state.hangoutId);
+        socket.emit("hangout::joined",
+                    {
+                        participantId: thisHangout.getLocalParticipantId(),
+                        hangout_participants: participantIds,
+                        hangout_id: thisHangout.getHangoutId(),
+                        hangout_url: thisHangout.getHangoutUrl(),
+                        hangout_topic: thisHangout.getTopic()
+                    });
     });
 
-    return {
-        primus: primus
-    };
 });

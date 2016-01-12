@@ -1,22 +1,23 @@
 var mongodb = require('feathers-mongodb');
 var Proto = require('uberproto');
+var underscore = require('underscore');
 
 // Custom, extended hangouts service -- adding created & updated
 // fields.
 var HangoutService = mongodb.Service.extend({
     
     create: function(data, params, callback) {
-        data.createdAt = new Date();
+        data.start_time = new Date();
         return this._super(data, params, callback);
     },
 
     patch: function(id, data, params, callback) {
-        data.updatedAt = new Date();
+        data.last_updated = new Date();
         return this._super(id, data, params, callback);
     },
 
     find: function(params, callback) {
-        console.log("example params:", this._super);
+        console.log("example params:", params);
         return this._super(params, callback);
         // console.log("possible hangouts: ", possible_hangouts);
         // if (possible_hangouts) {
@@ -51,7 +52,7 @@ module.exports = {
         collection: 'talking_history'
     }),
 
-    // Participants in hangouts
+    // Participants in hangouts -- every time there is a change.
     // 'name':      Name of talker
     // 'image':       Google profile image url
     // 'hangout_id':  Meteor hangout id for this participant

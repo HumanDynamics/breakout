@@ -13,6 +13,7 @@
     "express": "^4.13.3",
     "feathers": "^1.2.0",
     "feathers-mongodb": "^1.1.0",
+    "primus": "^4.0.4",
     "uberproto": "^1.2.0",
     "ws": "^0.8.1"
   }

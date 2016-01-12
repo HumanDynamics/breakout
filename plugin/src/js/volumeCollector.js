@@ -14,7 +14,6 @@ define(["underscore", 'underscore_string'], function(_, s) {
         var participantIds = [];
         
         window.gapi.hangout.onApiReady.add(function(eventObj) {
-            console.log("what?");
             window.setInterval(function() {
                 // get the most recent participant list
                 var newParticipantIds;
@@ -25,10 +24,10 @@ define(["underscore", 'underscore_string'], function(_, s) {
                 console.log("old participants:", participantIds);
                 console.log("new participants:", newParticipantIds);
 
+                // if it's the same participant list, don't do anything.
                 if (_.isEqual(participantIds, newParticipantIds)) {
                     return;
                 }
-
 
                 participantIds = newParticipantIds;
 
@@ -49,7 +48,7 @@ define(["underscore", 'underscore_string'], function(_, s) {
                     // start from scratch
                     var left = _.difference(participantIds, newParticipantIds);
                     _.each(left, function(participant) {
-                        allVolumes[participant] = []
+                        allVolumes[participant] = [];
                         talkState[googleId] = {'talking': false, 'time': null};
                     });
 

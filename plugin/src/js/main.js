@@ -9,7 +9,7 @@
 // (`gapi` itself is now of type `undefined`, see
 // http://stackoverflow.com/questions/14587720/using-requirejs-alongside-non-amd-javascript-files)
 requirejs.config({
-    baseUrl: 'https://breakout.media.mit.edu/dev/plugin/src/',
+    baseUrl: 'https://breakout-dev.media.mit.edu/plugin/src/',
     // do this to get cross-origin javascript through CDNs, etc.
     text: {
         useXhr: function (url, protocol, hostname, port) {
@@ -25,7 +25,9 @@ requirejs.config({
         d3: './bower_components/d3/d3',
         underscore: './bower_components/underscore/underscore',
         underscore_string: './bower_components/underscore.string/dist/underscore.string',
-        primus: 'https://breakout.media.mit.edu/primus/primus',
+        feathers: './bower_components/feathers-client/dist/feathers',
+        socketio: './bower_components/socket.io-client/socket.io',
+        primus: 'https://breakout-dev.media.mit.edu/primus/primus',
         gapi: 'https://plus.google.com/hangouts/_/api/v1/hangout',
         hangoutUtils: './js/hangoutUtils'
     }
