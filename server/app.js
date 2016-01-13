@@ -25,7 +25,7 @@ app.configure(feathers.rest())
         io.on('connection', function(socket) {
             // create all listeners
             listener.listen(socket);
-
+            
             // do authentication here (eventually)
         });
 

@@ -112,8 +112,8 @@ var listenParticipantsChanged = function(socket) {
 };
 
 
-
 // LISTENER REGISTER
+
 function listen(socket) {
     listenHangoutJoined(socket);
     listenParticipantsChanged(socket);

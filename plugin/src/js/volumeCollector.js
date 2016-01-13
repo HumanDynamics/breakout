@@ -1,6 +1,9 @@
-define(["underscore", 'underscore_string'], function(_, s) {
+define(["feathers", "socketio", "underscore", 'underscore_string'], function(feathers, io, _, s) {
 
-    function startVolumeCollection () {
+    function startVolumeCollection (socket) {
+        var sock = io();
+        var app = feathers().configure(feathers.socketio(sock));
+        var talking_history = app.service('talking_history');
 
         ////////////////////////////////////////////////////////
         // {participantId: [<volume object>, ...]}
@@ -12,6 +15,11 @@ define(["underscore", 'underscore_string'], function(_, s) {
 
         // check for new participants every 5s
         var participantIds = [];
+
+        window.state.collectingVolumes = true;
+
+        //TODO: perhaps move this so that it receives participant
+        // left events from the server.
         
         window.gapi.hangout.onApiReady.add(function(eventObj) {
             window.setInterval(function() {
@@ -98,6 +106,7 @@ define(["underscore", 'underscore_string'], function(_, s) {
                     return volumes[i].timestamp - volumes[j].timestamp;
                 }
             }
+            return null;
         }
 
         // TODO: abstract out
@@ -108,6 +117,7 @@ define(["underscore", 'underscore_string'], function(_, s) {
                     return volumes[i].timestamp - volumes[j].timestamp;
                 }
             }
+            return null;
         }
 
         // returns true if the user has stopped talking.  defines 'stopped
@@ -129,17 +139,26 @@ define(["underscore", 'underscore_string'], function(_, s) {
                 //console.log("time since quiet:", timeSinceLastQuiet(volumes.length - 1));
                 return res;
             }
+            return false;
         }
 
         function insertTalkEvent(participantId, startTime, endTime, volumeData) {
             console.log("inserting talk event:", startTime, endTime);
-            window.state.talkingHistoryCollection.insert({
-                'participant_id': participantId,
-                'hangout_id': window.state.hangoutId,
-                'start_time': new Date(startTime).toISOString(),
-                'end_time': new Date(endTime).toISOString(),
-                'volumes': volumeData  // TODO: remove to collect raw data
-            });
+
+            socket.emit("talking_history::create", 
+                        {
+                            'participant_id': participantId,
+                            'hangout_id': window.state.hangoutId,
+                            'start_time': new Date(startTime),
+                            'end_time': new Date(endTime),
+                            'volumes': volumeData  // TODO: remove to collect raw data
+                        },
+                        {},
+                        function(error, data) {
+                            if (error) {
+                                console.log("unable to create talking history event...");
+                            }
+                        });
         }
 
         // if the current value of `volumes` contains a distinct talk
