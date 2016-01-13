@@ -1,17 +1,22 @@
 var services = require('./services');
+var winston = require('winston');
 var _ = require('underscore');
 
 // register all listening functions
 
+// UTILITY FUNCTIONS
 
+// creates a new hangout with the given data.
+// `hangout` must have the following keys:
+// hangout_id, hangout_url, hangout_topic, hangout_participants
 function createHangout(hangout) {
     services.hangoutService.create(
         {
-            id: hangout.hangout_id,
+            hangout_id: hangout.hangout_id,
             url: hangout.hangout_url,
             topic: hangout.hangout_topic,
             active: true,
-            participants: hangout.participantIds,
+            participants: hangout.hangout_participants,
             end_time: null
         }, {}, function(error, data) {
             if (!error) {
@@ -20,46 +25,98 @@ function createHangout(hangout) {
         });
 }
 
-// function addParticipantToHangout(participantId, hangoutId) {
-//     services.hangoutService.
-// }
 
-
+// SPECIFIC LISTENERS
 
 // hangout::joined
-// emitted when a user joins a hangout.
+// received when a user joins a hangout.
 // provides data:
 // participantId, hangout_participants, hangout_id, hangout_url, hangout_topic
-var listenHangoutJoined = function(socket) {
+// creates a hangout in the db if the hangout doesn't exist
+function listenHangoutJoined(socket) {
     socket.on("hangout::joined", function(data) {
         console.log("hangout joined event, data:", data);
 
-        // might need to be app.service('hangout') or something, see
-        // http://feathersjs.com/learn/validation/
         services.hangoutService.find(
             {
                 hangout_id: data.hangout_id,
                 $limit: 1
             },
-            function(error, hangout) {
-                if (hangout.length == 0) {
+            function(error, foundHangouts) {
+                if (foundHangouts.length == 0) {
                     // hangout doesn't exist
+                    winston.log('info', "creating a new hangout");
                     createHangout(data);
                 } else {
-                    console.log("found a hangout:", error, hangout);
-                    if ( _.contains(hangout.participants, data.participantId )) {
-                        console.log("participant is in the hangout!:", hangout.participants, data.participantId);
+                    var hangout = foundHangouts[0];
+                    winston.log('info', "found a hangout:", error, hangout);
+                    if ( _.contains(hangout.participants, data.participant_id )) {
+                        winston.log('info', "participant is in the hangout, nothing happened:",
+                                    hangout.participants,
+                                    data.participant_id);
                     } else {
-                        console.log("participant not currently in hangout, adding...");
+                        winston.log('info', "participant not currently in hangout, updating participants...");
+                        updateHangoutParticipants(hangout.hangout_id, data.hangout_participants);
                     }
                 }
             });
     });
 };
 
-            
+
+function updateHangoutParticipants(hangoutId, new_participants) {
+    winston.log('info', 'I made it to the update function', hangoutId, new_participants);
+    services.hangoutService.find(
+        {
+            hangout_id: hangoutId,
+            $limit: 1
+        },
+        function(error, foundHangouts) {
+            if (error) {
+            } else {
+                var hangout = foundHangouts[0];
+
+                // log the participant changed event
+                services.participantEventService.create(
+                    {
+                        participants: new_participants,
+                        hangout_id: hangoutId,
+                        timestamp: new Date()
+                    }, function(error, data) {
+                    });
+
+                // patch this hangout to have the most recent participant list
+                services.hangoutService.patch(
+                    hangout._id,
+                    {
+                        participants: new_participants
+                    },
+                    {},
+                    function(error, data) {
+                        if (error) {
+                            winston.log('error', 'Could not update participant list for hangout' + data.hangoutId);
+                        } else {
+                            winston.log('debug', 'Updated participant list for hangout' + data.hangoutId + 'to' + data.participants);
+                        }
+                    }
+                );
+            }
+        });
+};
+
+var listenParticipantsChanged = function(socket) {
+    socket.on("participantsChanged", function(data) {
+        winston.log('info', 'Received hangout::participantsChanged event');
+        updateHangoutParticipants(data.hangout_id, data.participants);
+    });
+};
+
+
+
+// LISTENER REGISTER
 function listen(socket) {
     listenHangoutJoined(socket);
+    listenParticipantsChanged(socket);
 }
 
 module.exports = {

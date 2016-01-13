@@ -35,5 +35,6 @@ app.configure(feathers.rest())
     .use(bodyParser.json())
     .use('/hangouts', services.hangoutService)
     .use('/talking_history', services.talkingHistoryService)
+    .use('/participant_events', services.participantEventService)
     .use('/', feathers.static(__dirname))
     .listen(3000);

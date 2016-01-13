@@ -62,6 +62,14 @@ module.exports = {
         collection: 'participants'
     }),
 
+    // Logs of participant list for each hangout
+    // 'participants': list of google ID of each participant
+    // 'hangout_id':   id of hangout
+    // 'timestamp':    time of the event
+    participantEventService: mongodb({
+        collection: 'participantEvents'
+    }),
+
     // Volume changed events for hangouts
     // of the form:
     // 'timestamp':   timestamp of this event

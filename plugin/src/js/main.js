@@ -35,4 +35,4 @@ requirejs.config({
 
 // Main function / js injection point
 // requirejs(["scripts/lib", "charts/pieChart", "charts/herfindahl", "charts/all"]);
-requirejs(['gapi', 'src/lib']);
+requirejs(['gapi', 'src/listener', 'src/lib']);

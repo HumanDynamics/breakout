@@ -15,6 +15,7 @@
     "feathers-mongodb": "^1.1.0",
     "primus": "^4.0.4",
     "uberproto": "^1.2.0",
+    "winston": "^2.1.1",
     "ws": "^0.8.1"
   }
 }
