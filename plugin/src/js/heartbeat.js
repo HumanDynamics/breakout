@@ -50,6 +50,7 @@ define(["underscore"], function(underscore) {
     }
 
     return {
-        register_heartbeat: registerHeartbeat
+        register_heartbeat: registerHeartbeat,
+        maybe_start_heartbeat: maybeStartHeartbeat
     };
 });

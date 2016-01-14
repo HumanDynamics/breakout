@@ -39,10 +39,22 @@ var setHangoutInactive = function(hangout_id) {
                 return true;
             }
         });
+
+    services.hangoutEventService.create(
+        {
+            'hangout_id': hangout_id,
+            event: 'end',
+            timestamp: new Date()
+        },
+        {},
+        function (error, data) {
+            if (error) {
+            } else {
+                winston.log("info", "Hangout end event created");
+            }
+        }
+    );
 };
-
-
-
 
 var checkHeartbeat = function(heartbeat) {
     var lastHeartbeat = heartbeat.timestamp;

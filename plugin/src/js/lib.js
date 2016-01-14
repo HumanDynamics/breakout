@@ -18,17 +18,28 @@ define(["src/volumeCollector", "src/heartbeat", "feathers","socketio", "undersco
                'htmlfile'
            ]});
 
+           function get_participant_objects(participants) {
+               return _.map(participants,
+                           function(p) {
+                               return {
+                                   participant_id: p.person.id,
+                                   hangout_id: window.gapi.hangout.getHangoutId(),
+                                   name: p.person.displayName,
+                                   locale: p.locale,
+                                   image_url: p.person.image.url
+                               };
+                           });               
+           }
+
 
            // once the google api is ready...
            window.gapi.hangout.onApiReady.add(function(eventObj) {
                console.log('hangout object:',  window.gapi.hangout);
                var thisHangout = window.gapi.hangout;
                console.log("hangoutId:", thisHangout.getHangoutId());
-               var participantIds = _.map(window.gapi.hangout.getParticipants(),
-                                          function(p) {
-                                              return p.person.id;
-                                          });
-               console.log("participantIds:", participantIds);
+               
+               var participants = get_participant_objects(window.gapi.hangout.getParticipants());
+               
                var localParticipant = window.gapi.hangout.getLocalParticipant();
 
                volumeCollector.onParticipantsChanged(window.gapi.hangout.getParticipants());
@@ -39,15 +50,21 @@ define(["src/volumeCollector", "src/heartbeat", "feathers","socketio", "undersco
                                participant_name: localParticipant.person.displayName,
                                participant_locale: localParticipant.locale,
                                participant_image: localParticipant.person.image.url,
-                               hangout_participants: participantIds,
+                               hangout_participants: participants,
                                hangout_id: thisHangout.getHangoutId(),
                                hangout_url: thisHangout.getHangoutUrl(),
                                hangout_topic: thisHangout.getTopic()
                            });
 
-               // if (participantIds.length == 1) {
-               //     heartbeat.registerHeartbeat();
-               // }
+               // the only other thing sent to maybe_start_heartbeat
+               // is a gapi onparticipantsChanged event, so just follow the format...
+               if (participants.length == 1) {
+                   heartbeat.maybe_start_heartbeat(
+                       {
+                           participants: [localParticipant]
+                       }
+                   );
+               }
 
                addHangoutListeners();
            });
@@ -61,16 +78,7 @@ define(["src/volumeCollector", "src/heartbeat", "feathers","socketio", "undersco
                
                window.gapi.hangout.onParticipantsChanged.add(function(participantsChangedEvent) {
                    console.log("participants changed:", participantsChangedEvent.participants);
-                   var currentParticipants = _.map(participantsChangedEvent.participants,
-                                                   function(p) {
-                                                       return {
-                                                           participant_id: p.person.id,
-                                                           hangout_id: window.gapi.hangout.getHangoutId(),
-                                                           name: p.person.displayName,
-                                                           locale: p.locale,
-                                                           image_url: p.person.image.url
-                                                       };
-                                                   });
+                   var currentParticipants = get_participant_objects(participantsChangedEvent.participants);
 
                    // send the new participants to the volume collector, to reset volumes etc.
                    volumeCollector.onParticipantsChanged(participantsChangedEvent.participants);

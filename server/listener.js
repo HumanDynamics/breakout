@@ -55,7 +55,7 @@ function add_user(participant_id, hangout_id, image_url, name, locale) {
                 winston.log("info", "already have participant by id:", participant_id);
                 return;
             } else { // we don't, add it.
-                winston.log("info", "adding new participant:", participant_id, name);
+                winston.log("info", "creating new participant:", participant_id, name);
                 services.participantService.create(
                     {
                         'participant_id': participant_id,
@@ -78,6 +78,7 @@ function add_user(participant_id, hangout_id, image_url, name, locale) {
 
 // Gets called on hangout::participantsChanged
 function updateHangoutParticipants(hangoutId, new_participants) {
+    winston.log("info", "updating hangout participants:", hangoutId, new_participants);
     services.hangoutService.find(
         {
             hangout_id: hangoutId,
@@ -101,8 +102,8 @@ function updateHangoutParticipants(hangoutId, new_participants) {
                     });
 
                 _.each(new_participants, function(p) {
-                    winston.log("info", "Adding new participant:", p.name);
                     //TODO
+                    winston.log("info", "new participants:", p);
                     add_user(p.participant_id, p.hangout_id, p.image_url, p.name, p.locale);
                 });
 
@@ -111,7 +112,8 @@ function updateHangoutParticipants(hangoutId, new_participants) {
                 services.hangoutService.patch(
                     hangout._id,
                     {
-                        participants: new_participant_ids
+                        participants: new_participant_ids,
+                        active: (new_participant_ids.length > 0)
                     },
                     {},
                     function(error, data) {
@@ -151,7 +153,7 @@ function listenHangoutJoined(socket) {
                     createHangout(data);
                 } else {
                     var hangout = foundHangouts[0];
-                    winston.log('info', "found a hangout:", error, hangout);
+                    winston.log('info', "found a hangout:", hangout);
                     if ( _.contains(hangout.participants, data.participant_id )) {
                         winston.log('info', "participant is in the hangout, nothing happened:",
                                     hangout.participants,
@@ -162,6 +164,23 @@ function listenHangoutJoined(socket) {
                     }
                 }
             });
+
+        if (data.hangout_participants.length == 1) {
+            services.hangoutEventService.create(
+                {
+                    hangout_id: data.hangout_id,
+                    event: 'start',
+                    timestamp: new Date()
+                },
+                {},
+                function (error, data) {
+                    if (error) {
+                    } else {
+                        winston.log('info', "Added hangout start event");
+                    }
+                }
+            );
+        }
     });
 };
 

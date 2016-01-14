@@ -69,7 +69,17 @@ module.exports = {
     // 'hangout_id':   id of hangout
     // 'timestamp':    time of the event
     participantEventService: mongodb({
-        collection: 'participantEvents'
+        collection: 'participant_events'
+    }),
+
+    // Logs of hangout-level events.
+    // 'hangout_id': id of hangout
+    // 'timestamp':  timestamp of event
+    // 'event':      event type. one of:
+    // 'end', 'start'
+    // (hangouts can end and start multiple times).
+    hangoutEventService: mongodb({
+        collection: 'hangout_events'
     }),
 
     // // Volume changed events for hangouts
