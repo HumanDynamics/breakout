@@ -1,5 +1,5 @@
-define(["src/volumeCollector", "feathers","socketio", "underscore", "gapi"],
-       function(volumeCollector, feathers, io, underscore, gapi) {
+define(["src/volumeCollector", "src/heartbeat", "feathers","socketio", "underscore", "gapi"],
+       function(volumeCollector, heartbeat, feathers, io, underscore, gapi) {
 
            // initialize global state object
            window.state = {};
@@ -45,11 +45,19 @@ define(["src/volumeCollector", "feathers","socketio", "underscore", "gapi"],
                                hangout_topic: thisHangout.getTopic()
                            });
 
+               // if (participantIds.length == 1) {
+               //     heartbeat.registerHeartbeat();
+               // }
+
                addHangoutListeners();
            });
 
            function addHangoutListeners() {
+               // start collecting volume data
                volumeCollector.startVolumeCollection(socket);
+
+               // start heartbeat listener
+               heartbeat.register_heartbeat(socket);
                
                window.gapi.hangout.onParticipantsChanged.add(function(participantsChangedEvent) {
                    console.log("participants changed:", participantsChangedEvent.participants);

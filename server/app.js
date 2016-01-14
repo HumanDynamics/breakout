@@ -5,6 +5,7 @@ var mongodb = require('feathers-mongodb');
 // local modules
 var services = require('./services');
 var listener = require('./listener');
+var heartbeat = require('./heartbeat');
 
 var app = feathers();
 
@@ -25,7 +26,7 @@ app.configure(feathers.rest())
         io.on('connection', function(socket) {
             // create all listeners
             listener.listen(socket);
-            
+            heartbeat.listen_heartbeats(socket);
             // do authentication here (eventually)
         });
 

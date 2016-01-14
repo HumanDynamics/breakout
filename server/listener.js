@@ -68,47 +68,8 @@ function add_user(participant_id, hangout_id, image_url, name, locale) {
                     });
             }
         });
-    
 }
 
-// hangout::joined
-// received when a user joins a hangout.
-// provides data:
-// participantId, hangout_participants, hangout_id, hangout_url, hangout_topic
-// creates a hangout in the db if the hangout doesn't exist
-function listenHangoutJoined(socket) {
-    socket.on("hangout::joined", function(data) {
-        console.log("hangout joined event, data:", data);
-
-        add_user(data.participant_id, data.hangout_id,
-                 data.participant_image, data.participant_name,
-                 data.participant_locale);
-
-        services.hangoutService.find(
-            {
-                hangout_id: data.hangout_id,
-                $limit: 1
-            },
-            function(error, foundHangouts) {
-                if (foundHangouts.length == 0) {
-                    // hangout doesn't exist
-                    winston.log('info', "creating a new hangout");
-                    createHangout(data);
-                } else {
-                    var hangout = foundHangouts[0];
-                    winston.log('info', "found a hangout:", error, hangout);
-                    if ( _.contains(hangout.participants, data.participant_id )) {
-                        winston.log('info', "participant is in the hangout, nothing happened:",
-                                    hangout.participants,
-                                    data.participant_id);
-                    } else {
-                        winston.log('info', "participant not currently in hangout, updating participants...");
-                        updateHangoutParticipants(hangout.hangout_id, data.hangout_participants);
-                    }
-                }
-            });
-    });
-};
 
 //TODO:
 // problem is that when someone joins, the hangout object does not have their ID in some cases
@@ -150,8 +111,7 @@ function updateHangoutParticipants(hangoutId, new_participants) {
                 services.hangoutService.patch(
                     hangout._id,
                     {
-                        participants: new_participant_ids,
-                        active: (new_participants.length > 0)
+                        participants: new_participant_ids
                     },
                     {},
                     function(error, data) {
@@ -165,6 +125,46 @@ function updateHangoutParticipants(hangoutId, new_participants) {
             }
         });
 };
+
+// hangout::joined
+// received when a user joins a hangout.
+// provides data:
+// participantId, hangout_participants, hangout_id, hangout_url, hangout_topic
+// creates a hangout in the db if the hangout doesn't exist
+function listenHangoutJoined(socket) {
+    socket.on("hangout::joined", function(data) {
+        console.log("hangout joined event, data:", data);
+
+        add_user(data.participant_id, data.hangout_id,
+                 data.participant_image, data.participant_name,
+                 data.participant_locale);
+
+        services.hangoutService.find(
+            {
+                hangout_id: data.hangout_id,
+                $limit: 1
+            },
+            function(error, foundHangouts) {
+                if (foundHangouts.length == 0) {
+                    // hangout doesn't exist
+                    winston.log('info', "creating a new hangout");
+                    createHangout(data);
+                } else {
+                    var hangout = foundHangouts[0];
+                    winston.log('info', "found a hangout:", error, hangout);
+                    if ( _.contains(hangout.participants, data.participant_id )) {
+                        winston.log('info', "participant is in the hangout, nothing happened:",
+                                    hangout.participants,
+                                    data.participant_id);
+                    } else {
+                        winston.log('info', "participant not currently in hangout, updating participants...");
+                        updateHangoutParticipants(hangout.hangout_id, data.hangout_participants);
+                    }
+                }
+            });
+    });
+};
+
 
 var listenParticipantsChanged = function(socket) {
     socket.on("participantsChanged", function(data) {
