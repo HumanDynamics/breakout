@@ -28,11 +28,10 @@ requirejs.config({
         feathers: './bower_components/feathers-client/dist/feathers',
         socketio: './bower_components/socket.io-client/socket.io',
         primus: 'https://breakout-dev.media.mit.edu/primus/primus',
-        gapi: 'https://plus.google.com/hangouts/_/api/v1/hangout',
-        hangoutUtils: './js/hangoutUtils'
+        gapi: 'https://plus.google.com/hangouts/_/api/v1/hangout'
     }
 });
 
 // Main function / js injection point
 // requirejs(["scripts/lib", "charts/pieChart", "charts/herfindahl", "charts/all"]);
-requirejs(['gapi', 'src/listener', 'src/lib']);
+requirejs(['gapi', 'src/lib']);

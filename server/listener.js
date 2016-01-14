@@ -28,6 +28,37 @@ function createHangout(hangout) {
 
 // SPECIFIC LISTENERS
 
+
+function add_user(participant_id, hangout_id, image_url, name, locale) {
+    services.participantService.find(
+        // {'participant_id': participant_id,
+        //  'hangout_id': hangout_id},
+        {
+            $and: [{'participant_id': participant_id},
+                   { 'hangout_id': hangout_id}]
+        },
+        function(error, data) {
+            if (error) {
+                return;
+            } else if (data.length > 0) {
+                winston.log("info", "already have participant by id:", participant_id);
+                return;
+            } else {
+                services.participantService.create(
+                    {
+                        'participant_id': participant_id,
+                        'hangout_id': hangout_id,
+                        'image_url': image_url,
+                        'name': name,
+                        'locale': locale
+                    }, {}, function(error, data) {
+                        
+                    });
+            }
+        });
+    
+}
+
 // hangout::joined
 // received when a user joins a hangout.
 // provides data:
@@ -36,6 +67,10 @@ function createHangout(hangout) {
 function listenHangoutJoined(socket) {
     socket.on("hangout::joined", function(data) {
         console.log("hangout joined event, data:", data);
+
+        add_user(data.participant_id, data.hangout_id,
+                 data.participant_image, data.participant_name,
+                 data.participant_locale);
 
         services.hangoutService.find(
             {
@@ -63,9 +98,13 @@ function listenHangoutJoined(socket) {
     });
 };
 
+//TODO:
+// problem is that when someone joins, the hangout object does not have their ID in some cases
+// ALSO it does not get marked as inactive when a user leaves a hangout.
+
+
 
 function updateHangoutParticipants(hangoutId, new_participants) {
-    winston.log('info', 'I made it to the update function', hangoutId, new_participants);
     services.hangoutService.find(
         {
             hangout_id: hangoutId,
@@ -76,20 +115,30 @@ function updateHangoutParticipants(hangoutId, new_participants) {
             } else {
                 var hangout = foundHangouts[0];
 
+                var new_participant_ids = _.map(new_participants, function(p) {
+                    return p.participant_id;
+                });
                 // log the participant changed event
                 services.participantEventService.create(
                     {
-                        participants: new_participants,
+                        participant_ids: new_participant_ids,
                         hangout_id: hangoutId,
                         timestamp: new Date()
                     }, function(error, data) {
                     });
 
+                _.each(new_participants, function(p) {
+                    //TODO
+                    add_user(p.participant_id, p.hangout_id, p.image_url, p.name, p.locale);
+                });
+
                 // patch this hangout to have the most recent participant list
+                // if it has 0 participants, mark it inactive.
                 services.hangoutService.patch(
                     hangout._id,
                     {
-                        participants: new_participants
+                        participants: new_participant_ids,
+                        active: (new_participants.length > 0)
                     },
                     {},
                     function(error, data) {

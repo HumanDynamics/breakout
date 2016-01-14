@@ -1,4 +1,4 @@
-define(["src/volumeCollector","feathers","socketio", "underscore", "gapi"],
+define(["src/volumeCollector", "feathers","socketio", "underscore", "gapi"],
        function(volumeCollector, feathers, io, underscore, gapi) {
 
            // initialize global state object
@@ -29,9 +29,13 @@ define(["src/volumeCollector","feathers","socketio", "underscore", "gapi"],
                                               return p.person.id;
                                           });
                console.log("participantIds:", participantIds);
+               var localParticipant = window.gapi.hangout.getLocalParticipant();
                socket.emit("hangout::joined",
                            {
-                               participant_id: thisHangout.getLocalParticipant().person.id,
+                               participant_id: localParticipant.person.id,
+                               participant_name: localParticipant.person.displayName,
+                               participant_locale: localParticipant.locale,
+                               participant_image: localParticipant.person.image.url,
                                hangout_participants: participantIds,
                                hangout_id: thisHangout.getHangoutId(),
                                hangout_url: thisHangout.getHangoutUrl(),
@@ -42,13 +46,21 @@ define(["src/volumeCollector","feathers","socketio", "underscore", "gapi"],
            });
 
            function addHangoutListeners() {
-               volumeCollector.startVolumeCollection(socket);
+               //volumeCollector.startVolumeCollection(socket);
+               
                window.gapi.hangout.onParticipantsChanged.add(function(participantsChangedEvent) {
                    console.log("participants changed:", participantsChangedEvent.participants);
                    var currentParticipants = _.map(participantsChangedEvent.participants,
                                                    function(p) {
-                                                       return p.person.id;
+                                                       return {
+                                                           participant_id: p.person.id,
+                                                           hangout_id: window.gapi.hangout.getHangoutId(),
+                                                           name: p.person.displayName,
+                                                           locale: p.locale,
+                                                           image_url: p.person.image.url
+                                                       };
                                                    });
+                   console.log("sending:", currentParticipants);
                    socket.emit("participantsChanged",
                                {
                                    hangout_id: window.gapi.hangout.getHangoutId(),

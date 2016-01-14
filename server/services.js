@@ -1,6 +1,7 @@
 var mongodb = require('feathers-mongodb');
 var Proto = require('uberproto');
 var underscore = require('underscore');
+var winston = require('winston');
 
 // Custom, extended hangouts service -- adding created & updated
 // fields.
@@ -31,6 +32,7 @@ var HangoutService = mongodb.Service.extend({
     }
 });
 
+
 module.exports = {
     // Each item in Hangouts is of the form:
     // 'participants': [user_id1, user_id2, ...]
@@ -46,8 +48,8 @@ module.exports = {
     // 'participant_id': meteor participant ID
     // 'hangout_id':     meteor hangout ID of talk event
     // 'start_time':     timestamp of beginning of talking period
-    // 'end_time':       tiemstamp of end of talking period
-    //? 'volumes':        raw volume data of this talk event from the google hangout
+    // 'end_time':       timestamp of end of talking period
+    //? 'volumes':       raw volume data of this talk event from the google hangout
     talkingHistoryService: mongodb({
         collection: 'talking_history'
     }),
@@ -55,9 +57,9 @@ module.exports = {
     // Participants in hangouts -- every time there is a change.
     // 'name':      Name of talker
     // 'image':       Google profile image url
-    // 'hangout_id':  Meteor hangout id for this participant
-    // 'hangout_url': the URL for the hangout this participant is in.
-    // 'gid':         Google ID for this participant.
+    // 'hangout_id':  Hangout ID the participant was in
+    // 'participant_id':         Google ID for this participant.
+    // unique hangout ID for this participant.
     participantService: mongodb({
         collection: 'participants'
     }),
@@ -70,15 +72,15 @@ module.exports = {
         collection: 'participantEvents'
     }),
 
-    // Volume changed events for hangouts
-    // of the form:
-    // 'timestamp':   timestamp of this event
-    // 'participant': participant ID for the event
-    // 'hangout_id':  meteor hangout ID of the event
-    // 'volume':      volume of the volumechanged event.
-    volumeService: mongodb({
-        collection: 'volume_events'
-    }),
+    // // Volume changed events for hangouts
+    // // of the form:
+    // // 'timestamp':   timestamp of this event
+    // // 'participant': participant ID for the event
+    // // 'hangout_id':  meteor hangout ID of the event
+    // // 'volume':      volume of the volumechanged event.
+    // volumeService: mongodb({
+    //     collection: 'volume_events'
+    // }),
 
     // Herfindahl index records for hangouts
     // of the form:
