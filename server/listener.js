@@ -30,20 +30,32 @@ function createHangout(hangout) {
 
 
 function add_user(participant_id, hangout_id, image_url, name, locale) {
+    winston.log("info", "add user:", participant_id, name);
     services.participantService.find(
-        // {'participant_id': participant_id,
-        //  'hangout_id': hangout_id},
-        {
-            $and: [{'participant_id': participant_id},
-                   { 'hangout_id': hangout_id}]
-        },
+        {'participant_id': participant_id},
+        // {
+        //     $and: [{'participant_id': participant_id},
+        //            { 'hangout_id': hangout_id}]
+        // },
         function(error, data) {
             if (error) {
                 return;
-            } else if (data.length > 0) {
+            }
+            winston.log("info", "got participant data back:", data);
+
+            // we have to get all the matching records for this
+            // participant because I can't figure out how to get
+            // '$and' working correctly w/ mongo....
+            var matching_records = _.filter(data, function(participant) {
+                return participant.participant_id == participant_id &&
+                    participant.hangout_id == hangout_id;
+            });
+
+            if (matching_records.length > 0) {
                 winston.log("info", "already have participant by id:", participant_id);
                 return;
-            } else {
+            } else { // we don't, add it.
+                winston.log("info", "adding new participant:", participant_id, name);
                 services.participantService.create(
                     {
                         'participant_id': participant_id,
@@ -103,7 +115,7 @@ function listenHangoutJoined(socket) {
 // ALSO it does not get marked as inactive when a user leaves a hangout.
 
 
-
+// Gets called on hangout::participantsChanged
 function updateHangoutParticipants(hangoutId, new_participants) {
     services.hangoutService.find(
         {
@@ -128,6 +140,7 @@ function updateHangoutParticipants(hangoutId, new_participants) {
                     });
 
                 _.each(new_participants, function(p) {
+                    winston.log("info", "Adding new participant:", p.name);
                     //TODO
                     add_user(p.participant_id, p.hangout_id, p.image_url, p.name, p.locale);
                 });

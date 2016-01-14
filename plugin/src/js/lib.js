@@ -30,6 +30,9 @@ define(["src/volumeCollector", "feathers","socketio", "underscore", "gapi"],
                                           });
                console.log("participantIds:", participantIds);
                var localParticipant = window.gapi.hangout.getLocalParticipant();
+
+               volumeCollector.onParticipantsChanged(window.gapi.hangout.getParticipants());
+               
                socket.emit("hangout::joined",
                            {
                                participant_id: localParticipant.person.id,
@@ -46,7 +49,7 @@ define(["src/volumeCollector", "feathers","socketio", "underscore", "gapi"],
            });
 
            function addHangoutListeners() {
-               //volumeCollector.startVolumeCollection(socket);
+               volumeCollector.startVolumeCollection(socket);
                
                window.gapi.hangout.onParticipantsChanged.add(function(participantsChangedEvent) {
                    console.log("participants changed:", participantsChangedEvent.participants);
@@ -60,6 +63,10 @@ define(["src/volumeCollector", "feathers","socketio", "underscore", "gapi"],
                                                            image_url: p.person.image.url
                                                        };
                                                    });
+
+                   // send the new participants to the volume collector, to reset volumes etc.
+                   volumeCollector.onParticipantsChanged(participantsChangedEvent.participants);
+                   
                    console.log("sending:", currentParticipants);
                    socket.emit("participantsChanged",
                                {

@@ -1,69 +1,59 @@
 define(["feathers", "socketio", "underscore", 'underscore_string'], function(feathers, io, _, s) {
 
+    // {participantId: [<volume object>, ...]}
+    var allVolumes = {};
+
+    // {participantId: {'talking': <boolean>, 'time': <time of last
+    // start talking event>}
+    var talkState = {};
+
+    // check for new participants every 5s
+    var participantIds = [];
+
+
+    //TODO: do this on a websocket event instead?
+    var onParticipantsChanged = function(participants) {
+        console.log("volumeCollector onParticipantsChanged");
+        var newParticipantIds = _.map(participants,
+                                  function(p) {
+                                      return {'gid': p.person.id, 'hid': p.id};
+                                  });
+
+        if (_.isEqual(participantIds, newParticipantIds)) {
+            return;
+        }
+
+        participantIds = newParticipantIds;
+
+        _.each(newParticipantIds, function(participant) {
+            var googleId = participant.gid;
+            if (!_.has(allVolumes, googleId)) {
+                allVolumes[googleId] = [];
+                talkState[googleId] = {'talking': false, 'time': null};
+            }
+        });
+
+        
+        // check for participants that have left for each one
+        // that's left, just reset the data -- we can keep
+        // them as a key, but if they return we want them to
+        // start from scratch
+        var left = _.difference(participantIds, newParticipantIds);
+        _.each(left, function(participant) {
+            allVolumes[participant] = [];
+            talkState[participant.gid] = {'talking': false, 'time': null};
+        });
+    };
+
+    
     function startVolumeCollection (socket) {
         var sock = io();
         var app = feathers().configure(feathers.socketio(sock));
         var talking_history = app.service('talking_history');
 
         ////////////////////////////////////////////////////////
-        // {participantId: [<volume object>, ...]}
-        var allVolumes = {};
-
-        // {participantId: {'talking': <boolean>, 'time': <time of last
-        // start talking event>}
-        var talkState = {};
-
-        // check for new participants every 5s
-        var participantIds = [];
 
         window.state.collectingVolumes = true;
-
-        //TODO: perhaps move this so that it receives participant
-        // left events from the server.
-        
-        window.gapi.hangout.onApiReady.add(function(eventObj) {
-            window.setInterval(function() {
-                // get the most recent participant list
-                var newParticipantIds;
-                newParticipantIds = _.map(window.gapi.hangout.getParticipants(),
-                                          function(p) {
-                                              return {'gid': p.person.id, 'hid': p.id};
-                                          });
-                console.log("old participants:", participantIds);
-                console.log("new participants:", newParticipantIds);
-
-                // if it's the same participant list, don't do anything.
-                if (_.isEqual(participantIds, newParticipantIds)) {
-                    return;
-                }
-
-                participantIds = newParticipantIds;
-
-
-                _.each(newParticipantIds, function(participant) {
-                    var googleId = participant.gid;
-
-                    // if it's a new participant
-                    if (!_.has(allVolumes, googleId)) {
-                        console.log("new participant: ", googleId);
-                        allVolumes[googleId] = [];
-                        talkState[googleId] = {'talking': false, 'time': null};
-                    }
-
-                    // check for participants that have left for each one
-                    // that's left, just reset the data -- we can keep
-                    // them as a key, but if they return we want them to
-                    // start from scratch
-                    var left = _.difference(participantIds, newParticipantIds);
-                    _.each(left, function(participant) {
-                        allVolumes[participant] = [];
-                        talkState[googleId] = {'talking': false, 'time': null};
-                    });
-
-                });
-
-            }, 5000);
-        });
 
         console.log("[volumeCollector] participant ids:", participantIds);
 
@@ -276,6 +266,7 @@ define(["feathers", "socketio", "underscore", 'underscore_string'], function(fea
 
     return {
         startVolumeCollection: startVolumeCollection,
+        onParticipantsChanged: onParticipantsChanged,
         stopVolumeCollection: stopVolumeCollection
     };
 
