@@ -1,6 +1,9 @@
 var services = require('./services');
+var talk_time = require('./talk_time');
+
 var winston = require('winston');
 var _ = require('underscore');
+
 
 // register all listening functions
 
@@ -23,6 +26,8 @@ function createHangout(hangout) {
                 console.log("Successfully created hangout, ", hangout.hangout_id);
             }
         });
+    winston.log("info", "starting computing talk times...");
+    talk_time.compute_talk_times(hangout.hangout_id);
 }
 
 
@@ -41,8 +46,6 @@ function add_user(participant_id, hangout_id, image_url, name, locale) {
             if (error) {
                 return;
             }
-            winston.log("info", "got participant data back:", data);
-
             // we have to get all the matching records for this
             // participant because I can't figure out how to get
             // '$and' working correctly w/ mongo....
@@ -69,11 +72,6 @@ function add_user(participant_id, hangout_id, image_url, name, locale) {
             }
         });
 }
-
-
-//TODO:
-// problem is that when someone joins, the hangout object does not have their ID in some cases
-// ALSO it does not get marked as inactive when a user leaves a hangout.
 
 
 // Gets called on hangout::participantsChanged
@@ -108,12 +106,24 @@ function updateHangoutParticipants(hangoutId, new_participants) {
                 });
 
                 // patch this hangout to have the most recent participant list
-                // if it has 0 participants, mark it inactive.
+                // if it has 0 participants, mark it inactive, and save the end time.
+                // if it has > 0 participants, mark it active and set end time to null.
+                var active = (new_participant_ids.length > 0);
+                var end_time = null;
+                if (!active) {
+                    end_time = new Date();
+                    talk_time.stop_computing_talk_times(hangoutId);
+                } else if (!hangout.active && active) {
+                    // if hangout is moving from inactive to active...
+                    winston.log("info", "starting computing talk times...");
+                    talk_time.compute_talk_times(hangout.hangout_id);
+                }
                 services.hangoutService.patch(
                     hangout._id,
                     {
                         participants: new_participant_ids,
-                        active: (new_participant_ids.length > 0)
+                        active: (new_participant_ids.length > 0),
+                        end_time: end_time
                     },
                     {},
                     function(error, data) {
@@ -128,6 +138,10 @@ function updateHangoutParticipants(hangoutId, new_participants) {
         });
 };
 
+
+////////////////////////////////////////////////////////////////////////////
+// SOCKET LISTENERS
+////////////////////////////////////////////////////////////////////////////
 // hangout::joined
 // received when a user joins a hangout.
 // provides data:
@@ -191,6 +205,13 @@ var listenParticipantsChanged = function(socket) {
         updateHangoutParticipants(data.hangout_id, data.participants);
     });
 };
+
+// var listenTimeSpokenSince = function(socket) {
+//     socket.on("timeSpokenSince", function(data) {
+//         winston.log("info", "received timeSpokenSince event");
+//         talk_time.time_spoken_since(data.from_time, data.participant_ids, data.hangout_id);
+//     });
+// };
 
 
 // LISTENER REGISTER

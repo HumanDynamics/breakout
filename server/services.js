@@ -54,6 +54,16 @@ module.exports = {
         collection: 'talking_history'
     }),
 
+
+    // Number of ms spoken since start of hangout by each participant.
+    // Objects are of the form:
+    // 'hangout_id': hangout ID
+    // 'talk_times': {<participant_id>: <ms spoken>}
+    // 'timestamp': timestamp of this calculation
+    talkTimeService: mongodb({
+        collection: 'talk_times'
+    }),
+
     // Participants in hangouts -- every time there is a change.
     // 'name':      Name of talker
     // 'image':       Google profile image url
