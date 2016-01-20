@@ -138,7 +138,7 @@ define(["feathers", "socketio", "underscore", 'underscore_string'], function(fea
             socket.emit("talking_history::create", 
                         {
                             'participant_id': participantId,
-                            'hangout_id': window.state.hangoutId,
+                            'hangout_id': window.gapi.hangout.getHangoutId(),
                             'start_time': new Date(startTime),
                             'end_time': new Date(endTime),
                             'volumes': volumeData  // TODO: remove to collect raw data
