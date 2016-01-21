@@ -1,6 +1,7 @@
 var feathers = require('feathers');
 var bodyParser = require('body-parser');
 var mongodb = require('feathers-mongodb');
+var winston = require('winston');
 
 // local modules
 var services = require('./services');
@@ -24,9 +25,10 @@ app.configure(feathers.rest())
         ]);
 
         io.on('connection', function(socket) {
+            global.socket = socket;
             // create all listeners
             listener.listen(socket);
-            heartbeat.listen_heartbeats(socket);
+            heartbeat.listen_heartbeats(global.socket);
             // do authentication here (eventually)
         });
 
@@ -37,7 +39,7 @@ app.configure(feathers.rest())
     .use('/hangouts', services.hangoutService)
     .use('/hangout_events', services.hangoutEventService)
     .use('/talking_history', services.talkingHistoryService)
-    .use('/talk_times', services.talkTimeService)
+    .use('/talktimes', services.talkTimeService)
     .use('/participants', services.participantService)
     .use('/participant_events', services.participantEventService)
     .use('/', feathers.static(__dirname))

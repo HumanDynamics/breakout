@@ -18,6 +18,20 @@ requirejs.config({
             return true;
         }
     },
+
+    packages: [
+            {
+                name: 'cs',
+                location: './bower_components/require-cs',
+                main: 'cs'
+            },
+            {
+                name: 'coffee-script',
+                location: './bower_components/coffeescript',
+                main: 'extras/coffee-script'
+            }
+    ],
+
     paths: {
         src: './js',
         libs: './bower_components',

@@ -15,9 +15,12 @@ function save_talk_times(hangout_id, talk_times) {
             if (error) {
             } else {
                 winston.log("info", "stored speaking times for hangout:", hangout_id);
+                global.socket.emit('talktimes created', data);
             }
         }
     );
+
+    
 }
 
 // returns an object that reports the total time spoken by

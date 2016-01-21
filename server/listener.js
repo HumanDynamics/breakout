@@ -112,7 +112,7 @@ function updateHangoutParticipants(hangoutId, new_participants) {
                 var end_time = null;
                 if (!active) {
                     end_time = new Date();
-                    talk_time.stop_computing_talk_times(hangoutId);
+                    talk_time.stop_talk_times(hangoutId);
                 } else if (!hangout.active && active) {
                     // if hangout is moving from inactive to active...
                     winston.log("info", "starting computing talk times...");
@@ -157,16 +157,21 @@ function listenHangoutJoined(socket) {
 
         services.hangoutService.find(
             {
-                hangout_id: data.hangout_id,
-                $limit: 1
+                'hangout_id': data.hangout_id
             },
             function(error, foundHangouts) {
-                if (foundHangouts.length == 0) {
+                //TODO: WHY doesn't the find functinoality work properly here? what the hell??
+                var found_hangouts = _.filter(foundHangouts, function(h) {
+                    return h.hangout_id == data.hangout_id;
+                });
+                winston.log("info", "found ids:", found_hangouts);
+                
+                if (found_hangouts.length == 0) {
                     // hangout doesn't exist
                     winston.log('info', "creating a new hangout");
                     createHangout(data);
                 } else {
-                    var hangout = foundHangouts[0];
+                    var hangout = found_hangouts[0];
                     winston.log('info', "found a hangout:", hangout);
                     if ( _.contains(hangout.participants, data.participant_id )) {
                         winston.log('info', "participant is in the hangout, nothing happened:",

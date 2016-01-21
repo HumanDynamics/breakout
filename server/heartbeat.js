@@ -1,8 +1,9 @@
 var services = require('./services');
 var _ = require('underscore');
 var winston = require('winston');
-// wait 30 seconds to consider a hangout dead.
-var waitingThreshold = 10 * 1000;
+var talk_time = require('./talk_time');
+// wait 2 seconds to consider a hangout dead.
+var waitingThreshold = 5 * 1000;
 var heartbeats = {};
 var heartbeatListener = null;
 
@@ -23,7 +24,8 @@ var setHangoutInactive = function(hangout_id) {
                     hangout._id,
                     {
                         participants: [],
-                        active: false
+                        active: false,
+                        end_time: new Date()
                     },
                     {},
                     function(error, data) {
@@ -31,6 +33,7 @@ var setHangoutInactive = function(hangout_id) {
                             winston.log('error', 'Could not change hangout status', hangout_id);
                             return false;
                         } else {
+                            talk_time.stop_talk_times(hangout_id);
                             winston.log('info', "Hangout now inactive:", hangout_id);
                             return true;
                         }

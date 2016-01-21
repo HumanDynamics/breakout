@@ -1,14 +1,10 @@
-define(["src/volumeCollector", "src/heartbeat", "feathers","socketio", "underscore", "gapi"],
-       function(volumeCollector, heartbeat, feathers, io, underscore, gapi) {
+define(["src/volumeCollector", "src/heartbeat", "src/charts", "feathers", "socketio", "underscore", "gapi"],
+       function(volumeCollector, heartbeat, charts, feathers, io, underscore, gapi) {
 
            // initialize global state object
            window.state = {};
            window.state.url = "breakout-dev.media.mit.edu";
-
-           // var s = io();
-           // var app = feathers().configure(feathers.socketio(s));
-           // var hangouts = app.service('hangouts');
-
+           
            // set up raw socket for custom events.
            var socket = io.connect(window.state.url, {'transports': [
                'websocket',
@@ -17,6 +13,10 @@ define(["src/volumeCollector", "src/heartbeat", "feathers","socketio", "undersco
                'xhr-polling',
                'htmlfile'
            ]});
+
+           // var app = feathers().configure(feathers.socketio(s));
+           // var hangouts = app.service('hangouts');
+           // var talktimes = app.service('talktimes');
 
            function get_participant_objects(participants) {
                return _.map(participants,
@@ -67,6 +67,8 @@ define(["src/volumeCollector", "src/heartbeat", "feathers","socketio", "undersco
                }
 
                addHangoutListeners();
+               
+               charts.start_pie_chart(socket);
            });
 
            function addHangoutListeners() {
