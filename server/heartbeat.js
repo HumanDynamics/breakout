@@ -3,7 +3,7 @@ var _ = require('underscore');
 var winston = require('winston');
 var talk_time = require('./talk_time');
 // wait 2 seconds to consider a hangout dead.
-var waitingThreshold = 5 * 1000;
+var waitingThreshold = 10 * 1000;
 var heartbeats = {};
 var heartbeatListener = null;
 
@@ -11,8 +11,10 @@ var heartbeatListener = null;
 var setHangoutInactive = function(hangout_id) {
     services.hangoutService.find(
         {
-            'hangout_id': hangout_id,
-            $limit: 1
+            query: {
+                'hangout_id': hangout_id,
+                $limit: 1
+            }
         },
         function(error, foundHangouts) {
             if (error) {
