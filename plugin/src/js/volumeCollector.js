@@ -139,9 +139,9 @@ define(["feathers", "socketio", "underscore", 'underscore_string'], function(fea
                         {
                             'participant_id': participantId,
                             'hangout_id': window.gapi.hangout.getHangoutId(),
-                            'start_time': new Date(startTime),
-                            'end_time': new Date(endTime),
-                            'volumes': volumeData  // TODO: remove to collect raw data
+                            'start_time': new Date(startTime).toISOString(),
+                            'end_time': new Date(endTime).toISOString(),
+                            'volumes': volumeData  // comment to not collect raw data
                         },
                         {},
                         function(error, data) {

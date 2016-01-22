@@ -1,8 +1,8 @@
 define(["cs!src/charts/coffee/pieChart", "feathers"], function(pieChart, feathers) {
 
     var pie_chart = null;
-    var pie_chart_width = 400;
-    var pie_chart_height = 400;
+    var pie_chart_width = 300;
+    var pie_chart_height = 300;
 
     function maybe_update_pie_chart(data) {
         console.log("Maybe updating pie chart with data:", data);

@@ -16,20 +16,6 @@ var HangoutService = mongodb.Service.extend({
         data.last_updated = new Date();
         return this._super(id, data, params, callback);
     }
-
-    // find: function(params, callback) {
-    //     console.log("example params:", params);
-    //     return this._super(params, callback);
-    //     // console.log("possible hangouts: ", possible_hangouts);
-    //     // if (possible_hangouts) {
-    //     //     return possible_hangouts;
-    //     // } else {
-    //     //     console.log("no existing hangout was found, creating a new one.");
-    //     //     return possible_hangouts;
-    //     //     // return this.create({
-    //     //     // });
-    //     // }
-    // }
 });
 
 

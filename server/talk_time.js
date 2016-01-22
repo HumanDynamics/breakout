@@ -4,6 +4,12 @@ var _ = require('underscore');
 
 
 function save_talk_times(hangout_id, talk_times) {
+    // if there's no data to save, don't save anything.
+    if (talk_times.length == 0) {
+        winston.log("info", "not storing empty talk times:", talk_times);
+        return;
+    }
+    
     services.talkTimeService.create(
         {
             hangout_id: hangout_id,
@@ -19,8 +25,6 @@ function save_talk_times(hangout_id, talk_times) {
             }
         }
     );
-
-    
 }
 
 // returns an object that reports the total time spoken by
@@ -35,10 +39,13 @@ function save_talk_times(hangout_id, talk_times) {
 //
 // if `store` is true, store the result in the talktime db.
 function get_time_spoken(participant_ids, hangout_id, from, to, store) {
+    winston.log("info", 'getting talk events from:', from.toISOString(), from);
     services.talkingHistoryService.find(
-        {
-            'hangout_id': hangout_id,
-            'start_time': {$gt: from}
+        { query:
+          {
+              hangout_id: hangout_id,
+              start_time: {$gt: from.toISOString()}
+          }
         },
         function(error, data) {
             if (error) {

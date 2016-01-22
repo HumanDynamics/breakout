@@ -31,7 +31,7 @@ define ['d3', 'underscore'], (d3, underscore) ->
       #   g_colors[n % g_colors.length]
 
       @color = (d) ->
-        if (d.data.participant_id == window.state.localParticipant)
+        if (d.data.participant_id == window.gapi.hangout.getLocalParticipant().person.id)
           "#22A7F0"
         else
           "#D2D7D3"
