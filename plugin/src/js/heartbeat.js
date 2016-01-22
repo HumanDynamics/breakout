@@ -27,7 +27,11 @@ define(["underscore"], function(underscore) {
     }
 
     function maybeStartHeartbeat(participantsChangedEvent) {
-        if (participantsChangedEvent.participants.length == 1) {
+        // participants with app enabled
+        var appParticipants = _.filter(participantsChangedEvent.participants,
+                                       function(p) { return p.hasAppEnabled;});
+        
+        if (appParticipants.length == 1) {
             if (heartbeat_id) {
                 // weirdness. means participants changed to 
                 console.log("ERROR, should never be here. continuing to send heartbeat...");

@@ -89,6 +89,7 @@ define ['d3', 'underscore'], (d3, underscore) ->
       console.log "[pieChart] updating data: ", @data, " to: ", data
       # don't lose keys, just put them to 0
       data = @setLostKeysToZero data
+      console.log "[pieChart] updating data: ", @data, " to: ", data
 
       # keep track of previous data state
       @prevData = @data
