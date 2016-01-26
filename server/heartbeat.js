@@ -8,7 +8,12 @@ var heartbeats = {};
 var heartbeatListener = null;
 
 
-var setHangoutInactive = function(hangout_id) {
+// hangout_id is the hangout to set inactive.
+// cb is a callback to be called with whether the hangout was
+// successfully changed in the database.
+var setHangoutInactive = function(hangout_id, cb) {
+    winston.log("info", "trying to set hangout inactive for hangout id:", hangout_id);
+    var res = false;
     services.hangoutService.find(
         {
             query: {
@@ -18,8 +23,11 @@ var setHangoutInactive = function(hangout_id) {
         },
         function(error, foundHangouts) {
             if (error) {
-                winston.log('error', 'Could not find hangout:', hangout_id);
-                return false;
+                winston.log('error', 'Could not find hangout -- error:', hangout_id, error);
+                res = false;
+            } else if (foundHangouts.length == 0) {
+                winston.log('error', 'Could not find hangout -- no results back:', hangout_id);
+                res = false;
             } else {
                 var hangout = foundHangouts[0];
                 services.hangoutService.patch(
@@ -33,15 +41,18 @@ var setHangoutInactive = function(hangout_id) {
                     function(error, data) {
                         if (error) {
                             winston.log('error', 'Could not change hangout status', hangout_id);
-                            return false;
+                            res = false;
                         } else {
                             talk_time.stop_talk_times(hangout_id);
                             winston.log('info', "Hangout now inactive:", hangout_id);
-                            return true;
+                            res = true;
                         }
                     }
                 );
-                return true;
+                res = true;
+
+                // finish callback
+                cb(res);
             }
         });
 
@@ -61,13 +72,19 @@ var setHangoutInactive = function(hangout_id) {
     );
 };
 
-var checkHeartbeat = function(heartbeat) {
+var checkHeartbeat = function(heartbeat, hangout_id) {
     var lastHeartbeat = heartbeat.timestamp;
     var now = new Date();
     var delta = now - lastHeartbeat;
     if (delta > waitingThreshold) {
-        setHangoutInactive(heartbeat.hangout_id);
-        stopHeartbeat(heartbeat);
+        var res = setHangoutInactive(hangout_id, function(res) {
+            if (res) {
+                stopHeartbeat(heartbeat);
+            } else {
+                // hangout not even in database??
+                winston.log("info", "Hangout not found in database.");
+            }
+        });
     }
 };
 
@@ -78,7 +95,6 @@ var checkAllHeartbeats = function() {
 var stopHeartbeat = function(heartbeat) {
     winston.log("info", "Stopping heartbeat for hangout:", heartbeat.hangout_id);
     delete heartbeats[heartbeat.hangout_id];
-    winston.log("info", "heartbeats:", heartbeats);
 };
 
 var updateHeartbeat = function(heartbeat) {
