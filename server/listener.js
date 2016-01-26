@@ -25,7 +25,7 @@ function listenHangoutJoined(socket) {
         services.hangoutService.find(
             {
                 query: {
-                    hangout_id: 'AP36tYctegR9Halw290TVrhrg_pl0yoNUn2upXAlSspqNxlcR-YB9Q' //data.hangout_id
+                    hangout_id: data.hangout_id
                 }
             },
             function(error, found_hangouts) {
