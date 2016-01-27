@@ -59,6 +59,7 @@ define(["src/volumeCollector", "src/heartbeat", "src/charts", "feathers", "socke
                // the only other thing sent to maybe_start_heartbeat
                // is a gapi onparticipantsChanged event, so just follow the format...
                if (participants.length == 1) {
+                   heartbeat.register_heartbeat(socket);
                    heartbeat.maybe_start_heartbeat([localParticipant]);
                }
 

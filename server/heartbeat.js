@@ -57,7 +57,7 @@ var setHangoutInactive = function(hangout_id, cb) {
             }
         });
 
-    app.service('hangout_events').hangoutEventService.create(
+    app.service('hangout_events').create(
         {
             'hangout_id': hangout_id,
             event: 'end',
@@ -113,7 +113,7 @@ function listenHeartbeats(socket) {
     socket.on("heartbeat-start", updateHeartbeat);
     socket.on("heartbeat-stop", stopHeartbeat);
     heartbeatListener = setInterval(
-        checkAllHeartbeats, 5000);
+        checkAllHeartbeats, 1000);
 }
 
 module.exports = 
