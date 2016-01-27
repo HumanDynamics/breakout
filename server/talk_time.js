@@ -64,7 +64,8 @@ function get_time_spoken(participant_ids, hangout_id, from, to, store) {
             if (participant_ids) {
             // all records matching participant id info
                 matching_records = _.filter(data, function(talk_time_obj) {
-                    return isin(participant_ids, talk_time_obj.participant_id);
+                    return isin(participant_ids, talk_time_obj.participant_id) &&
+                        talk_time_obj.hangout_id == hangout_id;
                 });
             } else {
                 matching_records = data;
@@ -125,9 +126,11 @@ var talk_time_ids = {};
 var talk_time_compute_interval = 5 * 1000;
 
 var start_computing_talk_times = function(hangout_id) {
-    winston.log("info", "starting computing talk times for hangout:", hangout_id);
+    winston.log("info", "starting computing talk times for hangout:", hangout_id, talk_time_ids);
+    
     // if it's being run, don't start another one...
     if (_.has(talk_time_ids, hangout_id)) {
+        winston.log("info", "already computing talk times for hangout", hangout_id);
         return;
     }
     

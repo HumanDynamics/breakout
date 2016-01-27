@@ -26,19 +26,22 @@ define(["underscore"], function(underscore) {
                     });
     }
 
-    function maybeStartHeartbeat(participantsChangedEvent) {
+    function maybeStartHeartbeat(participants) {
         // participants with app enabled
-        var appParticipants = _.filter(participantsChangedEvent.participants,
+        var appParticipants = _.filter(participants,
                                        function(p) { return p.hasAppEnabled;});
         
         if (appParticipants.length == 1) {
             if (heartbeat_id) {
                 // weirdness. means participants changed to 
                 console.log("ERROR, should never be here. continuing to send heartbeat...");
+            } else {
+                console.log("ERROR, weird, only one participant, starting heartbeat..");
+                heartbeat_id = startHeartbeat();
             }
-            heartbeat_id = startHeartbeat();
         } else {
             if (heartbeat_id) {
+                console.log("Stopping heartbeat...");
                 stopHeartBeat();
                 heartbeat_id = null;
             }
@@ -50,7 +53,9 @@ define(["underscore"], function(underscore) {
     function registerHeartbeat(socket) {
         console.log("registering heartbeat listener");
         _socket = socket;
-        window.gapi.hangout.onParticipantsChanged.add(maybeStartHeartbeat);
+        window.gapi.hangout.onParticipantsChanged.add(function(event) {
+            maybeStartHeartbeat(event.participants);
+        });
     }
 
     return {
