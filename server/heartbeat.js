@@ -1,7 +1,8 @@
-var services = require('./services');
 var _ = require('underscore');
 var winston = require('winston');
 var talk_time = require('./talk_time');
+
+var app = require('./app');
 // wait 2 seconds to consider a hangout dead.
 var waitingThreshold = 10 * 1000;
 var heartbeats = {};
@@ -14,7 +15,7 @@ var heartbeatListener = null;
 var setHangoutInactive = function(hangout_id, cb) {
     winston.log("info", "trying to set hangout inactive for hangout id:", hangout_id);
     var res = false;
-    services.hangoutService.find(
+    app.service('hangouts').find(
         {
             query: {
                 'hangout_id': hangout_id,
@@ -30,7 +31,7 @@ var setHangoutInactive = function(hangout_id, cb) {
                 res = false;
             } else {
                 var hangout = foundHangouts[0];
-                services.hangoutService.patch(
+                app.service('hangouts').patch(
                     hangout._id,
                     {
                         participants: [],
@@ -56,7 +57,7 @@ var setHangoutInactive = function(hangout_id, cb) {
             }
         });
 
-    services.hangoutEventService.create(
+    app.service('hangout_events').hangoutEventService.create(
         {
             'hangout_id': hangout_id,
             event: 'end',

@@ -4,13 +4,14 @@ var mongodb = require('feathers-mongodb');
 var hooks = require('feathers-hooks');
 var winston = require('winston');
 
+// export app as module so we can require it later.
+var app = module.exports = feathers();
+
 // local modules
 var services = require('./services');
 var listener = require('./listener');
 var heartbeat = require('./heartbeat');
 var my_hooks = require('./my_hooks');
-
-var app = feathers();
 
 app.configure(feathers.rest())
     .configure(hooks())
@@ -28,29 +29,25 @@ app.configure(feathers.rest())
         ]);
 
         io.on('connection', function(socket) {
-            global.socket = socket;
             // create all listeners
             listener.listen(socket);
-            heartbeat.listen_heartbeats(global.socket);
+            heartbeat.listen_heartbeats(socket);
             // do authentication here (eventually)
 
             socket.on('disconnect', function() {
                 winston.log("info", ">>>>>>>>Client disconnected");
             });
+
         });
-
-        
-
     }))
     .use(bodyParser.json())
     .use('/hangouts', services.hangoutService)
     .use('/hangout_events', services.hangoutEventService)
     .use('/talking_history', services.talkingHistoryService)
-    .use('/talktimes', services.talkTimeService)
+    .use('/talk_times', services.talkTimeService)
     .use('/participants', services.participantService)
     .use('/participant_events', services.participantEventService)
     .use('/', feathers.static(__dirname))
     .listen(3000);
-
 
 my_hooks.configure_hooks(app);

@@ -19,7 +19,6 @@ var HangoutService = mongodb.Service.extend({
     }
 });
 
-
 module.exports = {
     // Each item in Hangouts is of the form:
     // 'participants': [user_id1, user_id2, ...]
@@ -98,4 +97,4 @@ module.exports = {
     hIndexService: mongodb({
         collection: 'h_indices'
     })
-}
+};

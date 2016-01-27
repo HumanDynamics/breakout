@@ -19,9 +19,10 @@ define(["cs!src/charts/coffee/pieChart", "feathers"], function(pieChart, feather
     }
 
     function start_pie_chart(socket) {
-        console.log("starting pie chart with empty data...");
-        console.log("piechart:", pieChart);
-        socket.on("talktimes created", maybe_update_pie_chart);
+        var app = feathers().configure(feathers.socketio(socket));
+        var talktimes = app.service('talk_times');
+        console.log("service:", talktimes);
+        talktimes.on("created", maybe_update_pie_chart);
     }
     
     return {

@@ -1,8 +1,9 @@
-var services = require('./services');
 var talk_time = require('./talk_time');
 var hu = require('./hangout_utils');
 var winston = require('winston');
 var _ = require('underscore');
+
+var app = require('./app');
 
 ////////////////////////////////////////////////////////////////////////////
 // SOCKET LISTENERS
@@ -21,14 +22,14 @@ function listenHangoutJoined(socket) {
                     data.participant_locale);
 
         winston.log("info", "finding hangout with id:", data.hangout_id);
-        services.hangoutService.find(
+        app.service('hangouts').find(
             {
                 query: {
                     hangout_id: data.hangout_id
                 }
             },
             function(error, found_hangouts) {
-                winston.log("info", "found ids:", found_hangouts);
+//                winston.log("info", "found ids:", found_hangouts);
 
                 // hangout doesn't exist
                 if (found_hangouts.length == 0) {
@@ -42,7 +43,7 @@ function listenHangoutJoined(socket) {
 
                 } else {  // we have a hangout
                     var found_hangout = found_hangouts[0];
-                    winston.log('info', "found a hangout:", found_hangout);
+                    //winston.log('info', "found a hangout:", found_hangout);
                     if ( _.contains(found_hangout.participants, data.participant_id )) {
                         winston.log('info', "participant is in the hangout, nothing happened:",
                                     found_hangout.participants,
@@ -58,7 +59,7 @@ function listenHangoutJoined(socket) {
         if (data.hangout_participants.length == 1) {
             winston.log("info", "only have one participant now, re-computing talk times...");
             hu.createHangoutEvent(data.hangout_id, 'start', new Date());
-            talk_time.compute_talk_times(data.hangout_id);
+            talk_time.compute_talk_times(data.hangout_id, socket);
         }
     });
 };

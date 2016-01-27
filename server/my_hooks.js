@@ -1,5 +1,6 @@
 var winston = require('winston');
 var _ = require('underscore');
+var app = require('./app');
 
 
 function date_diff(d1, d2) {
@@ -15,7 +16,7 @@ function date_diff(d1, d2) {
 // insert the event.
 // TODO: This should query the database for talk times that are after, say,
 // 5s before the given start time, to reduce computational load.
-function configure_talking_history_hooks(app) {
+function configure_talking_history_hooks() {
     var talkingHistoryService = app.service('talking_history');
 
     // check for repeat data in DB before creating.
@@ -59,10 +60,9 @@ function configure_talking_history_hooks(app) {
     });
 }
 
-
-function configure_hooks(app) {
+function configure_hooks() {
     winston.log("info", "Configuring hooks for feathers services");
-    configure_talking_history_hooks(app);
+    configure_talking_history_hooks();
 }
 
 module.exports =  {

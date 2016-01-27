@@ -1,15 +1,16 @@
-var services = require('./services');
 var winston = require('winston');
 var talk_time = require('./talk_time');
 
 var _ = require('underscore');
+
+var app = require('./app');
 
 
 // creates a new hangout with the given data.
 // `hangout` must have the following keys:
 // hangout_id, hangout_url, hangout_topic, hangout_participants
 function createHangout(hangout) {
-    services.hangoutService.create(
+    app.service('hangouts').create(
         {
             hangout_id: hangout.hangout_id,
             url: hangout.hangout_url,
@@ -28,7 +29,7 @@ function createHangout(hangout) {
 // create a hangout event.
 // 'event' must be one of: 'start' | 'end'
 function createHangoutEvent(hangout_id, event, timestamp) {
-    services.hangoutEventService.create(
+    app.service('hangout_events').create(
         {
             hangout_id: hangout_id,
             event: event,
@@ -48,7 +49,7 @@ function createHangoutEvent(hangout_id, event, timestamp) {
 // create a participant event
 // participant_ids must be a list of google person IDs.
 function createParticipantEvent(participant_ids, hangout_id, timestamp) {
-    services.participantEventService.create(
+    app.service('participant_events').create(
         {
             participant_ids: participant_ids,
             hangout_id: hangout_id,
@@ -68,7 +69,7 @@ function createParticipantEvent(participant_ids, hangout_id, timestamp) {
 // if the user already is recorded for that hangout, do nothing.
 function add_user(participant_id, hangout_id, image_url, name, locale) {
     winston.log("info", "add user:", participant_id, name);
-    services.participantService.find(
+    app.service('participants').find(
         {
             query: {
                 $and: [{participant_id: participant_id},
@@ -96,7 +97,7 @@ function add_user(participant_id, hangout_id, image_url, name, locale) {
                 return;
             } else { // we don't, add it.
                 winston.log("info", "creating new participant:", participant_id, name);
-                services.participantService.create(
+                app.service('participants').create(
                     {
                         'participant_id': participant_id,
                         'hangout_id': hangout_id,
@@ -116,7 +117,7 @@ function add_user(participant_id, hangout_id, image_url, name, locale) {
 // 
 function updateHangoutParticipants(hangoutId, new_participants) {
     winston.log("info", "updating hangout participants:", hangoutId, new_participants);
-    services.hangoutService.find(
+    app.service('hangouts').find(
         {
             query: {
                 hangout_id: hangoutId,
@@ -154,7 +155,7 @@ function updateHangoutParticipants(hangoutId, new_participants) {
                     winston.log("info", "starting computing talk times...");
                     talk_time.compute_talk_times(hangout.hangout_id);
                 }
-                services.hangoutService.patch(
+                app.service('hangouts').patch(
                     hangout._id,
                     {
                         participants: new_participant_ids,

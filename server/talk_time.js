@@ -1,6 +1,6 @@
-var services = require('./services');
 var winston = require('winston');
 var _ = require('underscore');
+var app = require('./app');
 
 
 function save_talk_times(hangout_id, talk_times) {
@@ -10,7 +10,7 @@ function save_talk_times(hangout_id, talk_times) {
         return;
     }
     
-    services.talkTimeService.create(
+    app.service('talk_times').create(
         {
             hangout_id: hangout_id,
             talk_times: talk_times,
@@ -21,7 +21,6 @@ function save_talk_times(hangout_id, talk_times) {
             if (error) {
             } else {
                 winston.log("info", "stored speaking times for hangout:", hangout_id);
-                global.socket.emit('talktimes created', data);
             }
         }
     );
@@ -40,7 +39,7 @@ function save_talk_times(hangout_id, talk_times) {
 // if `store` is true, store the result in the talktime db.
 function get_time_spoken(participant_ids, hangout_id, from, to, store) {
     winston.log("info", 'getting talk events from:', from.toISOString(), from);
-    services.talkingHistoryService.find(
+    app.service('talking_history').find(
         { query:
           {
               hangout_id: hangout_id,
