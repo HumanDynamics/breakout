@@ -47,12 +47,6 @@ define(["feathers", "socketio", "underscore", 'underscore_string'], function(fea
 
     
     function startVolumeCollection (socket) {
-        var sock = io();
-        var app = feathers().configure(feathers.socketio(sock));
-        var talking_history = app.service('talking_history');
-
-        ////////////////////////////////////////////////////////
-
         window.state.collectingVolumes = true;
 
         console.log("[volumeCollector] participant ids:", participantIds);
@@ -140,13 +134,13 @@ define(["feathers", "socketio", "underscore", 'underscore_string'], function(fea
                             'participant_id': participantId,
                             'hangout_id': window.gapi.hangout.getHangoutId(),
                             'start_time': new Date(startTime).toISOString(),
-                            'end_time': new Date(endTime).toISOString(),
-                            'volumes': volumeData  // comment to not collect raw data
+                            'end_time': new Date(endTime).toISOString()
+                            //'volumes': volumeData  // comment to not collect raw data
                         },
                         {},
                         function(error, data) {
                             if (error) {
-                                console.log("unable to create talking history event...");
+                                console.log("unable to create talking history event...", error);
                             }
                         });
         }
