@@ -1,16 +1,19 @@
 var feathers = require('feathers');
 var bodyParser = require('body-parser');
 var mongodb = require('feathers-mongodb');
+var hooks = require('feathers-hooks');
 var winston = require('winston');
 
 // local modules
 var services = require('./services');
 var listener = require('./listener');
 var heartbeat = require('./heartbeat');
+var my_hooks = require('./my_hooks');
 
 var app = feathers();
 
 app.configure(feathers.rest())
+    .configure(hooks())
     .configure(feathers.socketio(function(io) {
 
         // enable all transports (optional if you want flashsocket support, please note that some hosting
@@ -30,6 +33,10 @@ app.configure(feathers.rest())
             listener.listen(socket);
             heartbeat.listen_heartbeats(global.socket);
             // do authentication here (eventually)
+
+            socket.on('disconnect', function() {
+                winston.log("info", ">>>>>>>>Client disconnected");
+            });
         });
 
         
@@ -44,3 +51,6 @@ app.configure(feathers.rest())
     .use('/participant_events', services.participantEventService)
     .use('/', feathers.static(__dirname))
     .listen(3000);
+
+
+my_hooks.configure_hooks(app);

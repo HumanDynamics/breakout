@@ -1,7 +1,6 @@
 var services = require('./services');
 var talk_time = require('./talk_time');
 var hu = require('./hangout_utils');
-
 var winston = require('winston');
 var _ = require('underscore');
 
@@ -39,6 +38,7 @@ function listenHangoutJoined(socket) {
                         return p.participant_id;
                     });
                     hu.createHangout(data);  // create the hangout
+                    talk_time.compute_talk_times(data.hangout_id);
 
                 } else {  // we have a hangout
                     var found_hangout = found_hangouts[0];
@@ -56,7 +56,9 @@ function listenHangoutJoined(socket) {
 
         // if we now only have one participant, then the hangout started again
         if (data.hangout_participants.length == 1) {
+            winston.log("info", "only have one participant now, re-computing talk times...");
             hu.createHangoutEvent(data.hangout_id, 'start', new Date());
+            talk_time.compute_talk_times(data.hangout_id);
         }
     });
 };

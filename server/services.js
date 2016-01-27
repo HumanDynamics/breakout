@@ -1,6 +1,7 @@
 var mongodb = require('feathers-mongodb');
 var Proto = require('uberproto');
 var underscore = require('underscore');
+var hooks = require('feathers-hooks');
 var winston = require('winston');
 
 // Custom, extended hangouts service -- adding created & updated

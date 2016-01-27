@@ -22,8 +22,6 @@ function createHangout(hangout) {
                 console.log("Successfully created hangout, ", hangout.hangout_id);
             }
         });
-    winston.log("info", "starting computing talk times...");
-    talk_time.compute_talk_times(hangout.hangout_id);
 }
 
 
