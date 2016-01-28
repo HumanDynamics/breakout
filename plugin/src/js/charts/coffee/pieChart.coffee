@@ -4,11 +4,11 @@ define ['d3', 'underscore'], (d3, underscore) ->
 
       @fontFamily = "Futura,Helvetica Neue,Helvetica,Arial,sans-serif"
       @localParticipant = localParticipantId
+      @grayColor = "#D2D7D3"
+      @participantColor = "#22A7F0"
 
       @data = data
       @prevData = data  # to keep track of previous data step. same at first for now.
-
-      console.log("[pieChart] data:", @data);
 
       @margin = {top: 10, right: 10, bottom: 10, left: 10}
 
@@ -28,17 +28,19 @@ define ['d3', 'underscore'], (d3, underscore) ->
         .value (d) -> d.seconds_spoken
         .sort(null);
 
+      # if the chart is loading, the whole thing should be gray.
       @color = (d) =>
         if @loading
-          return "#D2D7D3"
+          @grayColor
         if (d.data.participant_id.toString() == @localParticipant.toString())
-          return "#22A7F0"
+          @blueColor
         else
-          return "#D2D7D3"
+          @grayColor
 
       @loading = true
 
 
+    # cb is a callback to call right after render.
     render: (id="#pie-chart", cb) =>
 
       @chart = d3.select(id)
@@ -190,6 +192,8 @@ define ['d3', 'underscore'], (d3, underscore) ->
         .style "opacity", 0
         .remove()
 
+      # timeout here to change the text after the loading text has
+      # been removed.
       setTimeout(() =>
         @text.text d3.format("%") @localPercentageOfTime()
 
