@@ -19,3 +19,14 @@ TODO
    meteor server instead of the one that's hardcoded in there
 
 4. Install your plugin in a hangout!
+
+
+## Notes from using feathers
+
+### Calling services from the server
+- when you use the `find` functionality, you have to send any query in the following format:
+
+```
+    { query: { <attr>: <param>} }
+```
+(just adding query to the front)
