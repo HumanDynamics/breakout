@@ -4,11 +4,12 @@ define(["cs!src/charts/coffee/pieChart", "cs!src/charts/coffee/loadingPie", "fea
     var pie_chart_width = 300;
     var pie_chart_height = 300;
 
+    // updates the pie chart with data!
     function maybe_update_pie_chart(data) {
         console.log("Maybe updating pie chart with data:", data);
         if (data.hangout_id == window.gapi.hangout.getHangoutId()) {
             if (pie_chart.loading) {
-                console.log("it's rotating, stop it!");
+                // have to call loadData before on change.
                 pie_chart.loadData(data.talk_times);
             } else {
                 pie_chart.change(data.talk_times);
@@ -21,13 +22,13 @@ define(["cs!src/charts/coffee/pieChart", "cs!src/charts/coffee/loadingPie", "fea
         var talktimes = app.service('talk_times');
         
         var local_participant = window.gapi.hangout.getLocalParticipant().person.id;
-        
-        var fake_data = [{'participant_id': local_participant, 'seconds_spoken': 0},
-                         {'participant_id': '0', 'seconds_spoken': 100}];
+
+        // use this for when you first create the pie chart
+        var fake_data = [{'participant_id': local_participant, 'seconds_spoken': 1}];
         pie_chart = new pieChart(fake_data, local_participant, pie_chart_width, pie_chart_height);
         pie_chart.render('#pie-chart');
-
-        console.log("service:", talktimes);
+        
+        // update the pie chart when we get new talk times
         talktimes.on("created", maybe_update_pie_chart);
     }
     

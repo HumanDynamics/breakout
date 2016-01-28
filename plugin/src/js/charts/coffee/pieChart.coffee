@@ -28,15 +28,13 @@ define ['d3', 'underscore'], (d3, underscore) ->
         .value (d) -> d.seconds_spoken
         .sort(null);
 
-      # @color = (n) ->
-      #   g_colors[n % g_colors.length]
-
       @color = (d) =>
-        if (d.data.participant_id == @localParticipant)
+        if @loading
+          return "#D2D7D3"
+        if (d.data.participant_id.toString() == @localParticipant.toString())
           return "#22A7F0"
         else
           return "#D2D7D3"
-      console.log "local participant:", @localParticipant
 
       @loading = true
 
@@ -102,8 +100,11 @@ define ['d3', 'underscore'], (d3, underscore) ->
         .attrTween "d", @arcTween
 
       # # transition to make the update pretty
-      @path.transition()
-        .duration 1000
+      @path
+        .attr "fill", @color
+        .transition()
+        .duration 500
+        .attr "fill", @color
         .attrTween "d", @arcTween
 
       @text.text d3.format("%") @localPercentageOfTime()
@@ -173,9 +174,6 @@ define ['d3', 'underscore'], (d3, underscore) ->
       prevData = @setLostKeysToZero @prevData, @data
       oldAngles = @orderData(@pie(@prevData))
       # problem is that oldAngles doesn't have the new / added participant ID key.
-      console.log "old angles:", oldAngles
-      console.log @key(d)
-      console.log oldAngles[@key(d)]
       i = d3.interpolate(oldAngles[@key(d)], d)
 
       # function to give interpolation step for each tween step
