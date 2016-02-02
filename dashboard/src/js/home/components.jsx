@@ -10,7 +10,7 @@ class Home extends React.Component {
         return (
             <div>
                 <Nav></Nav>
-                <p>Hello, world!</p>
+                <HangoutTable></HangoutTable>
             </div>
         );
     }
@@ -25,12 +25,6 @@ class Nav extends React.Component {
     }
     
     handleTap() {
-        /* this.setState({
-           if (this.open)
-           this.setState({open: false});
-           else
-           this.setState({open: true});
-           }) */
         console.log(this.refs);
         this.refs.NavMenu.handleToggle();
     }
@@ -45,7 +39,6 @@ class Nav extends React.Component {
                     onRightIconButtonTouchTap={this.handleTap}
                 />
                 <NavMenu ref="NavMenu"></NavMenu>
-                <HangoutTable></HangoutTable>
             </div>
         );
     }
