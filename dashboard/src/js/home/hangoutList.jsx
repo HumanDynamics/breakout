@@ -1,8 +1,11 @@
 // hangoutList.jsx
 
 import React from 'react';
+import update from 'react-addons-update';
 import io from 'socket.io-client';
 import feathers from 'feathers-client';
+import _ from 'underscore';
+
 
 import Table from 'material-ui/lib/table/table';
 import TableHeaderColumn from 'material-ui/lib/table/table-header-column';
@@ -20,10 +23,23 @@ import HighlightOff from 'material-ui/lib/svg-icons/action/highlight-off';
 export default class HangoutTable extends React.Component {
     constructor(props, context) {
         super(props, context);
-        /* this.componentWillMount = this.componentWillMount.bind(this); */
+        this.updateHangout = this.updateHangout.bind(this);
         this.state = {
             hangouts: []
         };
+    }
+
+    // updates a hangout with a new object.
+    // first finds it by looking at the `hangout_id` of that hangout, and then
+    // replaces it in this.state using the update pattern.
+    updateHangout(hangoutObject) {
+        // find hangout index in state
+        var n = _.findIndex(this.state.hangouts,
+                            (hangout) => hangout.hangout_id == hangoutObject.hangout_id);
+        // update that hangout object with the new one
+        if (n) 
+            this.setState({hangouts: update(this.state.hangouts,
+                                            {[n]: {$set: hangoutObject}})});
     }
 
     componentWillMount() {
@@ -41,16 +57,28 @@ export default class HangoutTable extends React.Component {
     }
 
     componentDidMount() {
+        // add one every time it's created.
         this.hangouts.on('created', function(hangout) {
-            this.setState({hangouts: this.state.hangouts.concat(hangout)});
+            this.setState({hangouts: update(this.state.hangouts,
+                                            {$push: [hangout]})});
         }.bind(this));
 
-        this.hangouts.find({}, function(error, foundHangouts) {
-            console.log("found hangouts:", foundHangouts);
-            foundHangouts.map(function(hangout) {
-                this.setState({hangouts: this.state.hangouts.concat(hangout)});
-            }, this);
-        }.bind(this));
+        // find initial data
+        this.hangouts.find(
+             {
+                 $sort: {start_time: -1},
+            }, function(error, foundHangouts) {
+                console.log("found hangouts:", foundHangouts);
+                foundHangouts.map(function(hangout) {
+                    this.setState({hangouts: this.state.hangouts.concat(hangout)});
+                }, this);
+            }.bind(this));
+
+        // on patched
+        this.hangouts.on('patched', function(updatedHangout) {
+            console.log("updated hangout:", updatedHangout);
+            this.updateHangout(updatedHangout);
+            }.bind(this))
     }
 
     render() {
