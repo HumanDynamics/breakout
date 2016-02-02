@@ -3,6 +3,7 @@
 import React from 'react';
 import AppBar from 'material-ui/lib/app-bar';
 import NavMenu from './NavMenu';
+import HangoutTable from './hangoutList';
 
 class Home extends React.Component {
     render() {
@@ -44,6 +45,7 @@ class Nav extends React.Component {
                     onRightIconButtonTouchTap={this.handleTap}
                 />
                 <NavMenu ref="NavMenu"></NavMenu>
+                <HangoutTable></HangoutTable>
             </div>
         );
     }
