@@ -87,7 +87,7 @@ export default class HangoutTable extends React.Component {
                 </TableHeader>
                 <TableBody>
                     {this.state.hangouts.map((hangout, i) =>
-                        <HangoutRow hangout={hangout} key={i}></HangoutRow>
+                        <HangoutRow hangout={hangout} key={hangout.hangout_id}></HangoutRow>
                      )};
                 </TableBody>
             </Table>

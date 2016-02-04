@@ -17,7 +17,10 @@ class _HangoutStore {
     }
 
     getAll() {
-        return _.values(this.hangouts) || [];
+        var hangouts =  (_.values(this.hangouts) || []);
+        return _.sortBy(hangouts, function(h) {
+            return h.start_time;
+        }).reverse();
 //        return this.hangouts;
     }
 
