@@ -5,18 +5,7 @@ import AppBar from 'material-ui/lib/app-bar';
 import NavMenu from './NavMenu';
 import HangoutTable from './hangoutList';
 
-class Home extends React.Component {
-    render() {
-        return (
-            <div>
-                <Nav></Nav>
-                <HangoutTable></HangoutTable>
-            </div>
-        );
-    }
-}
 
-exports.Home = Home;
 
 class Nav extends React.Component {
     constructor(props, context) {
@@ -45,3 +34,32 @@ class Nav extends React.Component {
 
 }
 
+class Home extends React.Component {
+    constructor(props, context) {
+        super(props, context);
+        this.state = {tab: 0}
+    }
+
+    pageBody() {
+        console.log("pagebody");
+        switch (this.state.tab) {
+            case 0:
+                return (<HangoutTable></HangoutTable>);
+            case 1:
+                return (<p>user Table</p>);
+            default:
+                return (<p>Hello World!</p>);
+        }
+    }
+    
+    render() {
+        return (
+            <div>
+                <Nav></Nav>
+                {this.pageBody()}
+            </div>
+        );
+    }
+}
+
+exports.Home = Home;
