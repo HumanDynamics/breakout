@@ -60,7 +60,6 @@ export default class HangoutTable extends React.Component {
 
     
     hangoutsChanged() {
-        console.log("Hangouts changed!", HangoutStore.getAll());
         this.setState({hangouts: update(this.state.hangouts,
                                         {$set: HangoutStore.getAll()})
         });
@@ -74,7 +73,7 @@ export default class HangoutTable extends React.Component {
     }
 
     componentWillUnmount() {  
-        HangoutStore.unbind( 'change', this.hangoutsChanged );
+        HangoutStore.unbind('change', this.hangoutsChanged);
     }
 
     render() {

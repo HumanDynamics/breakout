@@ -2,7 +2,7 @@ import _ from 'underscore';
 //var EventEmitter = require('events').EventEmitter;
 import MicroEvent from 'microevent';
 
-import AppDispatcher from '../dispatcher/dispatcher'
+import AppDispatcher from '../dispatcher/dispatcher';
 import HangoutListConstants from '../constants/HangoutListConstants';
 
 
@@ -31,24 +31,32 @@ MicroEvent.mixin(_HangoutStore);
 
 var HangoutStore = new _HangoutStore();
 
+
+function _addHangout(hangout) {
+    if (!_.has(HangoutStore.hangouts, hangout.hangout_id)) {
+        HangoutStore.hangouts[hangout.hangout_id] = hangout;
+    }
+}
+
 function _addHangouts(hangouts) {
     _.each(hangouts, function(hangout) {
-        if (!_.has(HangoutStore.hangouts, hangout.hangout_id)) {
-            HangoutStore.hangouts[hangout.hangout_id] = hangout;
-        }
+        _addHangout(hangout);
     });
 }
 
 
+
 AppDispatcher.register(function(payload) {
-    switch( payload.eventName ) {
+    switch( payload.type ) {
         case ActionTypes.RECEIVE_ALL_HANGOUTS:
-            console.log("[hangoutStore] Received all hangouts:", payload);
+            console.log('[hangoutStore] got all hangouts:', payload);
             _addHangouts(payload.hangouts);
             HangoutStore.trigger(CHANGE_EVENT);
             break;
         case ActionTypes.RECEIVE_NEW_HANGOUT:
-            HangoutStore.hangouts.push( payload.newHangout );
+            console.log('[hangoutStore] got new hangout:', payload);
+            _addHangout(payload.hangout);
+            console.log('[hangoutStore] hangouts now:', HangoutStore.getAll());
             HangoutStore.trigger(CHANGE_EVENT);
             break;
         default:
