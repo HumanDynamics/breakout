@@ -32,6 +32,12 @@ MicroEvent.mixin(_HangoutStore);
 var HangoutStore = new _HangoutStore();
 
 
+function _replaceHangout(hangout) {
+    if (_.has(HangoutStore.hangouts, hangout.hangout_id)) {
+        HangoutStore.hangouts[hangout.hangout_id] = hangout;
+    }
+}
+
 function _addHangout(hangout) {
     if (!_.has(HangoutStore.hangouts, hangout.hangout_id)) {
         HangoutStore.hangouts[hangout.hangout_id] = hangout;
@@ -49,14 +55,15 @@ function _addHangouts(hangouts) {
 AppDispatcher.register(function(payload) {
     switch( payload.type ) {
         case ActionTypes.RECEIVE_ALL_HANGOUTS:
-            console.log('[hangoutStore] got all hangouts:', payload);
             _addHangouts(payload.hangouts);
             HangoutStore.trigger(CHANGE_EVENT);
             break;
         case ActionTypes.RECEIVE_NEW_HANGOUT:
-            console.log('[hangoutStore] got new hangout:', payload);
             _addHangout(payload.hangout);
-            console.log('[hangoutStore] hangouts now:', HangoutStore.getAll());
+            HangoutStore.trigger(CHANGE_EVENT);
+            break;
+        case ActionTypes.RECEIVE_CHANGED_HANGOUT:
+            _replaceHangout(payload.hangout);
             HangoutStore.trigger(CHANGE_EVENT);
             break;
         default:
