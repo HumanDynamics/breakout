@@ -5,6 +5,7 @@ import update from 'react-addons-update';
 import _ from 'underscore';
 
 import {HangoutStore} from '../stores/hangoutStore';
+import {ParticipantStore} from '../stores/participantStore';
 
 import Table from 'material-ui/lib/table/table';
 import TableHeaderColumn from 'material-ui/lib/table/table-header-column';
@@ -16,6 +17,8 @@ import TableBody from 'material-ui/lib/table/table-body';
 import Colors from 'material-ui/lib/styles/colors';
 import CheckCircle from 'material-ui/lib/svg-icons/action/check-circle';
 import HighlightOff from 'material-ui/lib/svg-icons/action/highlight-off';
+
+import Avatar from 'material-ui/lib/avatar';
 
 
 
@@ -38,11 +41,36 @@ class HangoutRow extends React.Component {
         }
     }
 
+    getAvatar(participant, i) {
+        if (!participant.image_url) {
+            return (
+                <Avatar>{participant.name.charAt(0)} key={i}</Avatar>
+            );
+        } else {
+            return (
+                <Avatar src={participant['image_url']} key={i}/>
+            );
+        }
+                    
+    }
+
+    getAvatars() {
+        return (
+            <div>
+                {this.props.participants.map((participant, i) =>
+                    this.getAvatar(participant, i)
+                )}
+            </div>
+        );
+
+    }
+
     render() {
         return (
             <TableRow>
                 <TableRowColumn>{this.props.hangout.hangout_id}</TableRowColumn>
                 <TableRowColumn>{this.getIcon(this.props.hangout.active)}</TableRowColumn>
+                <TableRowColumn>{this.getAvatars()}</TableRowColumn>
             </TableRow>
         );
     }
@@ -53,8 +81,10 @@ export default class HangoutTable extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.hangoutsChanged = this.hangoutsChanged.bind(this);
+        this.participantsChanged = this.participantsChanged.bind(this);
         this.state = {
-            hangouts: HangoutStore.getAll()
+            hangouts: HangoutStore.getAll(),
+            participants: ParticipantStore.getParticipantsByHangout()
         }
     }
 
@@ -65,15 +95,27 @@ export default class HangoutTable extends React.Component {
         });
     }
 
+    participantsChanged() {
+        this.setState({participants: update(this.state.participants,
+                                            {$set: ParticipantStore.getParticipantsByHangout()})
+        });
+    }
+
+    getParticipantFromHangout(hangout_id) {
+        return this.state.participants[hangout_id] || [];
+    }
+
     componentWillMount() {
     }
 
     componentDidMount() {
         HangoutStore.bind("change", this.hangoutsChanged);
+        ParticipantStore.bind("change", this.participantsChanged);
     }
 
-    componentWillUnmount() {  
+    componentWillUnmount() {
         HangoutStore.unbind('change', this.hangoutsChanged);
+        ParticipantStore.unbind("change", this.participantsChanged);
     }
 
     render() {
@@ -83,11 +125,14 @@ export default class HangoutTable extends React.Component {
                     <TableRow>
                         <TableHeaderColumn>Hangout ID</TableHeaderColumn>
                         <TableHeaderColumn>Active?</TableHeaderColumn>
+                        <TableHeaderColumn>Participants</TableHeaderColumn>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {this.state.hangouts.map((hangout, i) =>
-                        <HangoutRow hangout={hangout} key={hangout.hangout_id}></HangoutRow>
+                        <HangoutRow hangout={hangout}
+                                    participants={this.getParticipantFromHangout(hangout.hangout_id)}
+                                    key={hangout.hangout_id} ></HangoutRow>
                      )};
                 </TableBody>
             </Table>

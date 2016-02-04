@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import {Home} from './components/components';
 import HangoutListAPIUtils from './api/HangoutListAPIUtils';
+import ParticipantAPIUtils from './api/ParticipantAPIUtils';
 import $ from 'jquery';
 
 const app = {
@@ -20,6 +21,10 @@ const app = {
         HangoutListAPIUtils.getAllHangouts();
         HangoutListAPIUtils.registerCreatedCallback();
         HangoutListAPIUtils.registerChangedCallback();
+        
+        ParticipantAPIUtils.getAllParticipants();
+        ParticipantAPIUtils.registerCreatedCallback();
+        ParticipantAPIUtils.registerChangedCallback();
     }
 };
 
