@@ -1,4 +1,4 @@
-define(["cs!src/charts/coffee/pieChart", "cs!src/charts/coffee/loadingPie", "feathers"], function(pieChart, loadingPie, feathers) {
+define(["cs!src/charts/coffee/pieChart", "cs!src/charts/coffee/mm", "feathers"], function(pieChart, MM, feathers) {
 
     var pie_chart = null;
     var pie_chart_width = 300;
@@ -31,8 +31,28 @@ define(["cs!src/charts/coffee/pieChart", "cs!src/charts/coffee/loadingPie", "fea
         // update the pie chart when we get new talk times
         talktimes.on("created", maybe_update_pie_chart);
     }
+
+    var mm = null;
+    var mm_width = 300;
+    var mm_height = 300;
+
+    function start_meeting_mediator(socket) {
+        var app = feathers().configure(feathers.socketio(socket));
+        var mm_data = app.service('mm_data');
+
+        var fake_data = {
+                'participants': ['uid1', 'uid2', 'uid3'],
+                'transitions': 5.32,
+                'turns': [{'participant_id': 'uid1', 'turns': 0.99},
+                          {'participant_id': 'uid2', 'turns': 0.005},
+                          {'participant_id': 'uid3', 'turns': 0.005}]
+        };
+        mm = new MM(fake_data, mm_width, mm_height);
+        mm.render('#meeting-mediator');
+    }
     
     return {
-        start_pie_chart: start_pie_chart
+        start_pie_chart: start_pie_chart,
+        start_meeting_mediator: start_meeting_mediator
     };
 });

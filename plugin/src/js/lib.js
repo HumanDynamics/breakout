@@ -66,6 +66,7 @@ define(["src/volumeCollector", "src/heartbeat", "src/charts", "feathers", "socke
                addHangoutListeners();
                
                charts.start_pie_chart(socket);
+               charts.start_meeting_mediator(socket);
            });
 
            function addHangoutListeners() {
