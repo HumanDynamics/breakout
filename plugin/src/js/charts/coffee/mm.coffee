@@ -39,8 +39,8 @@ define ['d3', 'underscore'], (d3, underscore) ->
         .range ['#AC78D0', '#EA3134', '#356AD5', '#4ECDC4', '#F89406']
 
       # create node data
-      @nodes = ({'uid': p} for p in @data.participants)
-      @nodes.push({'uid': 'energy'}) # keep the energy ball in the list of nodes
+      @nodes = ({'participant_id': p} for p in @data.participants)
+      @nodes.push({'participant_id': 'energy'}) # keep the energy ball in the list of nodes
 
       @links = ({'source': turn.participant_id, 'target': 'energy', 'weight': turn.turns} for turn in @data.turns)
 
@@ -69,17 +69,17 @@ define ['d3', 'underscore'], (d3, underscore) ->
 
     renderNodes: () =>
       @node = @nodesG.selectAll "circle.node"
-        .data @nodes, (d) -> d.uid
+        .data @nodes, (d) -> d.participant_id
 
       @node.enter()
         .append "circle"
         .attr "class", "node"
-        .attr "id", (d) -> d.uid
-        .attr "fill", (d) =>
-          if (d.uid == 'energy')
-            return @sphereColorScale(@data.transitions)
-          else
-            return @nodeColorScale(d.uid)
+        .attr "id", (d) -> d.participant_id
+        .attr "fill", @nodeColor
+        
+      @node
+        .transition()
+        .duration(500)
         .attr "transform", @nodeTransform
         .attr "r", @nodeRadius
         
@@ -90,24 +90,28 @@ define ['d3', 'underscore'], (d3, underscore) ->
       # remove nodes that have left
       @node.exit().remove()
 
+    nodeColor: (d) =>
+      if (d.participant_id == 'energy')
+        return @sphereColorScale(@data.transitions)
+      else
+        return @nodeColorScale(d.participant_id)
+
     nodeTransform: (d) =>
-      if (d.uid == "energy")
+      if (d.participant_id == "energy")
         @sphereTranslation()
       else
-        "rotate(" + @angle(d.uid) + ")translate(" + @radius + ",0)"
+        "rotate(" + @angle(d.participant_id) + ")translate(" + @radius + ",0)"
 
     getNodeCoords: (id) =>
-      transformText = @nodeTransform({'uid': id})
+      transformText = @nodeTransform({'participant_id': id})
       coords = d3.transform(transformText).translate
       return {'x': coords[0], 'y': coords[1]}
 
 
     renderLinks: () =>
-      console.log "links:", @links
-      @link = @linksG.selectAll "path.link"
-        .data @links, (d) -> d.source + '_' + d.target
 
-      console.log @links
+      @link = @linksG.selectAll "line.link"
+        .data @links
 
       @link.enter()
         .append "line"
@@ -115,12 +119,16 @@ define ['d3', 'underscore'], (d3, underscore) ->
         .attr "stroke", "#ddd"
         .attr "fill", "none"
         .attr "stroke-opacity", 0.8
-        .transition().duration(500)
+        .attr "stroke-width", 0
+
+      @link.transition().duration(500)
         .attr "stroke-width", (d) => @linkStrokeScale d.weight
         .attr "x1", (d) => @getNodeCoords(d.source)['x']
         .attr "y1", (d) => @getNodeCoords(d.source)['y']
         .attr "x2", (d) => @getNodeCoords(d.target)['x']
         .attr "y2", (d) => @getNodeCoords(d.target)['y']
+        
+      @link.exit().remove()
 
     
     sphereTranslation: () =>
@@ -130,7 +138,6 @@ define ['d3', 'underscore'], (d3, underscore) ->
       for turn in @data.turns
         coords = @getNodeCoords(turn.participant_id)
         # get coordinates of this node & distance from ball
-        console.log "coords:", coords
         node_x = coords['x']
         node_y = coords['y']
         xDist = (node_x - x)
@@ -141,3 +148,15 @@ define ['d3', 'underscore'], (d3, underscore) ->
         x += turn.turns * (xDist / 2)
         y += turn.turns * (yDist / 2)
       return "translate(" + x + "," + y + ")"
+
+    updateData: (data) =>
+      @data = data
+      @nodes = ({'participant_id': p} for p in @data.participants)
+      @nodes.push({'participant_id': 'energy'}) # keep the energy ball in the list of nodes
+      
+      @angle.domain @data.participants
+
+      @links = ({'source': turn.participant_id, 'target': 'energy', 'weight': turn.turns} for turn in @data.turns)
+
+      @renderNodes()
+      @renderLinks()
