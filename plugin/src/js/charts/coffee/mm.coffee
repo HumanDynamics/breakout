@@ -27,8 +27,16 @@ define ['d3', 'underscore'], (d3, underscore) ->
 
       # determines thickness of lines to ball
       @linkStrokeScale = d3.scale.linear()
-        .domain [0, 100]
-        .range [3, 20]
+        .domain [0, 1]
+        .range [3, 15]
+
+      @sphereColorScale = d3.scale.linear()
+        .domain [0, 10]
+        .range ['white', 'green']
+
+      @nodeColorScale = d3.scale.ordinal()
+        .domain (p for p in @data.participants)
+        .range ['#AC78D0', '#EA3134', '#356AD5', '#4ECDC4', '#F89406']
 
       # create node data
       @nodes = ({'uid': p} for p in @data.participants)
@@ -67,7 +75,11 @@ define ['d3', 'underscore'], (d3, underscore) ->
         .append "circle"
         .attr "class", "node"
         .attr "id", (d) -> d.uid
-        .attr "fill", (d) => "#00000"  #TODO: Colors or avatar images for nodes
+        .attr "fill", (d) =>
+          if (d.uid == 'energy')
+            return @sphereColorScale(@data.transitions)
+          else
+            return @nodeColorScale(d.uid)
         .attr "transform", @nodeTransform
         .attr "r", @nodeRadius
         
@@ -84,19 +96,31 @@ define ['d3', 'underscore'], (d3, underscore) ->
       else
         "rotate(" + @angle(d.uid) + ")translate(" + @radius + ",0)"
 
+    getNodeCoords: (id) =>
+      transformText = @nodeTransform({'uid': id})
+      coords = d3.transform(transformText).translate
+      return {'x': coords[0], 'y': coords[1]}
+
 
     renderLinks: () =>
+      console.log "links:", @links
       @link = @linksG.selectAll "path.link"
         .data @links, (d) -> d.source + '_' + d.target
 
+      console.log @links
+
       @link.enter()
-        .append "path"
+        .append "line"
         .attr "class", "link"
         .attr "stroke", "#ddd"
         .attr "fill", "none"
         .attr "stroke-opacity", 0.8
         .transition().duration(500)
         .attr "stroke-width", (d) => @linkStrokeScale d.weight
+        .attr "x1", (d) => @getNodeCoords(d.source)['x']
+        .attr "y1", (d) => @getNodeCoords(d.source)['y']
+        .attr "x2", (d) => @getNodeCoords(d.target)['x']
+        .attr "y2", (d) => @getNodeCoords(d.target)['y']
 
     
     sphereTranslation: () =>
@@ -104,13 +128,11 @@ define ['d3', 'underscore'], (d3, underscore) ->
       y = 0
 
       for turn in @data.turns
-        console.log("turn:", turn);
-        transformText = @nodeTransform {'uid': turn.participant_id}
-        coords = d3.transform(transformText).translate
-
+        coords = @getNodeCoords(turn.participant_id)
         # get coordinates of this node & distance from ball
-        node_x = coords[0]
-        node_y = coords[1]
+        console.log "coords:", coords
+        node_x = coords['x']
+        node_y = coords['y']
         xDist = (node_x - x)
         yDist = (node_y - y)
         

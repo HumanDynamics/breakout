@@ -43,9 +43,9 @@ define(["cs!src/charts/coffee/pieChart", "cs!src/charts/coffee/mm", "feathers"],
         var fake_data = {
                 'participants': ['uid1', 'uid2', 'uid3'],
                 'transitions': 5.32,
-                'turns': [{'participant_id': 'uid1', 'turns': 0.99},
-                          {'participant_id': 'uid2', 'turns': 0.005},
-                          {'participant_id': 'uid3', 'turns': 0.005}]
+                'turns': [{'participant_id': 'uid1', 'turns': 0.75},
+                          {'participant_id': 'uid2', 'turns': 0.1},
+                          {'participant_id': 'uid3', 'turns': 0.15}]
         };
         mm = new MM(fake_data, mm_width, mm_height);
         mm.render('#meeting-mediator');
