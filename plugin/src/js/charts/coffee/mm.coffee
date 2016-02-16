@@ -8,14 +8,16 @@ define ['d3', 'underscore'], (d3, underscore) ->
   class MM
     constructor: (data, width, height) ->
 
+      console.log "constructing MM with data:", data
+
       @fontFamily = "Futura,Helvetica Neue,Helvetica,Arial,sans-serif"
       @margin = {top: 0, right: 0, bottom: 0, left: 0}
       @width = width - @margin.right - @margin.left
       @height = height - @margin.bottom - @margin.top
 
       # radius of network as a whole
-      @radius = 120
-      @nodeRadius = 30
+      @radius = 115
+
 
       @data = data
       console.log @data
@@ -31,8 +33,8 @@ define ['d3', 'underscore'], (d3, underscore) ->
         .range [3, 15]
 
       @sphereColorScale = d3.scale.linear()
-        .domain [0, 10]
-        .range ['white', 'green']
+        .domain [0, 5]
+        .range ['#D3D3D3', '#27ae60']
 
       @nodeColorScale = d3.scale.ordinal()
         .domain (p for p in @data.participants)
@@ -42,7 +44,14 @@ define ['d3', 'underscore'], (d3, underscore) ->
       @nodes = ({'participant_id': p} for p in @data.participants)
       @nodes.push({'participant_id': 'energy'}) # keep the energy ball in the list of nodes
 
-      @links = ({'source': turn.participant_id, 'target': 'energy', 'weight': turn.turns} for turn in @data.turns)
+      @createLinks()
+      
+    nodeRadius: (d) =>
+      if (d.participant_id == "energy")
+        30
+      else
+        20
+
 
     render: (id="#meeting-mediator") ->
       @chart = d3.select id
@@ -56,6 +65,15 @@ define ['d3', 'underscore'], (d3, underscore) ->
       @chartBody = @chart.append "g"
         .attr "width", @width
         .attr "height", @height
+
+      @outline = @chartBody.append "g"
+        .attr "id", "outline"
+        .append "circle"
+        .style "stroke", "#AFAFAF"
+        .attr "stroke-width", 3
+        .style "stroke-dasharray", ("10, 5")
+        .attr "fill", "transparent"
+        .attr "r", @radius + 20 + 2# + @nodeRadius + 2.5
 
       @linksG = @chartBody.append "g"
         .attr "id", "links"
@@ -76,6 +94,7 @@ define ['d3', 'underscore'], (d3, underscore) ->
         .attr "class", "node"
         .attr "id", (d) -> d.participant_id
         .attr "fill", @nodeColor
+        .attr 
         
       @node
         .transition()
@@ -116,7 +135,7 @@ define ['d3', 'underscore'], (d3, underscore) ->
       @link.enter()
         .append "line"
         .attr "class", "link"
-        .attr "stroke", "#ddd"
+        .attr "stroke", "#646464"
         .attr "fill", "none"
         .attr "stroke-opacity", 0.8
         .attr "stroke-width", 0
@@ -149,14 +168,23 @@ define ['d3', 'underscore'], (d3, underscore) ->
         y += turn.turns * (yDist / 2)
       return "translate(" + x + "," + y + ")"
 
+    createLinks: () =>
+      @links = ({'source': turn.participant_id, 'target': 'energy', 'weight': turn.turns} for turn in @data.turns)
+      for participant_id in @data.participants
+        if !_.find(@links, (link) => link.source == participant_id)
+          @links.push({'source': participant_id, 'target': 'energy', 'weight': 0})
+      
+
     updateData: (data) =>
+      console.log "updating MM viz with data:", data
       @data = data
       @nodes = ({'participant_id': p} for p in @data.participants)
       @nodes.push({'participant_id': 'energy'}) # keep the energy ball in the list of nodes
-      
-      @angle.domain @data.participants
 
-      @links = ({'source': turn.participant_id, 'target': 'energy', 'weight': turn.turns} for turn in @data.turns)
+      @createLinks()
+
+      # update node angle stuff
+      @angle.domain @data.participants
 
       @renderNodes()
       @renderLinks()

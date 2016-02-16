@@ -75,7 +75,7 @@ define(["feathers", "socketio", "underscore", 'underscore_string'], function(fea
 
         // If we get no signal for this amount of time, consider them no
         // longer talking.
-        var TALK_TIMEOUT = 1500;
+        var TALK_TIMEOUT = 1000;
 
 
         //////////////////////////////////////////

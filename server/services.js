@@ -96,5 +96,21 @@ module.exports = {
     // 'second_window': the length of the window being examined. if 'all', is the entire hangout up to that point.
     hIndexService: mongodb({
         collection: 'h_indices'
+    }),
+
+    // Number of turns for each participant in each hangout
+    // of the form:
+    // 'timestamp': timestamp of this event
+    // 'hangout_id': hangout id this was calculated for
+    // 'from': from time
+    // 'to': to time
+    // 'turns': {<participant_id>: <# of turns>}
+    turnService: mongodb({
+        collection: 'turns'
+    }),
+    
+    transitionService: mongodb({
+        collection: 'transitions'
     })
+    
 };

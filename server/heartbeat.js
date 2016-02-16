@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var winston = require('winston');
 var talk_time = require('./talk_time');
+var turns = require('./statistics/turns');
 
 var app = require('./app');
 // wait 2 seconds to consider a hangout dead.
@@ -44,7 +45,8 @@ var setHangoutInactive = function(hangout_id, cb) {
                             winston.log('error', 'Could not change hangout status', hangout_id);
                             res = false;
                         } else {
-                            talk_time.stop_talk_times(hangout_id);
+                            talk_time.stop(hangout_id);
+                            turns.stop(hangout_id);
                             winston.log('info', "Hangout now inactive:", hangout_id);
                             res = true;
                         }
