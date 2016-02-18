@@ -71,7 +71,7 @@ define(["feathers", "socketio", "underscore", 'underscore_string'], function(fea
         var MIN_SILENCE_LENGTH = 1000;
         // if at least this amount of time happens between a null signal
         // and a talk signal, they are considered to have started talking.
-        var MIN_TALK_LENGTH = 500;
+        var MIN_TALK_LENGTH = 200;
 
         // If we get no signal for this amount of time, consider them no
         // longer talking.
@@ -149,6 +149,14 @@ define(["feathers", "socketio", "underscore", 'underscore_string'], function(fea
         // event, send it to the server and remove it from the list.
         function checkTalkEvent(participantId) {
             var volumes = allVolumes[participantId];
+
+            if (participantId == window.gapi.hangout.getLocalParticipant().person.id) {
+                if (window.gapi.hangout.av.getMicrophoneMute()) {
+                    console.log("Local participant muted, continuing...");
+                    return;
+                }
+            }
+            
             if (volumes.length < 3) {
                 console.log("no volumes to examine, continuing...");
                 return;
