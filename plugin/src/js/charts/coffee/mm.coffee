@@ -136,9 +136,17 @@ define ['d3', 'underscore'], (d3, underscore) ->
         .attr "fill", "none"
         .attr "stroke-opacity", 0.8
         .attr "stroke-width", 0
+        .transition().duration(500)
+        .attr "x1", (d) => @getNodeCoords(d.source)['x']
+        .attr "y1", (d) => @getNodeCoords(d.source)['y']
+        .attr "x2", (d) => @getNodeCoords(d.target)['x']
+        .attr "y2", (d) => @getNodeCoords(d.target)['y']
+        .attr "stroke-width", (d) => @linkStrokeScale d.weight
 
       @link.transition().duration(500)
         .attr "stroke-width", (d) => @linkStrokeScale d.weight
+        
+      @link
         .attr "x1", (d) => @getNodeCoords(d.source)['x']
         .attr "y1", (d) => @getNodeCoords(d.source)['y']
         .attr "x2", (d) => @getNodeCoords(d.target)['x']
@@ -152,19 +160,18 @@ define ['d3', 'underscore'], (d3, underscore) ->
       y = 0
 
       for turn in @data.turns
-        if _.has(@data.participants, turn.participant_id)
-          coords = @getNodeCoords(turn.participant_id)
-          # get coordinates of this node & distance from ball
-          node_x = coords['x']
-          node_y = coords['y']
-          xDist = (node_x - x)
-          yDist = (node_y - y)
+        coords = @getNodeCoords(turn.participant_id)
+        # get coordinates of this node & distance from ball
+        node_x = coords['x']
+        node_y = coords['y']
+        xDist = (node_x - x)
+        yDist = (node_y - y)
         
-          # transform x and y proportional to the percentage of turns
-          # (and use dist/2 to prevent collision)
-          x += turn.turns * (xDist / 2)
-          y += turn.turns * (yDist / 2)
-        return "translate(" + x + "," + y + ")"
+        # transform x and y proportional to the percentage of turns
+        # (and use dist/2 to prevent collision)
+        x += turn.turns * (xDist / 2)
+        y += turn.turns * (yDist / 2)
+      return "translate(" + x + "," + y + ")"
 
     # create links, give it a 0 default (all nodes should be linked to
     # ball)
