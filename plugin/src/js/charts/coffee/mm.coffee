@@ -18,7 +18,6 @@ define ['d3', 'underscore'], (d3, underscore) ->
       # radius of network as a whole
       @radius = 115
 
-
       @data = data
       console.log @data
 
@@ -33,7 +32,7 @@ define ['d3', 'underscore'], (d3, underscore) ->
         .range [3, 15]
 
       @sphereColorScale = d3.scale.linear()
-        .domain [0, 5]
+        .domain [0, data.participants.length * 5]
         .range ['#D3D3D3', '#27ae60']
 
       @nodeColorScale = d3.scale.ordinal()
@@ -99,18 +98,16 @@ define ['d3', 'underscore'], (d3, underscore) ->
       @node
         .transition()
         .duration(500)
+        .attr "fill", @nodeColor
         .attr "transform", @nodeTransform
         .attr "r", @nodeRadius
-        
-      # change radius
-      # @node.transition.duration(500)
-      #   .attr "r", @nodeRadius
         
       # remove nodes that have left
       @node.exit().remove()
 
     nodeColor: (d) =>
       if (d.participant_id == 'energy')
+        console.log("transitions:", @data.transitions)
         return @sphereColorScale(@data.transitions)
       else
         return @nodeColorScale(d.participant_id)
@@ -155,19 +152,22 @@ define ['d3', 'underscore'], (d3, underscore) ->
       y = 0
 
       for turn in @data.turns
-        coords = @getNodeCoords(turn.participant_id)
-        # get coordinates of this node & distance from ball
-        node_x = coords['x']
-        node_y = coords['y']
-        xDist = (node_x - x)
-        yDist = (node_y - y)
+        if _.has(@data.participants, turn.participant_id)
+          coords = @getNodeCoords(turn.participant_id)
+          # get coordinates of this node & distance from ball
+          node_x = coords['x']
+          node_y = coords['y']
+          xDist = (node_x - x)
+          yDist = (node_y - y)
         
-        # transform x and y proportional to the percentage of turns
-        # (and use dist/2 to prevent collision)
-        x += turn.turns * (xDist / 2)
-        y += turn.turns * (yDist / 2)
-      return "translate(" + x + "," + y + ")"
+          # transform x and y proportional to the percentage of turns
+          # (and use dist/2 to prevent collision)
+          x += turn.turns * (xDist / 2)
+          y += turn.turns * (yDist / 2)
+        return "translate(" + x + "," + y + ")"
 
+    # create links, give it a 0 default (all nodes should be linked to
+    # ball)
     createLinks: () =>
       @links = ({'source': turn.participant_id, 'target': 'energy', 'weight': turn.turns} for turn in @data.turns)
       for participant_id in @data.participants

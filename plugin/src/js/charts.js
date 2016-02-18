@@ -42,24 +42,33 @@ define(["cs!src/charts/coffee/pieChart", "cs!src/charts/coffee/mm", "feathers", 
         return _.reduce(_.values(turns), function(m, n){return m+n;}, 0);
     }
 
-    function transform_turns(turns) {
+    // transform to the right data to send to chart
+    function transform_turns(participants, turns) {
         console.log("transforming turns:", turns);
-        return _.map(_.pairs(turns), function(t) {
+        turns = _.map(_.pairs(turns), function(t) {
             return {'participant_id': t[0],
                     'turns': t[1]};
         });
+        // filter out turns not by present participants
+        var filtered_turns = _.filter(turns, function(turn){
+            return _.contains(participants, turn.participant_id);
+        });
+        return filtered_turns;
+
     }
-    
+
+    // update MM turns if it matches this hangout.
     function maybe_update_mm_turns(data) {
+        console.log("mm data:", data);
         if (data.hangout_id == window.gapi.hangout.getHangoutId()) {
             mm.updateData({participants: mm.data.participants,
-                           transitions: 5,
-                           turns: transform_turns(data.turns)});
+                           transitions: data.transitions,
+                           turns: transform_turns(mm.data.participants, data.turns)});
         } else {
         }
     }
 
-    
+    // update MM participants if it matches this hangout.
     function maybe_update_mm_participants(data) {
         if (data.hangout_id == window.gapi.hangout.getHangoutId()) {
             mm.updateData({participants: data.participants,
@@ -85,7 +94,7 @@ define(["cs!src/charts/coffee/pieChart", "cs!src/charts/coffee/mm", "feathers", 
                           } else {
                               console.log("found hangout:", foundhangouts[0]);
                               mm = new MM({participants: foundhangouts[0].participants,
-                                           transitions: 3,
+                                           transitions: 0,
                                            turns: []},
                                           mm_width,
                                           mm_height);

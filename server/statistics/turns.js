@@ -3,7 +3,7 @@ var _ = require('underscore');
 var app = require('../app');
 
 
-function save_turns(hangout_id, turns, from, to) {
+function save_turns(hangout_id, turns, total_turns, from, to) {
     if (_.isEmpty(turns)) {
         winston.log("info", "not saving empty turn object");
     } else {
@@ -11,6 +11,7 @@ function save_turns(hangout_id, turns, from, to) {
             {
                 hangout_id: hangout_id,
                 turns: turns,
+                transitions: total_turns,
                 timestamp: new Date(),
                 from: from.toISOString(),
                 to: to.toISOString()
@@ -58,11 +59,11 @@ function get_turns(hangout_id, from, to) {
                     return memo + val[1];
                 }, 0);
 
-                num_utterances = _.mapObject(num_utterances, function(val, key) {
+                var pct_utterances = _.mapObject(num_utterances, function(val, key) {
                     return val / total_utterances;
                 });
 
-                save_turns(hangout_id, num_utterances, from, to);
+                save_turns(hangout_id, pct_utterances, total_utterances, from, to);
             }
         }
     );

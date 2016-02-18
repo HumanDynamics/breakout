@@ -156,7 +156,7 @@ function updateHangoutParticipants(hangoutId, new_participants) {
                     // if hangout is moving from inactive to active...
                     winston.log("info", "starting computing talk times...");
                     talk_time.compute(hangout.hangout_id);
-                    turns.compute(hangout.hangoutId);
+                    turns.compute(hangout.hangout_id);
                 }
                 app.service('hangouts').patch(
                     hangout._id,
