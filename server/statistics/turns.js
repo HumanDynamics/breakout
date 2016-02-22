@@ -28,6 +28,24 @@ function save_turns(hangout_id, turns, total_turns, from, to) {
     }
 }
 
+// Assumes turns is reported in order
+// Simply looks at order of speaking events, and counts a 'transition' where
+// the speaker at index t is different than the speaker at index t+1.
+// TODO: make more accurate. this is a naive implementation that does not
+// take into account speaking overlap.
+function get_turn_transitions(turns) {
+    var transitions = 0;
+    var participant_ids = _.map(turns, function(turn) { return turn.participant_id; });
+    _.each(participant_ids, function(t, index, turns) {
+        if (index != 0) {
+            if (t != turns[index-1]) {
+                transitions += 1;
+            }
+        }
+    });
+    return transitions;
+}
+
 // returns an object that reports the total time spoken by
 // the given participant ids in the given hangout.
 // of the form:
@@ -63,7 +81,9 @@ function get_turns(hangout_id, from, to) {
                     return val / total_utterances;
                 });
 
-                save_turns(hangout_id, pct_utterances, total_utterances, from, to);
+                var transitions = get_turn_transitions(data);
+
+                save_turns(hangout_id, pct_utterances, transitions, from, to);
             }
         }
     );
