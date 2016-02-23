@@ -6,10 +6,10 @@
 
 define ['d3', 'underscore'], (d3, underscore) ->
   class MM
-    constructor: (data, width, height) ->
+    constructor: (data, localParticipant, width, height) ->
 
       console.log "constructing MM with data:", data
-
+      @localParticipant = localParticipant
       @fontFamily = "Futura,Helvetica Neue,Helvetica,Arial,sans-serif"
       @margin = {top: 0, right: 0, bottom: 0, left: 0}
       @width = width - @margin.right - @margin.left
@@ -17,34 +17,36 @@ define ['d3', 'underscore'], (d3, underscore) ->
 
       # radius of network as a whole
       @radius = 115
-
+      
       @data = data
-      console.log @data
 
       # determines positions for participant avatars
+      # use [115, 435] to keep local participant node at the top
+      # of the visual.
       @angle = d3.scale.ordinal()
         .domain @data.participants
-        .rangePoints [0, 360], 1
+        .rangePoints [0, 360], 1 # 90 to make it start at top? still goes to left...
 
-      # determines thickness of lines to ball
+      # determines thickness of edges
       @linkStrokeScale = d3.scale.linear()
         .domain [0, 1]
         .range [3, 15]
 
+      # color scale for sphere in the middle
       @sphereColorScale = d3.scale.linear()
         .domain [0, data.participants.length * 5]
-        .range ['#D3D3D3', '#27ae60']
+        .range ['#C8E6C9', '#2E7D32']
+        .clamp true
 
-      @nodeColorScale = d3.scale.ordinal()
-        .domain (p for p in @data.participants)
-        .range ['#AC78D0', '#EA3134', '#356AD5', '#4ECDC4', '#F89406']
-
-      # create node data
+      # create initial node data
       @nodes = ({'participant_id': p} for p in @data.participants)
       @nodes.push({'participant_id': 'energy'}) # keep the energy ball in the list of nodes
 
+      @nodeTransitionTime = 500
+      @linkTransitionTime = 500
+
       @createLinks()
-      
+
     nodeRadius: (d) =>
       if (d.participant_id == "energy")
         30
@@ -65,6 +67,10 @@ define ['d3', 'underscore'], (d3, underscore) ->
         .attr "width", @width
         .attr "height", @height
 
+      @graphG = @chart.append "g"
+        .attr "width", @width
+        .attr "height", @height
+
       @outline = @chartBody.append "g"
         .attr "id", "outline"
         .append "circle"
@@ -74,50 +80,68 @@ define ['d3', 'underscore'], (d3, underscore) ->
         .attr "fill", "transparent"
         .attr "r", @radius + 20 + 2# + @nodeRadius + 2.5
 
-      @linksG = @chartBody.append "g"
+      # put links / nodes in a separate group
+      @linksG = @graphG.append "g"
         .attr "id", "links"
-
-      @nodesG = @chartBody.append "g"
+      @nodesG = @graphG.append "g"
         .attr "id", "nodes"
 
       @renderNodes()
       @renderLinks()
+      # keeps user node at top
+      @graphG.transition().duration(250)
+        .attr "transform", @constantRotation()
 
-
+    # a little complicated, since we want to be able to put text
+    # and prettier stuff on nodes in the future (maybe).
+    # We create a group for each node, and do a selection for moving them around.
     renderNodes: () =>
-      @node = @nodesG.selectAll "circle.node"
+      @node = @nodesG.selectAll ".node"
         .data @nodes, (d) -> d.participant_id
-
-      @node.enter()
-        .append "circle"
+        
+      @nodeG = @node.enter().append "g"
         .attr "class", "node"
         .attr "id", (d) -> d.participant_id
+
+      @nodeG.append "circle"
+        .attr "class", "nodeCircle"
         .attr "fill", @nodeColor
-        .attr 
-        
-      @node
-        .transition()
-        .duration(500)
-        .attr "fill", @nodeColor
-        .attr "transform", @nodeTransform
         .attr "r", @nodeRadius
+        
+      @nodeG.append "circle"
+        .attr "class", "nodeFill"
+        .attr "fill", "#FFFFFF"
+        .attr "r", (d) =>
+          if (d.participant_id == 'energy' or d.participant_id == @localParticipant)
+            0
+          else
+            @nodeRadius(d) - 3
+
+      @nodesG.selectAll(".node").transition().duration(500)
+        .attr "transform", @nodeTransform
         
       # remove nodes that have left
       @node.exit().remove()
 
+    # different colors for different types of nodes...
     nodeColor: (d) =>
       if (d.participant_id == 'energy')
-        console.log("transitions:", @data.transitions)
-        return @sphereColorScale(@data.transitions)
+        @sphereColorScale(@data.transitions)
+      else if d.participant_id == @localParticipant
+        '#092070'
       else
-        return @nodeColorScale(d.participant_id)
+        '#3AC4C5'
 
+    # we have different kinds of nodes, so this just abstracts
+    # out the transform function.
     nodeTransform: (d) =>
       if (d.participant_id == "energy")
         @sphereTranslation()
       else
         "rotate(" + @angle(d.participant_id) + ")translate(" + @radius + ",0)"
 
+    # a translatoin between the angle rotation for nodes
+    # and the raw x/y positions. Used for computing link endpoints.
     getNodeCoords: (id) =>
       transformText = @nodeTransform({'participant_id': id})
       coords = d3.transform(transformText).translate
@@ -125,7 +149,6 @@ define ['d3', 'underscore'], (d3, underscore) ->
 
 
     renderLinks: () =>
-
       @link = @linksG.selectAll "line.link"
         .data @links
 
@@ -136,14 +159,12 @@ define ['d3', 'underscore'], (d3, underscore) ->
         .attr "fill", "none"
         .attr "stroke-opacity", 0.8
         .attr "stroke-width", 0
-        .transition().duration(500)
         .attr "x1", (d) => @getNodeCoords(d.source)['x']
         .attr "y1", (d) => @getNodeCoords(d.source)['y']
         .attr "x2", (d) => @getNodeCoords(d.target)['x']
         .attr "y2", (d) => @getNodeCoords(d.target)['y']
-        .attr "stroke-width", (d) => @linkStrokeScale d.weight
 
-      @link.transition().duration(500)
+      @link.transition().duration(@linkTransitionTime)
         .attr "stroke-width", (d) => @linkStrokeScale d.weight
         
       @link
@@ -154,7 +175,9 @@ define ['d3', 'underscore'], (d3, underscore) ->
         
       @link.exit().remove()
 
-    
+
+    # translation / position for "energy" ball.
+    # Moves closer (just based on weighting) to nodes.
     sphereTranslation: () =>
       x = 0
       y = 0
@@ -180,18 +203,52 @@ define ['d3', 'underscore'], (d3, underscore) ->
       for participant_id in @data.participants
         if !_.find(@links, (link) => link.source == participant_id)
           @links.push({'source': participant_id, 'target': 'energy', 'weight': 0})
-      
+
+
+    # we want the users's node always at the top
+    # This returns a translation string to rotate the _entire_
+    # "graph group" to keep the user's node at the top.
+    constantRotation: () =>
+      mod = (a, n) -> a - Math.floor(a/n) * n
+      angle = @angle @localParticipant
+      targetAngle = -90
+      a = targetAngle - angle
+      a = (a + 180) % 360 - 180
+      if (angle != -90)
+        angle_diff = a
+        return "rotate(" + angle_diff + ")"
+      else
+        return "rotate(" + 0 + ")"
 
     updateData: (data) =>
       console.log "updating MM viz with data:", data
-      @data = data
-      @nodes = ({'participant_id': p} for p in @data.participants)
-      @nodes.push({'participant_id': 'energy'}) # keep the energy ball in the list of nodes
+      # if we're not updating participants, don't redraw everything.
+      if data.participants.length == @data.participants.length
+        @data = data
+        @createLinks()
+        
+        @renderLinks()
+        @renderNodes()
+      else
+        # Create nodes again
+        @data = data
+        @nodes = ({'participant_id': p} for p in @data.participants)
+        @nodes.push({'participant_id': 'energy'}) # keep the energy ball in the list of nodes
+        
+        # recompute the color scale for the sphere and angle domain
+        @sphereColorScale.domain [0, data.participants.length * 5]
+        @angle.domain @data.participants
 
-      @createLinks()
+        # recompute links
+        @link = @linksG.selectAll "line.link"
+        .data []
+        .exit().remove()
+        # Re-render. Do it on a delay to make sure links get rendered after nodes.
+        # After links, rotate entire graph so user is at top.
+        @renderNodes()
+        setTimeout((() =>
+          @renderLinks()
+          @graphG.transition().duration(100)
+            .attr "transform", @constantRotation()
+          ), @nodeTransitionTime + 100)
 
-      # update node angle stuff
-      @angle.domain @data.participants
-
-      @renderNodes()
-      @renderLinks()

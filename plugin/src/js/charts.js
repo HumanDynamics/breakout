@@ -1,4 +1,4 @@
-define(["cs!src/charts/coffee/pieChart", "cs!src/charts/coffee/mm", "feathers", "underscore"], function(pieChart, MM, feathers, _) {
+define(["cs!src/charts/coffee/pieChart", "cs!src/charts/coffee/mm", "feathers", "underscore", "underscore_string"], function(pieChart, MM, feathers, _, s) {
 
     var pie_chart = null;
     var pie_chart_width = 300;
@@ -62,6 +62,7 @@ define(["cs!src/charts/coffee/pieChart", "cs!src/charts/coffee/mm", "feathers", 
         console.log("mm data:", data);
         if (data.hangout_id == window.gapi.hangout.getHangoutId()) {
             mm.updateData({participants: mm.data.participants,
+                           initials: mm.data.initials,
                            transitions: data.transitions,
                            turns: transform_turns(mm.data.participants, data.turns)});
         } else {
@@ -69,13 +70,30 @@ define(["cs!src/charts/coffee/pieChart", "cs!src/charts/coffee/mm", "feathers", 
     }
 
     // update MM participants if it matches this hangout.
+    // removes the local participants from the list.
     function maybe_update_mm_participants(data) {
         if (data.hangout_id == window.gapi.hangout.getHangoutId()) {
             mm.updateData({participants: data.participants,
+                           initials: get_participant_initials(data.participants),
                            transitions: mm.data.transitions,
                            turns: mm.data.turns});
         } else {
         }
+    }
+
+    function get_participant_initials(participants) {
+        var participantObjects = _.filter(window.gapi.hangout.getParticipants(),
+                                      function(p) {
+                                          return _.contains(participants, p.person.id);
+                                      });
+       return _.map(participantObjects, function(p) {
+            var words =  s.words(p.person.displayName);
+            if (words.length > 1) {
+                return "" + words[0].charAt(0) + words[1].charAt(0);
+            } else {
+                return "" + words[0].charAt(0);
+            }
+        });
     }
 
     function start_meeting_mediator(socket) {
@@ -94,8 +112,10 @@ define(["cs!src/charts/coffee/pieChart", "cs!src/charts/coffee/mm", "feathers", 
                           } else {
                               console.log("found hangout:", foundhangouts[0]);
                               mm = new MM({participants: foundhangouts[0].participants,
+                                           initials: get_participant_initials(foundhangouts[0].participants),
                                            transitions: 0,
                                            turns: []},
+                                          window.gapi.hangout.getLocalParticipant().person.id,
                                           mm_width,
                                           mm_height);
                               mm.render('#meeting-mediator');
@@ -104,14 +124,6 @@ define(["cs!src/charts/coffee/pieChart", "cs!src/charts/coffee/mm", "feathers", 
                           }
                       }
                      );
-
-        // setTimeout(function() {
-        //     mm.updateData(fake_data_2);
-        // }, 5000);
-
-        // setTimeout(function() {
-        //     mm.updateData(fake_data_3);
-        // }, 10000);
     }
     
     return {
@@ -119,29 +131,3 @@ define(["cs!src/charts/coffee/pieChart", "cs!src/charts/coffee/mm", "feathers", 
         start_meeting_mediator: start_meeting_mediator
     };
 });
-
-
-
-        // var fake_data = {
-        //         'participants': ['uid1', 'uid2', 'uid3'],
-        //         'transitions': 2.1,
-        //         'turns': [{'participant_id': 'uid1', 'turns': 0.75},
-        //                   {'participant_id': 'uid2', 'turns': 0.1},
-        //                   {'participant_id': 'uid3', 'turns': 0.15}]
-        // };
-
-        // var fake_data_2 = {
-        //     'participants': ['uid1', 'uid2', 'uid3', 'uid4'],
-        //     'transitions': 2.1,
-        //     'turns': [{'participant_id': 'uid1', 'turns': 0.75},
-        //               {'participant_id': 'uid2', 'turns': 0.1},
-        //               {'participant_id': 'uid3', 'turns': 0.1},
-        //               {'participant_id': 'uid4', 'turns': 0.05}]
-        // };
-        // var fake_data_3 = {
-        //     'participants': ['uid1', 'uid2', 'uid3'],
-        //     'transitions': 2.1,
-        //     'turns': [{'participant_id': 'uid1', 'turns': 0.5},
-        //               {'participant_id': 'uid2', 'turns': 0.25},
-        //               {'participant_id': 'uid3', 'turns': 0.25}]
-        // };
