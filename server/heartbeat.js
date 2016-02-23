@@ -101,7 +101,7 @@ var stopHeartbeat = function(heartbeat) {
 };
 
 var updateHeartbeat = function(heartbeat) {
-    winston.log("info", "Updating heartbeat for hangout:", heartbeat.hangout_id);
+    winston.log("info", "Updating heartbeat for hangout:", heartbeat.hangout_id, heartbeat.participant_id);
     heartbeats[heartbeat.hangout_id] =
         {
             hangout_id: heartbeat.hangout_id,
