@@ -1,5 +1,5 @@
-define(["src/volumeCollector", "src/heartbeat", "src/charts", "feathers", "socketio", "underscore", "gapi"],
-       function(volumeCollector, heartbeat, charts, feathers, io, underscore, gapi) {
+define(["src/volumeCollector", "src/heartbeat", "src/charts", "feathers", "socketio", "underscore", "gapi", "jquery"],
+       function(volumeCollector, heartbeat, charts, feathers, io, underscore, gapi, $) {
 
            // initialize global state object
            window.state = {};
@@ -30,6 +30,7 @@ define(["src/volumeCollector", "src/heartbeat", "src/charts", "feathers", "socke
                                };
                            });               
            }
+           
 
 
            // once the google api is ready...

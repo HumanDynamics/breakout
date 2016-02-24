@@ -12,3 +12,18 @@ html, body {
     width: 150px;
     height; auto;
 }
+
+
+
+// Taken from:
+// http://jsfiddle.net/Ur6a7/
+// usage: <i class="Chevron"></i>
+// 
+
+#upbutton {
+    -ms-transform: rotate(90deg);/* IE 9 */
+    -webkit-transform: rotate(90deg); /* Safari */
+    transform: rotate(90deg);
+    color: #5F5F5F;
+    margin-bottom: -25px;
+}
