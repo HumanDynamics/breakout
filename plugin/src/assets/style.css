@@ -1,0 +1,14 @@
+html, body {
+    height: 100%;
+}
+#footer {
+    position: fixed;
+    padding: 10px;
+    bottom: 0;
+    width: 100%;
+}
+
+#connection-science-logo {
+    width: 150px;
+    height; auto;
+}
