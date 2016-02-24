@@ -19,21 +19,33 @@
         <div id="meeting-mediator"></div>
     </div>
 
-    <div class="container center-justified" id="footer">
-        <div class="container center-justified">
-            <div class="row">
-                <div class="col s4 push-s4">
-                    <div id="upbutton">
-                        <a href="#bottom-menu">
-                            <i class="upbutton medium material-icons">navigate_before</i>
-                        </a>
-                    </div>
+    <div class="card center-justified" id="footer">
+        <div class="row button-row">
+            <div class="col s4 push-s4">
+                <div id="upbutton">
+                    <a id="move-footer">
+                        <i class="upbutton medium material-icons">navigate_before</i>
+                    </a>
                 </div>
             </div>
         </div>
-        <hr>
         <img id="connection-science-logo" class="responsive-img" src="https://breakout-dev.media.mit.edu/plugin/src/assets/connection-science.png">
+        <ul class="collection" id="settings-pane">
+            <li class="collection-item">
+                Data Collection
+                <div class="switch secondary-content">
+                    <label>
+                        Off
+                        <input type="checkbox">
+                        <span class="lever"></span>
+                        On
+                    </label>
+                </div>
+            </li>
+        </ul>
     </div>
+    
+
 </body>
 
 <!-- requirejs -->

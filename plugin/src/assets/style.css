@@ -1,29 +1,59 @@
 html, body {
     height: 100%;
 }
+
 #footer {
     position: fixed;
     padding: 10px;
     bottom: 0;
     width: 100%;
+    height: 400px;
+    bottom: -275px;
+}
+
+
+.slide-up
+{
+    bottom: 0px !important;
+}
+
+.slide-down
+{
+    bottom: -275px !important;
+}
+
+.button-row {
+    border-bottom: 1px solid rgba(160,160,160,0.2);
+    margin-bottom: 10px;
 }
 
 #connection-science-logo {
     width: 150px;
     height; auto;
+    padding: 10px;
 }
 
+a:active {
+    color: #64B5F6;
+}
 
-
-// Taken from:
-// http://jsfiddle.net/Ur6a7/
-// usage: <i class="Chevron"></i>
-// 
+#settings-pane {
+    padding-right: 0px;
+    padding-left: 0px;
+}
 
 #upbutton {
     -ms-transform: rotate(90deg);/* IE 9 */
     -webkit-transform: rotate(90deg); /* Safari */
     transform: rotate(90deg);
-    color: #5F5F5F;
-    margin-bottom: -25px;
+    margin-top: -10px;
+    margin-bottom: -10px;
 }
+
+.upside-down {
+    -ms-transform: rotate(180deg);/* IE 9 */
+    -webkit-transform: rotate(180deg); /* Safari */
+    transform: rotate(180deg);
+}
+
+

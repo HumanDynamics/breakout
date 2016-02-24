@@ -14,6 +14,19 @@ define(["src/volumeCollector", "src/heartbeat", "src/charts", "feathers", "socke
                'htmlfile'
            ]});
 
+           $('#move-footer').click(function() {
+               console.log("clicked!");
+               if($('#footer').hasClass('slide-up')) {
+                   $('#footer').addClass('slide-down', 150, 'linear');
+                   $('#footer').removeClass('slide-up');
+                   $('#upbutton').removeClass('upside-down', 150, 'linear');
+               } else {
+                   $('#footer').removeClass('slide-down');
+                   $('#footer').addClass('slide-up', 150, 'linear');
+                   $('#upbutton').addClass('upside-down', 100, 'linear');
+               }
+           });
+
            // var app = feathers().configure(feathers.socketio(s));
            // var hangouts = app.service('hangouts');
            // var talktimes = app.service('talktimes');

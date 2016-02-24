@@ -36,6 +36,7 @@ requirejs.config({
         src: './js',
         libs: './bower_components',
         jquery: './bower_components/jquery/dist/jquery',
+        jqueryui: './bower_components/jquery-ui/jquery-ui',
         d3: './bower_components/d3/d3',
         underscore: './bower_components/underscore/underscore',
         underscore_string: './bower_components/underscore.string/dist/underscore.string',
@@ -163,6 +164,7 @@ requirejs.config({
 // requirejs(["scripts/lib", "charts/pieChart", "charts/herfindahl", "charts/all"]);
 requirejs([
     'jquery',
+    'jqueryui',
     'materialize.global',
     'materialize.animation',
     'materialize.toasts',
