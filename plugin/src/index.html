@@ -9,7 +9,11 @@
         <div class="nav-wrapper">
             <a href="#" class="brand-logo">Breakout</a>
             <ul class="right">
-                <li><a href="#click"><i class="small material-icons">info_outline</i></a></li>
+              <li>
+                <a href="#info-modal" class="modal-trigger">
+                  <i class="small material-icons">info_outline</i>
+                </a>
+              </li>
             </ul>
         </div>
     </nav>
@@ -21,17 +25,24 @@
 
     <div class="card center-justified" id="footer">
         <div class="row button-row">
-            <div class="col s4 push-s4">
-                <div id="upbutton">
-                    <a id="move-footer">
-                        <i class="upbutton medium material-icons">navigate_before</i>
-                    </a>
-                </div>
+            <div class="col s4 push-s4 center-align">
+              <a id="move-footer">
+                <i id="upbutton" class="medium material-icons">navigate_before</i>
+              </a>
             </div>
         </div>
-        <a href="http://connection.mit.edu/">
-            <img id="connection-science-logo" class="responsive-img" src="https://breakout-dev.media.mit.edu/plugin/src/assets/connection-science.png">
-        </a>
+        <div class="row valign-wrapper">
+            <div class="col s7">
+                <a href="http://connection.mit.edu/">
+                    <img id="connection-science-logo" class="responsive-img" src="https://breakout-dev.media.mit.edu/plugin/src/assets/connection-science.png">
+                </a>
+            </div>
+            <div class="col s5 center-align valign-wrapper">
+                <a class="tooltipped" data-position="top" data-delay="50" data-tooltip="Contact Us""><i class="small material-icons page-icon">email</i></a>
+                <a class="tooltipped" data-position="top" data-delay="50" data-tooltip="Bug Report"><i class="small material-icons page-icon">report_problem</i></a>
+                <a class="tooltipped" data-position="top" data-delay="50" data-tooltip="Github" href="https://github.com/HumanDynamics/breakout"><i class="small material-icons page-icon">code</i></a>
+            </div>
+        </div>
         <ul class="collection" id="settings-pane">
             <li class="collection-item">
                 <i class="tiny material-icons">info_outline</i>
@@ -59,7 +70,47 @@
             </li>
         </ul>
     </div>
-    
+
+  <div id="info-modal" class="modal bottom-sheet">
+      <div class="modal-content">
+          <div class="container">
+              <div class="row thin-row">
+                  <div class="col s3 align-center valign-wrapper">
+                      <img class="responsive-img" id="connection-science-logo-2" src="http://hd.media.mit.edu/hd-logo.jpg">
+                  </div>
+                  <div class="col s9">
+                      <div class="row">
+                          <h4>Breakout</h4>
+                          <p>A Project from <a href="http://connection.mit.edu/">MIT Connection Science</a>.</p>
+                      </div>
+                  </div>
+              </div>
+              <div class="row center-align">
+                  <p class="flow-text">
+                      Breakout helps you and your team communicate
+                      better, and helps scientists understand how
+                      groups interact.
+                  </p>
+                  <a class="waves-effect waves-light btn"><i class="material-icons right">email</i>Send Feedback</a>
+              </div>
+              <div class="row">
+                  <p>
+                      Breakout is a research and communication tool
+                      released by scientists at MIT Connection
+                      Science. It collects information on when you and
+                      your teammates speak, and gives you real-time
+                      feedback about how well your team is communicating.
+                  </p>
+                  <p>
+                      All the data we collect from you is anonymized
+                      and stored securely. It'll only ever be used for
+                      research, and we never collect any of the
+                      content of your conversation.
+                  </p>
+              </div>
+          </div>
+    </div>
+  </div>
 
 </body>
 

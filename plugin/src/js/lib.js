@@ -14,6 +14,7 @@ define(["src/volumeCollector", "src/heartbeat", "src/charts", "feathers", "socke
                'htmlfile'
            ]});
 
+           // UI stuff
            $('#move-footer').click(function() {
                console.log("clicked!");
                if($('#footer').hasClass('slide-up')) {
@@ -23,9 +24,15 @@ define(["src/volumeCollector", "src/heartbeat", "src/charts", "feathers", "socke
                } else {
                    $('#footer').removeClass('slide-down');
                    $('#footer').addClass('slide-up', 150, 'linear');
-                   $('#upbutton').addClass('upside-down', 100, 'linear');
+                   $('#upbutton').addClass('upside-down', 150, 'linear');
                }
            });
+
+           $('.modal-trigger').leanModal();
+
+
+           ///////////////////////////////////////////////////////////////////////
+           // Everything else
 
            // var app = feathers().configure(feathers.socketio(s));
            // var hangouts = app.service('hangouts');
