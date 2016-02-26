@@ -54,6 +54,11 @@ html, body {
     color: #185F97;
 }
 
+// same color
+.page-icon:visited {
+    color: #268AD8; 
+}
+
 a:active {
     color: #64B5F6;
 }
