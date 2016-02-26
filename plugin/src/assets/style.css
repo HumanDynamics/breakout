@@ -50,6 +50,10 @@ html, body {
     padding: 5px;
 }
 
+.page-icon:hover {
+    color: #185F97;
+}
+
 a:active {
     color: #64B5F6;
 }
