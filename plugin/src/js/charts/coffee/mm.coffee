@@ -34,7 +34,7 @@ define ['d3', 'underscore'], (d3, underscore) ->
 
       # color scale for sphere in the middle
       @sphereColorScale = d3.scale.linear()
-        .domain [0, data.participants.length * 5]
+        .domain [0, data.participants.length * 3]
         .range ['#C8E6C9', '#2E7D32']
         .clamp true
 
