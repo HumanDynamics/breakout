@@ -57,6 +57,7 @@ define(["jquery", "feathers", "socketio", "underscore"], function($, feathers, i
         app = feathers().configure(feathers.socketio(socket));
         participantService = app.service('participants');
 
+        console.log("getting participant info for:", participant_id, hangout_id);
         participantService.find(
             {query:
              {
@@ -65,7 +66,8 @@ define(["jquery", "feathers", "socketio", "underscore"], function($, feathers, i
              }
             },
             function(error, foundParticipants) {
-                if (error) {
+                if (error || !foundParticipants) {
+                    console.log("didn't find any participants...", error, foundParticipants);
                 } else {
                     var foundParticipant = foundParticipants[0];
                     console.log("consent, found participant:", foundParticipant);

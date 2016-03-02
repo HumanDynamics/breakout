@@ -59,9 +59,15 @@ html, body {
     color: #185F97;
 }
 
-// same color
-a:visited {
-    color: #268AD8 !important; 
+/* // same color */
+/* a:visited { */
+/*     color: #268AD8 !important;  */
+/* } */
+
+a:visited {color:#268AD8 !important;}
+
+.brand-logo:visited {
+    color: inherit;
 }
 
 a:active {
