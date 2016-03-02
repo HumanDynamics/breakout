@@ -18,8 +18,10 @@ function listenHangoutJoined(socket) {
     socket.on("hangout::joined", function(data) {
         console.log("hangout joined event, data:", data);
 
-        hu.add_user(data.participant_id, data.hangout_id,
-                    data.participant_image, data.participant_name,
+        hu.add_user(data.participant_id,
+                    data.hangout_id,
+                    data.participant_image,
+                    data.participant_name,
                     data.participant_locale);
 
         winston.log("info", "finding hangout with id:", data.hangout_id);
@@ -72,6 +74,13 @@ var listenParticipantsChanged = function(socket) {
     socket.on("participantsChanged", function(data) {
         winston.log('info', 'Received hangout::participantsChanged event');
         hu.updateHangoutParticipants(data.hangout_id, data.participants);
+    });
+};
+
+var listenConsentChanged = function(socket) {
+    socket.on("consentChanged", function(data) {
+        winston.log("info", "consent changed for participant:");
+        
     });
 };
 

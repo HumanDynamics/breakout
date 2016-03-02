@@ -46,6 +46,10 @@ html, body {
     max-height: 60%;
 }
 
+#consent-modal {
+    max-height: 100%;
+}
+
 
 .page-icon {
     padding: 5px;
@@ -55,9 +59,15 @@ html, body {
     color: #185F97;
 }
 
-// same color
-.page-icon:visited {
-    color: #268AD8 !important; 
+/* // same color */
+/* a:visited { */
+/*     color: #268AD8 !important;  */
+/* } */
+
+a:visited {color:#268AD8 !important;}
+
+.brand-logo:visited {
+    color: inherit;
 }
 
 a:active {
@@ -89,4 +99,29 @@ a:active {
     /* margin-top: 0px !important; */
 }
 
+.circle
+{
+    width:250px;
+    height:250px;
+    border-radius:50%;
+    font-size:30px;
+    border-style: dashed;
+    border-color:#9F9F9F;
+    border-width: 5px;
+    line-height: 40px;
+    text-align:center
+    background:#fff;
+    margin-top: 20px;
+    margin-left: 10px;
+}
 
+
+#mm-consent-text {
+    max-width: 275px;
+    margin-left: 5px;
+    padding-top: 35px;
+}
+
+#mm-holder-consent {
+    display: none;
+}
