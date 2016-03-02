@@ -110,7 +110,7 @@ define(["cs!src/charts/coffee/pieChart", "cs!src/charts/coffee/mm", "feathers", 
                       function(error, foundhangouts) {
                           if (error) {
                           } else {
-                              console.log("MM viz found hangout:", foundhangouts[0]);
+                              console.log("found hangout:", foundhangouts[0]);
                               mm = new MM({participants: foundhangouts[0].participants,
                                            initials: get_participant_initials(foundhangouts[0].participants),
                                            transitions: 0,

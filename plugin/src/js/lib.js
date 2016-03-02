@@ -1,21 +1,19 @@
-define(["src/volumeCollector", "src/heartbeat", "src/charts", "src/consent", "feathers", "socketio", "underscore", "gapi", "jquery"],
-       function(volumeCollector, heartbeat, charts, consent, feathers, io, underscore, gapi, $) {
+define(["src/volumeCollector", "src/heartbeat", "src/charts", "feathers", "socketio", "underscore", "gapi", "jquery"],
+       function(volumeCollector, heartbeat, charts, feathers, io, underscore, gapi, $) {
 
            // initialize global state object
            window.state = {};
            window.state.url = "breakout-dev.media.mit.edu";
            
            // set up raw socket for custom events.
-           var socket = io.connect(window.state.url, {
-               'transports': [
-                   'websocket',
-                   'flashsocket',
-                   'jsonp-polling',
-                   'xhr-polling',
-                   'htmlfile'
-               ]});
+           var socket = io.connect(window.state.url, {'transports': [
+               'websocket',
+               'flashsocket',
+               'jsonp-polling',
+               'xhr-polling',
+               'htmlfile'
+           ]});
 
-           /////////////////////////////////////////////////////////////////////
            // UI stuff
            $('#move-footer').click(function() {
                console.log("clicked!");
@@ -31,7 +29,6 @@ define(["src/volumeCollector", "src/heartbeat", "src/charts", "src/consent", "fe
            });
 
            $('.modal-trigger').leanModal();
-           $('#mm-holder-consent').hide();
 
            // all links need to open in new tab.
            $('a').each(function() {
@@ -44,18 +41,7 @@ define(["src/volumeCollector", "src/heartbeat", "src/charts", "src/consent", "fe
                    });
                }
            });
-
-           function ui_consent(consentVal) {
-               $('#consent-checkbox').prop('checked', consentVal);
-               if (consentVal == true) {
-                   $('#mm-holder-consent').hide();
-               } else {
-                   $('#mm-holder-consent').show();
-               }
-               
-           }
-
-
+           
 
            ///////////////////////////////////////////////////////////////////////
            // Everything else
@@ -63,14 +49,6 @@ define(["src/volumeCollector", "src/heartbeat", "src/charts", "src/consent", "fe
            // var app = feathers().configure(feathers.socketio(s));
            // var hangouts = app.service('hangouts');
            // var talktimes = app.service('talktimes');
-
-           function collection_consent(consentVal) {
-               if (!consentVal) {
-                   volumeCollector.consent = false;
-               } else {
-                   volumeCollector.consent = true;
-               }
-           }
 
            function get_participant_objects(participants) {
                return _.map(participants,
@@ -82,7 +60,7 @@ define(["src/volumeCollector", "src/heartbeat", "src/charts", "src/consent", "fe
                                    locale: p.locale,
                                    image_url: p.person.image.url
                                };
-                           });
+                           });               
            }
            
 
@@ -118,44 +96,13 @@ define(["src/volumeCollector", "src/heartbeat", "src/charts", "src/consent", "fe
                    heartbeat.maybe_start_heartbeat([localParticipant]);
                }
 
-               function process_consent(consentVal) {
-                   console.log("processing consent");
-                   // get rid of those stupid click events; if we
-                   // don't, they will be called twice later... (god I hate jquery)
-                   $('#consent-button').off('click.consent');
-                   $('#no-consent-button').off('click.consent');
-                   if (consentVal === true) {
-                       addHangoutListeners();
-                       charts.start_meeting_mediator(socket);
-                       ui_consent(consentVal);
-                       collection_consent(consentVal);
-                       $('#post-hoc-consent').off('click.consent');
-                       $('#consent-checkbox').off('change');
-                       $('#consent-checkbox').prop('disabled', true);
-                   } else {
-                       console.log("didn't get consent from form...");
-                       ui_consent(consentVal);
-                       collection_consent(consentVal);
-                       $('consent-checkbox').prop('disabled', false);
-                   }
-               }
-
-               consent.get_consent(socket,
-                                   localParticipant.person.id,
-                                   thisHangout.getHangoutId(),
-                                   process_consent);
+               addHangoutListeners();
                
-               $('#post-hoc-consent').on('click.consent', function(evt) {
-                   consent.display_consent(process_consent);
-               });
-
-               $('#consent-checkbox').on('change', function(evt) {
-                   consent.display_consent(process_consent);
-               });
+               charts.start_pie_chart(socket);
+               charts.start_meeting_mediator(socket);
            });
 
            function addHangoutListeners() {
-               console.log("adding hangout listeners...");
                // start collecting volume data
                volumeCollector.startVolumeCollection(socket);
 
@@ -177,5 +124,7 @@ define(["src/volumeCollector", "src/heartbeat", "src/charts", "src/consent", "fe
                                });
                });
            }
+
+
 
        });

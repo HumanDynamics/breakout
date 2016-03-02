@@ -10,8 +10,6 @@ define(["feathers", "socketio", "underscore", 'underscore_string'], function(fea
     // check for new participants every 5s
     var participantIds = [];
 
-    var consent = true;
-
 
     //TODO: do this on a websocket event instead?
     var onParticipantsChanged = function(participants) {
@@ -130,11 +128,6 @@ define(["feathers", "socketio", "underscore", 'underscore_string'], function(fea
 
         function insertTalkEvent(participantId, startTime, endTime, volumeData) {
             console.log("inserting talk event:", startTime, endTime);
-            
-            // if we don't have consent, don't send anything.
-            if (!consent) {
-                return;
-            }
 
             socket.emit("talking_history::create", 
                         {

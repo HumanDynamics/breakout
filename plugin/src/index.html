@@ -7,7 +7,7 @@
 <body>
     <nav>
         <div class="nav-wrapper">
-            <a class="brand-logo" href="https://breakout.media.mit.edu">Breakout</a>
+            <a href="#" class="brand-logo">Breakout</a>
             <ul class="right">
               <li>
                 <a href="#info-modal" class="modal-trigger">
@@ -21,13 +21,6 @@
     <div class="center-justified">
         <!-- <div id="pie-chart"></div> -->
         <div id="meeting-mediator"></div>
-        <div id="mm-holder-consent" class="container center-align">
-            <div class="circle">
-                 <p id="mm-consent-text">Please <a href="#" id="post-hoc-consent">consent</a> to
-                     turn on feedback.
-                 </p>
-            </div>
-        </div>
     </div>
 
     <div class="card center-justified" id="footer">
@@ -51,31 +44,25 @@
             </div>
         </div>
         <ul class="collection" id="settings-pane">
-            <!-- <li class="collection-item">
-                 <i class="tiny material-icons">info_outline</i>
-                 Data Collection
-                 <div class="switch secondary-content">
-                 <label>
-                 Off
-                 <input id="collection-checkbox" type="checkbox">
-                 <span class="lever"></span>
-                 On
-                 </label>
-                 </div>
-                 </li> -->
             <li class="collection-item">
-                <a class="tooltipped"
-                   data-position="bottom"
-                   data-delay="50"
-                   data-tooltip="Want to un-consent? Email support@cues.mit.edu to make changes."
-                   href="#" >
-                    <i class="tiny material-icons">info_outline</i>
-                </a>
+                <i class="tiny material-icons">info_outline</i>
+                Data Collection
+                <div class="switch secondary-content">
+                    <label>
+                        Off
+                        <input type="checkbox">
+                        <span class="lever"></span>
+                        On
+                    </label>
+                </div>
+            </li>
+            <li class="collection-item">
+                <i class="tiny material-icons">info_outline</i>
                 Consent
                 <div class="switch secondary-content">
                     <label>
                         No
-                        <input id="consent-checkbox" type="checkbox">
+                        <input type="checkbox">
                         <span class="lever"></span>
                         Yes
                     </label>
@@ -122,46 +109,6 @@
               </div>
           </div>
     </div>
-  </div>
-
-  <div id="consent-modal" class="modal bottom-sheet modal-fixed-footer">
-      <div class="modal-content">
-          <div class="container">
-              <div class="row thin-row">
-                  <div class="col s9">
-                      <div class="row">
-                          <h4>Consent</h4>
-                      </div>
-                  </div>
-              </div>
-              <div class="row center-align">
-                  <p class="flow-text">
-                      The data you generate from this Hangout session
-                      and future sessions with this plug-in enabled
-                      can be used in a research study to understand
-                      how groups communicate. By clicking 'I
-                      Consent' below, you indicate that you
-                      understand the following:
-                  </p>
-              </div>
-              <div class="row">
-                  <ul>
-                      <li>You must be 18 to participate.</li>
-                      <li>Your participation is voluntary, and uncompensated.</li>
-                      <li>You may stop contributing data at any time by emailing <a href="cues-support@mit.edu">cues-support@mit.edu</a>.</li>
-                      <li>There is no way for us to identify you based on your data.</li>
-                      <li>The only information we will collect is the
-                      dynamics of your conversation (e.g. who speaks
-                          when and for how long), NOT any content.</li>
-                      <li>The possible risks of this study are minimal.</li>
-                  </ul>
-              </div>
-          </div>
-      </div>
-      <div class="modal-footer">
-          <a href="#" id="consent-button" class="modal-action modal-close waves-effect waves-green btn-flat ">I Consent</a>
-          <a href="#" id="no-consent-button" class="modal-action modal-close waves-effect waves-green btn-flat ">No Thanks</a>
-      </div>
   </div>
 
 </body>
