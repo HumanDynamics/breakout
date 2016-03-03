@@ -1,13 +1,170 @@
 <head>
     <title>Breakout</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://breakout-dev.media.mit.edu/plugin/src/assets/style.css">
+    <link rel="stylesheet" type="text/css" href="https://breakout-dev.media.mit.edu/plugin/src/bower_components/Materialize/bin/materialize.css">
 </head>
 <body>
-  <div class="container center-justified">
-    <div id="pie-chart"></div>
-    <member-list></member-list>
+    <nav>
+        <div class="nav-wrapper">
+            <a class="brand-logo" href="https://breakout.media.mit.edu">Breakout</a>
+            <ul class="right">
+              <li>
+                <a href="#info-modal" class="modal-trigger">
+                  <i class="small material-icons">info_outline</i>
+                </a>
+              </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="center-justified">
+        <!-- <div id="pie-chart"></div> -->
+        <div id="meeting-mediator"></div>
+        <div id="mm-holder-consent" class="container center-align">
+            <div class="circle">
+                 <p id="mm-consent-text">Please <a href="#" id="post-hoc-consent">consent</a> to
+                     turn on feedback.
+                 </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card center-justified" id="footer">
+        <div class="row button-row">
+            <div class="col s4 push-s4 center-align">
+              <a id="move-footer" href="#">
+                <i id="upbutton" class="medium material-icons page-icon">navigate_before</i>
+              </a>
+            </div>
+        </div>
+        <div class="row valign-wrapper">
+            <div class="col s7">
+                <a href="http://connection.mit.edu/"  >
+                    <img id="connection-science-logo" class="responsive-img" src="https://breakout-dev.media.mit.edu/plugin/src/assets/connection-science.png">
+                </a>
+            </div>
+            <div class="col s5 center-align valign-wrapper">
+                <a class="tooltipped" data-position="top" data-delay="50" data-tooltip="Talk to Us" href="mailto:cues-support@mit.edu" ><i class="small material-icons page-icon">email</i></a>
+                <a class="tooltipped" data-position="top" data-delay="50" data-tooltip="Found an issue?" href="https://github.com/HumanDynamics/breakout/issues/new" ><i class="small material-icons page-icon">report_problem</i></a>
+                <a class="tooltipped" data-position="top" data-delay="50" data-tooltip="See the Code" href="https://github.com/HumanDynamics/breakout"><i class="small material-icons page-icon">code</i></a>
+            </div>
+        </div>
+        <ul class="collection" id="settings-pane">
+            <!-- <li class="collection-item">
+                 <i class="tiny material-icons">info_outline</i>
+                 Data Collection
+                 <div class="switch secondary-content">
+                 <label>
+                 Off
+                 <input id="collection-checkbox" type="checkbox">
+                 <span class="lever"></span>
+                 On
+                 </label>
+                 </div>
+                 </li> -->
+            <li class="collection-item">
+                <a class="tooltipped"
+                   data-position="bottom"
+                   data-delay="50"
+                   data-tooltip="Want to un-consent? Email support@cues.mit.edu to make changes."
+                   href="#" >
+                    <i class="tiny material-icons">info_outline</i>
+                </a>
+                Consent
+                <div class="switch secondary-content">
+                    <label>
+                        No
+                        <input id="consent-checkbox" type="checkbox">
+                        <span class="lever"></span>
+                        Yes
+                    </label>
+                </div>                
+            </li>
+        </ul>
+    </div>
+
+  <div id="info-modal" class="modal bottom-sheet">
+      <div class="modal-content">
+          <div class="container">
+              <div class="row thin-row">
+                  <div class="col s3 align-center valign-wrapper">
+                  </div>
+                  <div class="col s9">
+                      <div class="row">
+                          <h4>Breakout</h4>
+                          <p>A Project from <a href="http://connection.mit.edu/">MIT Connection Science</a>.</p>
+                      </div>
+                  </div>
+              </div>
+              <div class="row center-align">
+                  <p class="flow-text">
+                      Breakout helps you and your team communicate
+                      better, and helps scientists understand how
+                      groups interact.
+                  </p>
+                  <a class="waves-effect waves-light btn" href="mailto:cues-support@mit.edu" ><i class="material-icons right">email</i>Send Feedback</a>
+              </div>
+              <div class="row">
+                  <p>
+                      Breakout is a research and communication tool
+                      released by scientists at MIT Connection
+                      Science. It collects information on when you and
+                      your teammates speak, and gives you real-time
+                      feedback about how well your team is communicating.
+                  </p>
+                  <p>
+                      All the data we collect from you is anonymized
+                      and stored securely. It'll only ever be used for
+                      research, and we never collect any of the
+                      content of your conversation.
+                  </p>
+              </div>
+          </div>
+    </div>
   </div>
+
+  <div id="consent-modal" class="modal bottom-sheet modal-fixed-footer">
+      <div class="modal-content">
+          <div class="container">
+              <div class="row thin-row">
+                  <div class="col s9">
+                      <div class="row">
+                          <h4>Consent</h4>
+                      </div>
+                  </div>
+              </div>
+              <div class="row center-align">
+                  <p class="flow-text">
+                      The data you generate from this Hangout session
+                      and future sessions with this plug-in enabled
+                      can be used in a research study to understand
+                      how groups communicate. By clicking 'I
+                      Consent' below, you indicate that you
+                      understand the following:
+                  </p>
+              </div>
+              <div class="row">
+                  <ul>
+                      <li>You must be 18 to participate.</li>
+                      <li>Your participation is voluntary, and uncompensated.</li>
+                      <li>You may stop contributing data at any time by emailing <a href="cues-support@mit.edu">cues-support@mit.edu</a>.</li>
+                      <li>There is no way for us to identify you based on your data.</li>
+                      <li>The only information we will collect is the
+                      dynamics of your conversation (e.g. who speaks
+                          when and for how long), NOT any content.</li>
+                      <li>The possible risks of this study are minimal.</li>
+                  </ul>
+              </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+          <a href="#" id="consent-button" class="modal-action modal-close waves-effect waves-green btn-flat ">I Consent</a>
+          <a href="#" id="no-consent-button" class="modal-action modal-close waves-effect waves-green btn-flat ">No Thanks</a>
+      </div>
+  </div>
+
 </body>
 
-<link rel="stylesheet" type="text/css" href="https://breakout-dev.media.mit.edu/plugin/src/style.css">
 <!-- requirejs -->
 <script data-main="https://breakout-dev.media.mit.edu/plugin/src/js/main" src="https://breakout-dev.media.mit.edu/plugin/src/bower_components/requirejs/require.js"></script>

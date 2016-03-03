@@ -47,6 +47,8 @@ app.configure(feathers.rest())
     .use('/talk_times', services.talkTimeService)
     .use('/participants', services.participantService)
     .use('/participant_events', services.participantEventService)
+    .use('/turns', services.turnService)
+    .use('/transitions', services.turnService)
     .use('/', feathers.static(__dirname))
     .listen(3000);
 

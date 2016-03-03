@@ -2,6 +2,8 @@
 // instance.
 define(["underscore"], function(underscore) {
 
+    var HEARTBEAT_FREQUENCY = 3000;
+
     var _socket = null;
     
     var heartbeat_id = null;
@@ -13,10 +15,11 @@ define(["underscore"], function(underscore) {
                          participant_id: window.gapi.hangout.getLocalParticipant().person.id
                      });
     }
+
     function startHeartbeat() {
         console.log("starting the heartbeat...");
         send_heartbeat();
-        var heartbeat = window.setInterval(send_heartbeat, 3000);
+        var heartbeat = window.setInterval(send_heartbeat, HEARTBEAT_FREQUENCY);
         return heartbeat;
     }
 
@@ -29,27 +32,37 @@ define(["underscore"], function(underscore) {
                     });
     }
 
-    function maybeStartHeartbeat(participants) {
-        // participants with app enabled
-        var appParticipants = _.filter(participants,
-                                       function(p) { return p.hasAppEnabled;});
-        console.log("app participants:", appParticipants);
+    // tries to start sending a heartbeat to the server every
+    // HEARTBEAT_FREQUENCY ms.
+    // It will only start if there are no other participants in the hangout
+    // with the app enabled.
+    // function maybeStartHeartbeat(participants) {
+    //     // participants with app enabled
+    //     var appParticipants = _.filter(participants,
+    //                                    function(p) { return p.hasAppEnabled;});
 
-        if (appParticipants.length == 1) {
-            if (heartbeat_id) {
-                // weirdness. means participants changed to 
-                console.log("ERROR, should never be here. continuing to send heartbeat...");
-            } else {
-                console.log("ERROR, weird, only one participant, starting heartbeat..");
-                heartbeat_id = startHeartbeat();
-            }
-        } else {
-            if (heartbeat_id) {
-                console.log("Stopping heartbeat...");
-                stopHeartBeat();
-                heartbeat_id = null;
-            }
-        }
+    //     if (appParticipants.length == 1) {
+    //         if (heartbeat_id) {
+    //             // weirdness. means we're trying to start the heartbeat while
+    //             // it's already going.
+    //             console.log("ERROR, should never be here. continuing to send heartbeat...");
+    //         } else {
+    //             console.log("ERROR, only one participant, starting heartbeat..");
+    //             heartbeat_id = startHeartbeat();
+    //         }
+    //     } else {
+    //         // if we have more than one participant, then stop the
+    //         // heartbeat.
+    //         if (heartbeat_id) {
+    //             console.log("Stopping heartbeat...");
+    //             stopHeartBeat();
+    //             heartbeat_id = null;
+    //         }
+    //     }
+    // }
+
+    function maybeStartHeartbeat(participants) {
+        heartbeat_id = startHeartbeat();
     }
 
     //TODO: How do we handle when someone joins???
@@ -58,7 +71,6 @@ define(["underscore"], function(underscore) {
         console.log("registering heartbeat listener");
         _socket = socket;
         window.gapi.hangout.onParticipantsChanged.add(function(event) {
-            console.log("heartbeat changed event:", event);
             maybeStartHeartbeat(event.participants);
         });
     }

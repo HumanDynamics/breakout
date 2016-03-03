@@ -154,7 +154,7 @@ module.exports =
     {
         time_spoken_since: get_time_spoken_since,
         total_time_spoken_in_hangout: get_time_spoken_in_hangout,
-        compute_talk_times: start_computing_talk_times,
-        stop_talk_times: stop_computing_talk_times,
-        talk_time_processes: talk_time_ids
+        compute: start_computing_talk_times,
+        stop: stop_computing_talk_times,
+        processes: talk_time_ids
     };

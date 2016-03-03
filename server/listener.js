@@ -1,4 +1,5 @@
 var talk_time = require('./talk_time');
+var turns = require('./statistics/turns');
 var hu = require('./hangout_utils');
 var winston = require('winston');
 var _ = require('underscore');
@@ -17,8 +18,10 @@ function listenHangoutJoined(socket) {
     socket.on("hangout::joined", function(data) {
         console.log("hangout joined event, data:", data);
 
-        hu.add_user(data.participant_id, data.hangout_id,
-                    data.participant_image, data.participant_name,
+        hu.add_user(data.participant_id,
+                    data.hangout_id,
+                    data.participant_image,
+                    data.participant_name,
                     data.participant_locale);
 
         winston.log("info", "finding hangout with id:", data.hangout_id);
@@ -39,7 +42,8 @@ function listenHangoutJoined(socket) {
                         return p.participant_id;
                     });
                     hu.createHangout(data);  // create the hangout
-                    talk_time.compute_talk_times(data.hangout_id);
+                    talk_time.compute(data.hangout_id);
+                    turns.compute(data.hangout_id);
 
                 } else {  // we have a hangout
                     var found_hangout = found_hangouts[0];
@@ -59,7 +63,8 @@ function listenHangoutJoined(socket) {
         if (data.hangout_participants.length == 1) {
             winston.log("info", "only have one participant now, re-computing talk times...");
             hu.createHangoutEvent(data.hangout_id, 'start', new Date());
-            talk_time.compute_talk_times(data.hangout_id, socket);
+            talk_time.compute(data.hangout_id, socket);
+            turns.compute(data.hangout_id);
         }
     });
 };
@@ -69,6 +74,13 @@ var listenParticipantsChanged = function(socket) {
     socket.on("participantsChanged", function(data) {
         winston.log('info', 'Received hangout::participantsChanged event');
         hu.updateHangoutParticipants(data.hangout_id, data.participants);
+    });
+};
+
+var listenConsentChanged = function(socket) {
+    socket.on("consentChanged", function(data) {
+        winston.log("info", "consent changed for participant:");
+        
     });
 };
 

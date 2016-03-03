@@ -1,5 +1,6 @@
 var winston = require('winston');
 var talk_time = require('./talk_time');
+var turns = require('./statistics/turns');
 
 var _ = require('underscore');
 
@@ -149,11 +150,13 @@ function updateHangoutParticipants(hangoutId, new_participants) {
                 var end_time = null;
                 if (!active) {
                     end_time = new Date();
-                    talk_time.stop_talk_times(hangoutId);
+                    talk_time.stop(hangoutId);
+                    turns.stop(hangoutId);
                 } else if (!hangout.active && active) {
                     // if hangout is moving from inactive to active...
                     winston.log("info", "starting computing talk times...");
-                    talk_time.compute_talk_times(hangout.hangout_id);
+                    talk_time.compute(hangout.hangout_id);
+                    turns.compute(hangout.hangout_id);
                 }
                 app.service('hangouts').patch(
                     hangout._id,

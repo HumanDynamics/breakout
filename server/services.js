@@ -9,6 +9,7 @@ var winston = require('winston');
 var HangoutService = mongodb.Service.extend({
     
     create: function(data, params, callback) {
+        winston.log("params", params);
         data.start_time = new Date();
         return this._super(data, params, callback);
     },
@@ -18,6 +19,7 @@ var HangoutService = mongodb.Service.extend({
         return this._super(id, data, params, callback);
     }
 });
+
 
 module.exports = {
     // Each item in Hangouts is of the form:
@@ -55,6 +57,7 @@ module.exports = {
     // 'image':       Google profile image url
     // 'hangout_id':  Hangout ID the participant was in
     // 'participant_id':         Google ID for this participant.
+    // 'consent': whether or not we have consent from the participant
     // unique hangout ID for this participant.
     participantService: mongodb({
         collection: 'participants'
@@ -96,5 +99,21 @@ module.exports = {
     // 'second_window': the length of the window being examined. if 'all', is the entire hangout up to that point.
     hIndexService: mongodb({
         collection: 'h_indices'
+    }),
+
+    // Number of turns for each participant in each hangout
+    // of the form:
+    // 'timestamp': timestamp of this event
+    // 'hangout_id': hangout id this was calculated for
+    // 'from': from time
+    // 'to': to time
+    // 'turns': {<participant_id>: <# of turns>}
+    turnService: mongodb({
+        collection: 'turns'
+    }),
+    
+    transitionService: mongodb({
+        collection: 'transitions'
     })
+    
 };

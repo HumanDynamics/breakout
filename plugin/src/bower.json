@@ -27,6 +27,10 @@
     "socket.io": "~1.3.7",
     "primus": "~4.0.4",
     "jquery": "~2.1.4",
-    "require-cs": "~0.5.0"
+    "require-cs": "~0.5.0",
+    "hammerjs": "~2.0.6",
+    "velocity": "~1.2.3",
+    "jquery-hammerjs": "~2.0.0",
+    "jquery-ui": "~1.11.4"
   }
 }
