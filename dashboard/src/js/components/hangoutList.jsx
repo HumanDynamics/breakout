@@ -6,6 +6,7 @@ import _ from 'underscore';
 
 import {HangoutStore} from '../stores/hangoutStore';
 import {ParticipantStore} from '../stores/participantStore';
+import HangoutActions from '../actions/HangoutListActionCreators'
 
 import Table from 'material-ui/lib/table/table';
 import TableHeaderColumn from 'material-ui/lib/table/table-header-column';
@@ -17,6 +18,9 @@ import TableBody from 'material-ui/lib/table/table-body';
 import Colors from 'material-ui/lib/styles/colors';
 import CheckCircle from 'material-ui/lib/svg-icons/action/check-circle';
 import HighlightOff from 'material-ui/lib/svg-icons/action/highlight-off';
+import Clear from 'material-ui/lib/svg-icons/content/clear';
+import RaisedButton from 'material-ui/lib/raised-button';
+import IconButton from 'material-ui/lib/icon-button';
 
 import Avatar from 'material-ui/lib/avatar';
 
@@ -26,6 +30,7 @@ class HangoutRow extends React.Component {
     constructor(props, context) {
         console.log("props:", props);
         super(props, context);
+        this.handleClickClear = this.handleClickClear.bind(this);
     }
 
 
@@ -51,7 +56,6 @@ class HangoutRow extends React.Component {
                 <Avatar src={participant['image_url']} key={i}/>
             );
         }
-                    
     }
 
     getAvatars() {
@@ -65,12 +69,24 @@ class HangoutRow extends React.Component {
 
     }
 
+    handleClickClear(event) {
+        HangoutActions.updateHangoutActive(this.props.hangout._id, false);
+    }
+
     render() {
         return (
             <TableRow>
                 <TableRowColumn>{this.props.hangout.hangout_id}</TableRowColumn>
                 <TableRowColumn>{this.getIcon(this.props.hangout.active)}</TableRowColumn>
                 <TableRowColumn>{this.getAvatars()}</TableRowColumn>
+                <TableRowColumn>
+                    <RaisedButton
+                        label="Set Inactive"
+                        icon={<Clear/>}
+                        onClick={this.handleClickClear}
+                        disabled={!this.props.hangout.active}
+                    />
+                </TableRowColumn>
             </TableRow>
         );
     }

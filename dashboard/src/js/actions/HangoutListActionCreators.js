@@ -26,6 +26,13 @@ module.exports = {
             type: ActionTypes.RECEIVE_CHANGED_HANGOUT,
             hangout: hangout
         });
+    },
+    
+    updateHangoutActive: function(hangoutDBId, active) {
+        AppDispatcher.dispatch({
+            type: ActionTypes.UPDATE_HANGOUT_ACTIVE,
+            hangoutDBId: hangoutDBId,
+            active: active
+        });
     }
-
 };

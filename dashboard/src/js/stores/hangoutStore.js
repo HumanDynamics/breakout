@@ -31,7 +31,6 @@ class _HangoutStore {
 
 MicroEvent.mixin(_HangoutStore);
 
-
 var HangoutStore = new _HangoutStore();
 
 
@@ -53,6 +52,12 @@ function _addHangouts(hangouts) {
     });
 }
 
+function _changeHangoutActive(hangout_id, active) {
+    if (_.has(HangoutStore.hangouts, hangout_id)) {
+        HangoutStore.hangouts[hangout_id].active = active;
+    }
+}
+
 
 
 AppDispatcher.register(function(payload) {
@@ -69,8 +74,11 @@ AppDispatcher.register(function(payload) {
             _replaceHangout(payload.hangout);
             HangoutStore.trigger(CHANGE_EVENT);
             break;
+        case ActionTypes.UPDATE_HANGOUT_ACTIVE:
+            _changeHangoutActive(payload.hangout_id, payload.active);
+            /* hangoutStore.trigger(CHANGE_EVENT); */
+            break;
         default:
-            
     }
     
     return true;
