@@ -36,29 +36,33 @@ define(["underscore"], function(underscore) {
     // HEARTBEAT_FREQUENCY ms.
     // It will only start if there are no other participants in the hangout
     // with the app enabled.
-    function maybeStartHeartbeat(participants) {
-        // participants with app enabled
-        var appParticipants = _.filter(participants,
-                                       function(p) { return p.hasAppEnabled;});
+    // function maybeStartHeartbeat(participants) {
+    //     // participants with app enabled
+    //     var appParticipants = _.filter(participants,
+    //                                    function(p) { return p.hasAppEnabled;});
 
-        if (appParticipants.length == 1) {
-            if (heartbeat_id) {
-                // weirdness. means we're trying to start the heartbeat while
-                // it's already going.
-                console.log("ERROR, should never be here. continuing to send heartbeat...");
-            } else {
-                console.log("ERROR, only one participant, starting heartbeat..");
-                heartbeat_id = startHeartbeat();
-            }
-        } else {
-            // if we have more than one participant, then stop the
-            // heartbeat.
-            if (heartbeat_id) {
-                console.log("Stopping heartbeat...");
-                stopHeartBeat();
-                heartbeat_id = null;
-            }
-        }
+    //     if (appParticipants.length == 1) {
+    //         if (heartbeat_id) {
+    //             // weirdness. means we're trying to start the heartbeat while
+    //             // it's already going.
+    //             console.log("ERROR, should never be here. continuing to send heartbeat...");
+    //         } else {
+    //             console.log("ERROR, only one participant, starting heartbeat..");
+    //             heartbeat_id = startHeartbeat();
+    //         }
+    //     } else {
+    //         // if we have more than one participant, then stop the
+    //         // heartbeat.
+    //         if (heartbeat_id) {
+    //             console.log("Stopping heartbeat...");
+    //             stopHeartBeat();
+    //             heartbeat_id = null;
+    //         }
+    //     }
+    // }
+
+    function maybeStartHeartbeat(participants) {
+        heartbeat_id = startHeartbeat();
     }
 
     //TODO: How do we handle when someone joins???
