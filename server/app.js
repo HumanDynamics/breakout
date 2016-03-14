@@ -12,6 +12,7 @@ var services = require('./services');
 var listener = require('./listener');
 var heartbeat = require('./heartbeat');
 var my_hooks = require('./my_hooks');
+var dashboardServices = require('./dashboardServices');
 
 app.configure(feathers.rest())
     .configure(hooks())
@@ -49,6 +50,7 @@ app.configure(feathers.rest())
     .use('/participant_events', services.participantEventService)
     .use('/turns', services.turnService)
     .use('/transitions', services.turnService)
+    .use('/dashboard_users', dashboardServices.dashboardUserService)
     .use('/', feathers.static(__dirname))
     .listen(3000);
 
