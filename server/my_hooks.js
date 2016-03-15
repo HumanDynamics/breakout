@@ -1,6 +1,8 @@
 var winston = require('winston');
 var _ = require('underscore');
 var app = require('./app');
+var crypto = require('./crypto');
+
 
 
 function date_diff(d1, d2) {
@@ -60,9 +62,141 @@ function configure_talking_history_hooks() {
     });
 }
 
+
+function json_transform(obj, id, transform) {
+    return JSON.parse(JSON.stringify(obj, function(key, value) {
+        if (value !== null && key === id) {
+            return transform(value);
+        } else if (typeof value === 'object' && value !== null && value.id === id) {
+            winston.log("info", "!!!!!!!>>>>>", value.id, value);
+            return value
+        } else {
+            return value;
+        }
+    }));
+}
+
+
+function configure_hangouts_hooks() {
+    var hangoutService = app.service('hangouts');
+
+    // check for repeat data in DB before creating.
+    hangoutService.before({
+        create(hook, next) {
+            hook.data = json_transform(hook.data, 'participants', function(ps){return _.map(ps, crypto.encrypt)});
+            //hook.data.participants = _.map(hook.data.participants, crypto.encrypt);
+            next();
+        },
+
+        find(hook, next) {
+            hook.params = json_transform(hook.params, 'participants', function(ps){return _.map(ps, crypto.encrypt)});
+            next();
+        },
+        
+        patch(hook, next) {
+            hook.data = json_transform(hook.data, 'participants', function(ps){return _.map(ps, crypto.encrypt)});
+            next();
+        },
+
+        update(hook, next) {
+            hook.data = json_transform(hook.data, 'participants', function(ps){return _.map(ps, crypto.encrypt)});
+            next();
+        }
+    });
+
+    hangoutService.after({
+        create(hook, next) {
+            hook.result = json_transform(hook.result, 'participants', function(ps){return _.map(ps, crypto.decrypt)});
+            next();
+        },
+
+        find(hook, next) {
+            if (hook.result) {
+                console.log("hangouts result BEFORE", hook.result);
+                hook.result = json_transform(hook.result, 'participants', function(ps){return _.map(ps, crypto.decrypt)});
+                console.log("hangouts result AFTER", hook.result);
+            }
+            next();
+        },
+        
+        patch(hook, next) {
+            hook.result = json_transform(hook.result, 'participants', function(ps){return _.map(ps, crypto.decrypt)});
+            next();
+        },
+
+        update(hook, next) {
+            hook.result = json_transform(hook.result, 'participants', function(ps){return _.map(ps, crypto.decrypt)});
+            next();
+        }
+    });
+}
+
+
+function configure_participant_hooks() {
+    var service = app.service('participants');
+
+    // check for repeat data in DB before creating.
+    service.before({
+        create(hook, next) {
+            winston.log("CREATE data:", hook.data);
+            hook.data = json_transform(hook.data, 'participant_id', crypto.encrypt);
+            winston.log(">>>> CREATE data:", hook.data);
+            next();  
+        },
+
+        find(hook, next) {
+            winston.log("info", ">>>>FIND PARTICIPANT START", hook.params);
+            hook.params = json_transform(hook.params, 'participant_id', crypto.encrypt);
+            winston.log("info", ">>>>FIND PARTICIPANT TRANSFORM", hook.params);
+            next();
+        },
+        
+        patch(hook, next) {
+            hook.data = json_transform(hook.data, 'participant_id', crypto.encrypt);
+            next();
+        },
+
+        update(hook, next) {
+            hook.data = json_transform(hook.data, 'participant_id', crypto.encrypt);
+            next();
+        }
+    });
+
+    service.after({
+        create(hook, next) {
+            hook.result = json_transform(hook.result, 'participant_id', crypto.decrypt);
+            next();
+        },
+
+        find(hook, next) {
+            //winston.log("info", "participant find result(1):", hook.result[0);
+            if (hook.result.length > 0) {
+                hook.result = _.map(hook.result, function(obj) {
+                    return json_transform(obj, 'participant_id', crypto.decrypt);
+                });
+                winston.log("info", ">>> first find result:", hook.result[0]);
+            }
+            winston.log("info", "> first find result:", hook.result);
+            next();
+        },
+        
+        patch(hook, next) {
+            hook.result = json_transform(hook.result, 'participant_id', crypto.decrypt);
+            next();
+        },
+
+        update(hook, next) {
+            hook.result = json_transform(hook.result, 'participant_id', crypto.decrypt);
+            next();
+        }
+    });
+}
+
 function configure_hooks() {
     winston.log("info", "Configuring hooks for feathers services");
     configure_talking_history_hooks();
+    configure_hangouts_hooks();
+    configure_participant_hooks();
 }
 
 module.exports =  {

@@ -60,13 +60,13 @@ define(["jquery", "feathers", "socketio", "underscore"], function($, feathers, i
         console.log("getting participant info for:", participant_id, hangout_id);
         participantService.find(
             {query:
-             {
-                 participant_id: participant_id,
-                 hangout_id: hangout_id
+             {$and: [{participant_id: participant_id},
+                     {hangout_id: hangout_id}
+                    ]
              }
             },
             function(error, foundParticipants) {
-                if (error || !foundParticipants) {
+                if (error || !foundParticipants || foundParticipants.length == 0) {
                     console.log("didn't find any participants...", error, foundParticipants);
                 } else {
                     var foundParticipant = foundParticipants[0];

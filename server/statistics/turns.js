@@ -93,7 +93,7 @@ var turn_ids = {};
 var turns_compute_interval = 5 * 1000;
 
 var start_computing_turns = function(hangout_id) {
-    winston.log("info", "starting computing turns for hangout:", hangout_id, turn_ids);
+    winston.log("info", "starting computing turns for hangout:", hangout_id);
     
     // if it's being run, don't start another one...
     if (_.has(turn_ids, hangout_id)) {
