@@ -2,6 +2,7 @@ var feathers = require('feathers');
 var bodyParser = require('body-parser');
 var mongodb = require('feathers-mongodb');
 var hooks = require('feathers-hooks');
+var authentication = require('feathers-authentication');
 var winston = require('winston');
 
 // export app as module so we can require it later.
@@ -41,6 +42,7 @@ app.configure(feathers.rest())
 
         });
     }))
+    //.configure(authentication())
     .use(bodyParser.json())
     .use('/hangouts', services.hangoutService)
     .use('/hangout_events', services.hangoutEventService)

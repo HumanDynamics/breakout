@@ -4,6 +4,7 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 import { Router, Route, IndexRoute, Link, hashHistory } from 'react-router'
 import AppBar from 'material-ui/lib/app-bar';
 import Home from './components/home'
+import Login from './components/login'
 import Dashboard from './components/dashboard'
 import Nav from './components/nav'
 import HangoutListAPIUtils from './api/HangoutListAPIUtils';
@@ -15,11 +16,7 @@ const App = React.createClass({
     render() {
         return (
             <div>
-                <Nav
-                    style={{
-                            color: 'green500';
-                        }}>
-                    
+                <Nav>
                 </Nav>
                 {this.props.children}
             </div>
@@ -31,7 +28,7 @@ const App = React.createClass({
 var routeComponent = (
     <Router history={hashHistory}>
         <Route path="/" component={App}>
-            <IndexRoute component={Home} />
+            <IndexRoute component={Login} />
             <Route path="dashboard" component={Dashboard} />
         </Route>
     </Router>);

@@ -48,6 +48,17 @@ function registerChangedCallback() {
     });
 };
 
+function login(username, password) {
+    app.authenticate({
+        type: 'local', // may need to change for mongo
+        username: username,
+        password: password
+    }).then(function(result) {
+        console.log("result:", result);
+    }).catch(function(error) {
+    });
+}
+
 
 
 // Register Dispatcher for API events

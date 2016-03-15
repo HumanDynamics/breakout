@@ -12,6 +12,7 @@
     "body-parser": "^1.14.1",
     "express": "^4.13.3",
     "feathers": "^1.2.0",
+    "feathers-authentication": "^0.4.1",
     "feathers-hooks": "^0.6.0",
     "feathers-mongodb": "^1.1.0",
     "primus": "^4.0.4",
