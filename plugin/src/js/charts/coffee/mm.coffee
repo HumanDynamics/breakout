@@ -119,6 +119,8 @@ define ['d3', 'underscore'], (d3, underscore) ->
 
       @nodesG.selectAll(".node").transition().duration(500)
         .attr "transform", @nodeTransform
+        .select('circle') # change circle color
+        .attr "fill", @nodeColor
         
       # remove nodes that have left
       @node.exit().remove()
