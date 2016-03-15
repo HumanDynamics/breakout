@@ -119,6 +119,8 @@ define ['d3', 'underscore'], (d3, underscore) ->
 
       @nodesG.selectAll(".node").transition().duration(500)
         .attr "transform", @nodeTransform
+        .select('circle') # change circle color
+        .attr "fill", @nodeColor
         
       # remove nodes that have left
       @node.exit().remove()
@@ -224,7 +226,6 @@ define ['d3', 'underscore'], (d3, underscore) ->
       console.log "updating MM viz with data:", data
       # if we're not updating participants, don't redraw everything.
       if data.participants.length == @data.participants.length
-        @sphereColorScale.domain [0, data.participants.length * 5]
         @data = data
         @createLinks()
         
@@ -242,8 +243,8 @@ define ['d3', 'underscore'], (d3, underscore) ->
 
         # recompute links
         @link = @linksG.selectAll "line.link"
-          .data []
-          .exit().remove()
+        .data []
+        .exit().remove()
         # Re-render. Do it on a delay to make sure links get rendered after nodes.
         # After links, rotate entire graph so user is at top.
         @renderNodes()
