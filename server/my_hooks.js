@@ -57,44 +57,47 @@ function remove_talking_history_repeats(hook, next) {
     );
 }
 
-function encrypt_participant_ids(hook, next) {
-    winston.log("debug", ">>>ENCRYPTING:", hook.data);
-    function encrypt_ids(data) {
-        return json_transform(data,
-                              ['participant_id', 'participants'],
-                              crypto.encrypt);
-    }
-    
-    if (hook.data != null) {
-        /* winston.log("debug", "encrypting data:", hook.data); */
-        var encrypted_data = encrypt_ids(hook.data);
-        /* winston.log("debug", "encrypted data:", encrypted_data); */
-        hook.data = encrypted_data;
-    }
+function encrypt_hook(keys) {
+    var encrypt_hook = function(hook, next) {
+        winston.log("debug", ">>>ENCRYPTING:", hook.data);
+        function encrypt_ids(data) {
+            return json_transform(data, keys, crypto.encrypt);
+        }
+        
+        if (hook.data != null) {
+            /* winston.log("debug", "encrypting data:", hook.data); */
+            var encrypted_data = encrypt_ids(hook.data);
+            /* winston.log("debug", "encrypted data:", encrypted_data); */
+            hook.data = encrypted_data;
+        }
 
-    if (hook.params != null) {
-        /* winston.log("debug", "encrypting params:", hook.params); */
-        var encrypted_params = encrypt_ids(hook.params);
-        /* winston.log("debug", "encrypted params:", encrypted_params); */
-        hook.params = encrypted_params;
+        if (hook.params != null) {
+            /* winston.log("debug", "encrypting params:", hook.params); */
+            var encrypted_params = encrypt_ids(hook.params);
+            /* winston.log("debug", "encrypted params:", encrypted_params); */
+            hook.params = encrypted_params;
+        }
+        next();
     }
-    next();
+    return encrypt_hook;
 }
 
-
-function decrypt_participant_ids(hook, next) {
-    winston.log("debug", ">>>DECRYPTING:", hook.result);
-    function decrypt_ids(data) {
-        return json_transform(data,
-                              ['participant_id', 'participants'],
-                              crypto.decrypt);
+function decrypt_hook(keys) {
+    var decrypt_hook = function(hook, next) {
+        winston.log("debug", ">>>DECRYPTING:", hook.result);
+        function decrypt_ids(data) {
+            return json_transform(data,
+                                  keys,
+                                  crypto.decrypt);
+        }
+        if (hook.result !== null && hook.result.length > 0) {
+            var decrypted = decrypt_ids(hook.result);
+            winston.log("debug", "decrypted:", decrypted);
+            hook.result = decrypted;
+        }
+        next();
     }
-    if (hook.result !== null && hook.result.length > 0) {
-        var decrypted = decrypt_ids(hook.result);
-        winston.log("debug", "decrypted:", decrypted);
-        hook.result = decrypted;
-    }
-    next();
+    return decrypt_hook;
 }
 
 
@@ -123,16 +126,26 @@ function configure_hangouts_hooks() {
 
 function configure_hooks() {
     winston.log("info", "Configuring hooks for feathers services");
-    app.service('hangouts').before(encrypt_participant_ids).after(decrypt_participant_ids);
-    app.service('turns').before(encrypt_participant_ids).after(decrypt_participant_ids);
-    app.service('participant_events').before(encrypt_participant_ids).after(decrypt_participant_ids);
-    app.service('participants').before(encrypt_participant_ids).after(decrypt_participant_ids);
-    app.service('hangout_events').before(encrypt_participant_ids).after(decrypt_participant_ids);
+    var participant_keys = ['participant_id', 'participants'];
+    var participant_encrypt = encrypt_hook(participant_keys);
+    var participant_decrypt = decrypt_hook(participant_keys);
+    
+    var participant_info_keys = ['name', 'image_url'];
+    var participant_info_encrypt = encrypt_hook(participant_info_keys);
+    var participant_info_decrypt = decrypt_hook(participant_info_keys);
+        
+    app.service('hangouts').before(participant_encrypt).after(participant_decrypt);
+    app.service('turns').before(participant_encrypt).after(participant_decrypt);
+    app.service('participant_events').before(participant_encrypt).after(participant_decrypt);
+    app.service('participants')
+       .before([participant_encrypt, participant_info_encrypt])
+       .after([participant_encrypt, participant_info_decrypt]);
+    app.service('hangout_events').before(participant_encrypt).after(participant_decrypt);
     
     app.service('talking_history').before({
-        all: encrypt_participant_ids,
+        all: participant_encrypt,
         create: remove_talking_history_repeats
-    }).after(decrypt_participant_ids);
+    }).after(participant_decrypt);
     
     configure_hangouts_hooks();
 }
