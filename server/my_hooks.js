@@ -68,7 +68,7 @@ function json_transform(obj, id, transform) {
         if (value !== null && key === id) {
             return transform(value);
         } else if (typeof value === 'object' && value !== null && value.id === id) {
-            winston.log("info", "!!!!!!!>>>>>", value.id, value);
+            // case where it's an item in a list of objects
             return value
         } else {
             return value;
@@ -138,16 +138,12 @@ function configure_participant_hooks() {
     // check for repeat data in DB before creating.
     service.before({
         create(hook, next) {
-            winston.log("CREATE data:", hook.data);
             hook.data = json_transform(hook.data, 'participant_id', crypto.encrypt);
-            winston.log(">>>> CREATE data:", hook.data);
             next();  
         },
 
         find(hook, next) {
-            winston.log("info", ">>>>FIND PARTICIPANT START", hook.params);
             hook.params = json_transform(hook.params, 'participant_id', crypto.encrypt);
-            winston.log("info", ">>>>FIND PARTICIPANT TRANSFORM", hook.params);
             next();
         },
         
@@ -174,9 +170,69 @@ function configure_participant_hooks() {
                 hook.result = _.map(hook.result, function(obj) {
                     return json_transform(obj, 'participant_id', crypto.decrypt);
                 });
-                winston.log("info", ">>> first find result:", hook.result[0]);
             }
-            winston.log("info", "> first find result:", hook.result);
+            next();
+        },
+        
+        patch(hook, next) {
+            hook.result = json_transform(hook.result, 'participant_id', crypto.decrypt);
+            next();
+        },
+
+        update(hook, next) {
+            hook.result = json_transform(hook.result, 'participant_id', crypto.decrypt);
+            next();
+        }
+    });
+}
+
+
+function configure_turn_hooks() {
+    var service = app.service('turns');
+
+    // check for repeat data in DB before creating.
+    service.before({
+        create(hook, next) {
+            hook.data = json_transform(hook.data, 'participant_id', crypto.encrypt);
+            console.log("TURN", hook.data);
+            next();  
+        },
+
+        find(hook, next) {
+            hook.params = json_transform(hook.params, 'participant_id', crypto.encrypt);
+            next();
+        },
+        
+        patch(hook, next) {
+            hook.data = json_transform(hook.data, 'participant_id', crypto.encrypt);
+            next();
+        },
+
+        update(hook, next) {
+            hook.data = json_transform(hook.data, 'participant_id', crypto.encrypt);
+            next();
+        }
+    });
+
+    service.after({
+        create(hook, next) {
+            hook.result = json_transform(hook.result, 'participant_id', crypto.decrypt);
+            next();
+        },
+
+        created(hook, next) {
+            winston.log("info", ">>>>>>>CREATED OMG");
+            hook.result = json_transform(hook.result, 'participant_id', crypto.decrypt);
+            next();
+        },
+
+        find(hook, next) {
+            //winston.log("info", "participant find result(1):", hook.result[0);
+            if (hook.result.length > 0) {
+                hook.result = _.map(hook.result, function(obj) {
+                    return json_transform(obj, 'participant_id', crypto.decrypt);
+                });
+            }
             next();
         },
         
@@ -197,6 +253,7 @@ function configure_hooks() {
     configure_talking_history_hooks();
     configure_hangouts_hooks();
     configure_participant_hooks();
+    configure_turn_hooks();
 }
 
 module.exports =  {

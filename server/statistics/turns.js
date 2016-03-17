@@ -77,8 +77,10 @@ function get_turns(hangout_id, from, to) {
                     return memo + val[1];
                 }, 0);
 
-                var pct_utterances = _.mapObject(num_utterances, function(val, key) {
-                    return val / total_utterances;
+                var pct_utterances = [];
+                _.mapObject(num_utterances, function(val, key) {
+                    pct_utterances.push({'participant_id': key,
+                                         'turns': val / total_utterances});
                 });
 
                 var transitions = get_turn_transitions(data);

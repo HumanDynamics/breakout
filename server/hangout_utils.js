@@ -83,6 +83,7 @@ function add_user(participant_id, hangout_id, image_url, name, locale) {
         // },
         function(error, data) {
             if (error) {
+                console.log("COULDNT ADD USER");
                 return;
             }
             // we have to get all the matching records for this
