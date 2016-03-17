@@ -19,7 +19,7 @@ function date_diff(d1, d2) {
 // TODO: This should query the database for talk times that are after, say,
 // 5s before the given start time, to reduce computational load.
 function configure_talking_history_hooks() {
-    var talkingHistoryService = app.service('talking_history');
+    var talkingHistoryService = app.service('/talking_history');
 
     // check for repeat data in DB before creating.
     talkingHistoryService.before({
@@ -84,6 +84,7 @@ function configure_hangouts_hooks() {
     hangoutService.before({
         create(hook, next) {
             hook.data = json_transform(hook.data, 'participants', function(ps){return _.map(ps, crypto.encrypt)});
+            hook.data.start_time = new Date();
             //hook.data.participants = _.map(hook.data.participants, crypto.encrypt);
             next();
         },
@@ -95,11 +96,13 @@ function configure_hangouts_hooks() {
         
         patch(hook, next) {
             hook.data = json_transform(hook.data, 'participants', function(ps){return _.map(ps, crypto.encrypt)});
+            hook.data.last_updated = new Date();
             next();
         },
 
         update(hook, next) {
             hook.data = json_transform(hook.data, 'participants', function(ps){return _.map(ps, crypto.encrypt)});
+            hook.data.last_updated = new Date();
             next();
         }
     });
