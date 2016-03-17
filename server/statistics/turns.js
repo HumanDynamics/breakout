@@ -52,7 +52,7 @@ function get_turn_transitions(turns) {
 // {<participantId>: <total ms>, ...}
 // if participant_ids is false, matches on all participants.
 function get_turns(hangout_id, from, to) {
-    winston.log("info", "getting turn data for hangout", hangout_id);
+    winston.log("info", "getting turn data for hangout", hangout_id, from, to);
 
     app.service('talking_history').find(
         { query:

@@ -133,6 +133,7 @@ define(["feathers", "socketio", "underscore", 'underscore_string'], function(fea
             
             // if we don't have consent, don't send anything.
             if (!consent) {
+                console.log("no consent, not sending...");
                 return;
             }
 
@@ -148,6 +149,8 @@ define(["feathers", "socketio", "underscore", 'underscore_string'], function(fea
                         function(error, data) {
                             if (error) {
                                 console.log("unable to create talking history event...", error);
+                            } else {
+                                console.log("created talking history event:", data);
                             }
                         });
         }

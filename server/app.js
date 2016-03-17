@@ -14,6 +14,7 @@ var app = module.exports = feathers();
 var listener = require('./listener');
 var heartbeat = require('./heartbeat');
 var my_hooks = require('./my_hooks');
+var filters = require('./filters');
 
 app.configure(rest())
    .configure(hooks())
@@ -73,8 +74,8 @@ MongoClient.connect('mongodb://localhost:27017/feathers', function(error, db) {
     // Number of ms spoken since start of hangout by each participant.
     // Objects are of the form:
     // 'hangout_id': hangout ID
-    // 'talk_times': {<participant_id>: <ms spoken>}
-    // 'timestamp': timestamp of this calculation    
+    // 'talk_times': [{'participant_id': <participant_id>, 'seconds_spoken': <ms spoken>}, ...]
+    // 'timestamp': timestamp of this calculation
     app.use('/talk_times', service({
         Model: db.collection('talk_times')
     }));
@@ -119,14 +120,16 @@ MongoClient.connect('mongodb://localhost:27017/feathers', function(error, db) {
         Model: db.collection('turns')
     }));
 
-    
-    app.use('/transitions', service({
-        Model: db.collection('transitions')
-    }));
-
 
     // Configure hooks on top of services
     my_hooks.configure_hooks(app);
+    filters.configure_filters([filters.crypto_filter],
+                              ['turns',
+                               'talking_history',
+                               'hangout_events',
+                               'participants',
+                               'participant_events',
+                               'hangouts']);
 });
 
 app.use('/', feathers.static(__dirname));

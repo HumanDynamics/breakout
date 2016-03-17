@@ -52,7 +52,7 @@ function createHangoutEvent(hangout_id, event, timestamp) {
 function createParticipantEvent(participant_ids, hangout_id, timestamp) {
     app.service('participant_events').create(
         {
-            participant_ids: participant_ids,
+            participants: participant_ids,
             hangout_id: hangout_id,
             timestamp: timestamp
         }, function(error, data) {
