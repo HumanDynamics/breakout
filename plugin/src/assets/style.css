@@ -67,7 +67,7 @@ html, body {
 a:visited {color:#268AD8 !important;}
 
 .brand-logo:visited {
-    color: inherit;
+    color: #fff !important;
 }
 
 a:active {

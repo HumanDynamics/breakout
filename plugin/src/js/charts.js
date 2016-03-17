@@ -45,10 +45,10 @@ define(["cs!src/charts/coffee/pieChart", "cs!src/charts/coffee/mm", "feathers", 
     // transform to the right data to send to chart
     function transform_turns(participants, turns) {
         console.log("transforming turns:", turns);
-        turns = _.map(_.pairs(turns), function(t) {
-            return {'participant_id': t[0],
-                    'turns': t[1]};
-        });
+        // turns = _.map(_.pairs(turns), function(t) {
+        //     return {'participant_id': t[0],
+        //             'turns': t[1]};
+        // });
         // filter out turns not by present participants
         var filtered_turns = _.filter(turns, function(turn){
             return _.contains(participants, turn.participant_id);

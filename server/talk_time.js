@@ -125,7 +125,7 @@ var talk_time_ids = {};
 var talk_time_compute_interval = 5 * 1000;
 
 var start_computing_talk_times = function(hangout_id) {
-    winston.log("info", "starting computing talk times for hangout:", hangout_id, talk_time_ids);
+    winston.log("info", "starting computing talk times for hangout:", hangout_id);
     
     // if it's being run, don't start another one...
     if (_.has(talk_time_ids, hangout_id)) {

@@ -140,10 +140,12 @@ define(["src/volumeCollector", "src/heartbeat", "src/charts", "src/consent", "fe
                    }
                }
 
-               consent.get_consent(socket,
-                                   localParticipant.person.id,
-                                   thisHangout.getHangoutId(),
-                                   process_consent);
+               setTimeout(function()  {
+                   consent.get_consent(socket,
+                                       localParticipant.person.id,
+                                       thisHangout.getHangoutId(),
+                                       process_consent);
+               }, 1000);
                
                $('#post-hoc-consent').on('click.consent', function(evt) {
                    consent.display_consent(process_consent);

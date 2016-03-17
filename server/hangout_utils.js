@@ -52,7 +52,7 @@ function createHangoutEvent(hangout_id, event, timestamp) {
 function createParticipantEvent(participant_ids, hangout_id, timestamp) {
     app.service('participant_events').create(
         {
-            participant_ids: participant_ids,
+            participants: participant_ids,
             hangout_id: hangout_id,
             timestamp: timestamp
         }, function(error, data) {
@@ -83,6 +83,7 @@ function add_user(participant_id, hangout_id, image_url, name, locale) {
         // },
         function(error, data) {
             if (error) {
+                console.log("COULDNT ADD USER");
                 return;
             }
             // we have to get all the matching records for this
