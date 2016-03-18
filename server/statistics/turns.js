@@ -52,7 +52,7 @@ function get_turn_transitions(turns) {
 // {<participantId>: <total ms>, ...}
 // if participant_ids is false, matches on all participants.
 function get_turns(hangout_id, from, to) {
-    winston.log("info", "getting turn data for hangout", hangout_id);
+    winston.log("info", "getting turn data for hangout", hangout_id, from, to);
 
     app.service('talking_history').find(
         { query:
@@ -77,8 +77,10 @@ function get_turns(hangout_id, from, to) {
                     return memo + val[1];
                 }, 0);
 
-                var pct_utterances = _.mapObject(num_utterances, function(val, key) {
-                    return val / total_utterances;
+                var pct_utterances = [];
+                _.mapObject(num_utterances, function(val, key) {
+                    pct_utterances.push({'participant_id': key,
+                                         'turns': val / total_utterances});
                 });
 
                 var transitions = get_turn_transitions(data);
@@ -93,7 +95,7 @@ var turn_ids = {};
 var turns_compute_interval = 5 * 1000;
 
 var start_computing_turns = function(hangout_id) {
-    winston.log("info", "starting computing turns for hangout:", hangout_id, turn_ids);
+    winston.log("info", "starting computing turns for hangout:", hangout_id);
     
     // if it's being run, don't start another one...
     if (_.has(turn_ids, hangout_id)) {
