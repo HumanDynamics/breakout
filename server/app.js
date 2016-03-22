@@ -47,6 +47,21 @@ app.configure(rest())
     }))
    .use(bodyParser.json());
 
+MongoClient.connect('mongodb://localhost:27017/dashboard', function(error, db) {
+    app.use('/dashboard/users', service({
+        Model: db.collection('users');
+    }));
+    
+    app.use('/dashboard/tokens', service({
+        Model: db.collection('tokens');
+    }));
+});
+
+app.configure(authentication({
+    userEndpoint: '/dashboard-users',
+    tokenEndpoint: '/dashboard-users'
+}));
+
 
 // connect to mongo services
 MongoClient.connect('mongodb://localhost:27017/feathers', function(error, db) {
