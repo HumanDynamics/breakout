@@ -52,6 +52,10 @@
     @import "base/_print";
   }
 
+  body, html {
+      overflow-x: hidden;
+  }
+
   
 .banner {
     text-align: center;
@@ -205,7 +209,7 @@
 }
 
 .ghlogo {
-    max-height: 50px;
+    max-height: 15px;
     
     path {
         fill: #FFFFFF;
@@ -225,3 +229,4 @@
     margin-right: auto;
     display: block;
 }
+

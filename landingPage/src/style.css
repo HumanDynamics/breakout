@@ -1755,6 +1755,9 @@ input::-moz-focus-inner {
   abbr[title]:after {
     content: " (" attr(title) ")"; } }
 
+body, html {
+  overflow-x: hidden; }
+
 .banner {
   text-align: center;
   background-color: #F9BF3B; }
@@ -1874,7 +1877,7 @@ input::-moz-focus-inner {
   margin-right: 50px; }
 
 .ghlogo {
-  max-height: 50px; }
+  max-height: 15px; }
   .ghlogo path {
     fill: #FFFFFF; }
 
