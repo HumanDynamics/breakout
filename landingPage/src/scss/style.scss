@@ -156,14 +156,13 @@
 }
 
 .screenshot-copy-container {
-    margin-left: 10px;
+    margin-left: 20px;
     margin-right: 10px;
 }
 
 .screenshot-copy {
     padding-top: 10px;
     color: $h1-color;
-    text-align: center;
     padding-bottom: 10px;
 }
 
@@ -171,14 +170,26 @@
     margin-bottom: 20px;
 }
 
-@media screen and (max-width: $container-tablet - 1) {
+@media screen and (max-width: $container-desktop) {
+    .screenshot-description {
+        display: none
+    }
+
+}
+ 
+@media screen and (max-width: $container-tablet) {
     .breakout-screenshot {
         display: none;
     }
 
+    .viz-gif-contained {
+        display: none !important;
+    }
+
+
     .screenshot-copy-header {
         text-align: center;
-    }
+    } 
 }
 
 
@@ -203,4 +214,14 @@
 
 .contact-link {
     color: $h1-color;
+}
+
+.viz-container {
+    margin-top: 50px;
+}
+
+.viz-gif {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
 }

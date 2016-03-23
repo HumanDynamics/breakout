@@ -1841,21 +1841,26 @@ input::-moz-focus-inner {
   background-color: #F9BF3B; }
 
 .screenshot-copy-container {
-  margin-left: 10px;
+  margin-left: 20px;
   margin-right: 10px; }
 
 .screenshot-copy {
   padding-top: 10px;
   color: #343434;
-  text-align: center;
   padding-bottom: 10px; }
 
 .screenshot-copy-header {
   margin-bottom: 20px; }
 
-@media screen and (max-width: 719px) {
+@media screen and (max-width: 960px) {
+  .screenshot-description {
+    display: none; } }
+
+@media screen and (max-width: 720px) {
   .breakout-screenshot {
     display: none; }
+  .viz-gif-contained {
+    display: none !important; }
   .screenshot-copy-header {
     text-align: center; } }
 
@@ -1875,3 +1880,11 @@ input::-moz-focus-inner {
 
 .contact-link {
   color: #343434; }
+
+.viz-container {
+  margin-top: 50px; }
+
+.viz-gif {
+  margin-left: auto;
+  margin-right: auto;
+  display: block; }
