@@ -1,0 +1,232 @@
+/* ==========================================================================
+
+// Base Stylesheet - http://getbase.org
+// Author: Matthew Hartman - http://www.matthewhartman.com.au/
+// Version: 2.8.2 - Last Updated: March 05, 2016
+
+========================================================================== */
+
+
+  @import "base/_variables";
+
+  @import "base/_mixins";
+  @import "base/_resets";
+
+  @import "base/_global";
+  @import "base/_lists";
+  @import "base/_blockquotes";
+  @import "base/_tables";
+  @import "base/_code";
+  @import "base/_forms";
+  
+  @import "base/_assets";
+
+  @import "base/_grid";
+  // @import "base/_grid-non-responsive";
+
+  // Helpers
+  @import "base/_helpers";
+
+  @import "_mobile-styles";
+
+  // Tablet Styles
+  @media only screen and (min-width: $breakpoint-tablet) {
+    @import "_tablet-styles";
+  }
+
+  // Desktop Styles
+  @media only screen and (min-width: $breakpoint-desktop) {
+    @import "_desktop-styles";
+  }
+
+  // HD Styles
+  @media only screen and (min-width: $breakpoint-hd) {
+    @import "_hd-styles";
+  }
+
+  // Animations
+  @import "base/_animations";
+
+  // Print Styles
+  @media print {
+    @import "base/_print";
+  }
+
+  body, html {
+      overflow-x: hidden;
+  }
+
+  
+.banner {
+    text-align: center;
+    background-color: #F9BF3B;
+}
+
+.banner-heading {
+    font-weight: $font-800;
+    font-size: 3rem;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    line-height: 3.25rem;
+    color: $h1-color;
+}
+
+.banner-copy {
+    font-weight: $font-500;
+    line-height: 1.75rem;
+    font-size: 1.25rem;
+    color: $h1-color;
+}
+
+.logo {
+    font-weight: 700;
+    width: 100px;
+    height: 40px;
+    display: block;
+    float: left;
+    -webkit-transition: all .3s;
+    -moz-transition: all .3s;
+    transition: all .3s;
+    position: relative;
+    z-index: 4000;
+}
+
+.hangout-button {
+    margin-top: 20px;
+    margin-bottom: -10px;
+}
+
+.feature-copy-header {
+    font-weight: $font-700;
+}
+
+.feature-copy {
+    font-weight: $font-400;
+}
+
+.features {
+    list-style: none;
+    padding: 0;
+    display: table;
+}
+
+.feature-item {
+    display: table-cell;
+    text-align: center;
+    position: relative;
+    padding-left: 50px;
+    padding-right: 50px;
+    padding-bottom: 20px;
+    max-width: 500px;
+    min-width: 200px;
+}
+
+@media screen and (max-width: $container-tablet) {
+    .features {
+        display: block;
+        max-width: 400px;
+    }
+    .feature-item {
+        display:inline-block;
+    }
+}
+
+@mixin feature-icon($url) {
+    width: 75px;
+    height: 75px;
+    margin-bottom: 20px;
+    background-image: url($url);
+}
+
+.scientist-icon {
+    @include feature-icon('img/people-1.svg');
+}
+
+.people-icon {
+    @include feature-icon('img/people.svg');
+}
+
+.chat-icon {
+    @include feature-icon('img/interface.svg');
+}
+
+
+.info-container {
+    padding-top: 50px;
+}
+
+.screenshot-container {
+    background-color: #F9BF3B;
+}
+
+.screenshot-copy-container {
+    margin-left: 20px;
+    margin-right: 10px;
+}
+
+.screenshot-copy {
+    padding-top: 10px;
+    color: $h1-color;
+    padding-bottom: 10px;
+}
+
+.screenshot-copy-header {
+    margin-bottom: 20px;
+}
+
+@media screen and (max-width: $container-desktop) {
+    .screenshot-description {
+        display: none
+    }
+
+}
+ 
+@media screen and (max-width: $container-tablet) {
+    .breakout-screenshot {
+        display: none;
+    }
+
+    .viz-gif-contained {
+        display: none !important;
+    }
+
+
+    .screenshot-copy-header {
+        text-align: center;
+    } 
+}
+
+
+.footer {
+    background-color: #F9BF3B;
+    margin-top: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.cslogo {
+    margin-right: 50px;
+}
+
+.ghlogo {
+    max-height: 15px;
+    
+    path {
+        fill: #FFFFFF;
+    }
+}
+
+.contact-link {
+    color: $h1-color;
+}
+
+.viz-container {
+    margin-top: 50px;
+}
+
+.viz-gif {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
