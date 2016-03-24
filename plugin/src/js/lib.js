@@ -1,9 +1,10 @@
-define(["src/volumeCollector", "src/heartbeat", "src/charts", "src/consent", "feathers", "socketio", "underscore", "gapi", "jquery"],
-       function(volumeCollector, heartbeat, charts, consent, feathers, io, underscore, gapi, $) {
+define(["config", "src/volumeCollector", "src/heartbeat", "src/charts", "src/consent", "feathers", "socketio", "underscore", "gapi", "jquery"],
+       function(config, volumeCollector, heartbeat, charts, consent, feathers, io, underscore, gapi, $) {
 
            // initialize global state object
            window.state = {};
-           window.state.url = "breakout-dev.media.mit.edu";
+           window.state.url = config.serverUrl;
+           console.log("connecting to:", window.state.url);
            
            // set up raw socket for custom events.
            var socket = io.connect(window.state.url, {
