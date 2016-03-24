@@ -109,4 +109,4 @@ After configuring the API, you need to grab the app ID to enter into `breakout/c
 4.  Click `other`
 5.  The first bit (13-digits) of your client ID that looks like `1095645588088` is your Client ID, and that is what to enter as the `appId` in  `breakout/config.json`.
 
-![Configuring Oauth + getting App ID](http://i.imgur.com/LFMuW0q.gifv)
+![Configuring Oauth + getting App ID](http://i.imgur.com/LFMuW0q.gif)
