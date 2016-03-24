@@ -84,6 +84,7 @@ Once the server is running, edit `breakout/config.json`. It should look like:
 Once you know these two values (`appId` will become clear after configuring the Google API), edit this file appropriately.
 
 ### Plugin
+
 1. `cd breakout/plugin/src`
 2. `npm install` to install node dependencies, used for building the plugin file (I know, I know...)
 3. `bower install` to install the bower dependencies that the plugin actually uses.
@@ -103,6 +104,7 @@ create a Google Hangout app as described by Google themselves. You can do this t
 The URL of the `plugin.xml` file you enter must be an HTTPS url.
 
 After configuring the API, you need to grab the app ID to enter into `breakout/config.json`. You can only do this after configuring OAuth on your app. 
+
 1.  Click `credentials`
 2.  enter info into the `OAuth Consent Screen` tab
 3.  Click `Create Credentials->OAuth Client ID`
