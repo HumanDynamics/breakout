@@ -76,7 +76,8 @@ To use the server with an actual Hangouts plugin, HTTPS needs to be running on t
 
 
 ### Configure the Google API
-[![How to configure a Google API](http://i.imgur.com/PY0YyDO.gifv)](https://vimeo.com/160266573)
+![Configuring a Google Hangout API](http://i.imgur.com/PY0YyDO.gif)
+[video here](https://vimeo.com/160266573)
 - 
 
 
