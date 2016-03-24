@@ -1,8 +1,8 @@
 <head>
     <title>Breakout</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="https://breakout-dev.media.mit.edu/plugin/src/assets/style.css">
-    <link rel="stylesheet" type="text/css" href="https://breakout-dev.media.mit.edu/plugin/src/bower_components/Materialize/bin/materialize.css">
+    <link rel="stylesheet" type="text/css" href="{{serverUrl}}/plugin/src/assets/style.css">
+    <link rel="stylesheet" type="text/css" href="{{serverUrl}}/plugin/src/bower_components/Materialize/bin/materialize.css">
 </head>
 <body>
     <nav>
@@ -41,7 +41,7 @@
         <div class="row valign-wrapper">
             <div class="col s7">
                 <a href="http://connection.mit.edu/"  >
-                    <img id="connection-science-logo" class="responsive-img" src="https://breakout-dev.media.mit.edu/plugin/src/assets/connection-science.png">
+                    <img id="connection-science-logo" class="responsive-img" src="{{serverUrl}}/plugin/src/assets/connection-science.png">
                 </a>
             </div>
             <div class="col s5 center-align valign-wrapper">
@@ -51,18 +51,6 @@
             </div>
         </div>
         <ul class="collection" id="settings-pane">
-            <!-- <li class="collection-item">
-                 <i class="tiny material-icons">info_outline</i>
-                 Data Collection
-                 <div class="switch secondary-content">
-                 <label>
-                 Off
-                 <input id="collection-checkbox" type="checkbox">
-                 <span class="lever"></span>
-                 On
-                 </label>
-                 </div>
-                 </li> -->
             <li class="collection-item">
                 <a class="tooltipped"
                    data-position="bottom"
@@ -167,4 +155,7 @@
 </body>
 
 <!-- requirejs -->
-<script data-main="https://breakout-dev.media.mit.edu/plugin/src/js/main" src="https://breakout-dev.media.mit.edu/plugin/src/bower_components/requirejs/require.js"></script>
+<script>
+ var serverUrl = "{{serverUrl}}";
+</script>
+<script data-main="{{serverUrl}}/plugin/src/js/main" src="{{serverUrl}}/plugin/src/bower_components/requirejs/require.js"></script>

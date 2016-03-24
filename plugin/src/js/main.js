@@ -7,11 +7,6 @@
 // http://stackoverflow.com/questions/14587720/using-requirejs-alongside-non-amd-javascript-files)
 
 
-// CONFIGURE SERVER URL HERE
-var serverUrl = 'https://breakout-dev.media.mit.edu';
-///////////////////////
-
-
 // Main RequireJS Config
 requirejs.config({
     baseUrl: serverUrl + '/plugin/src/',
