@@ -62,7 +62,21 @@ follow the next two steps to get things rolling.
 
 1. Clone the repo
 `git clone git@github.com:HumanDynamics/breakout.git`
-2. 
+2. `cd breakout/server`
+2. run `npm install` to install node dependencies
+3. run `node app.js` directory to start the server.
+
+To use the server with an actual Hangouts plugin, HTTPS needs to be running on the web server that hosts the server. If you'd like to run it through nginx, I've included some configuration snippets down below.
+
+### Plugin
+1. `cd breakout/plugin/src`
+2. `npm install` to install node dependencies, used for building the plugin file (I know, I know...)
+3. `bower install` to install the bower dependencies that the plugin actually uses.
+4. `node build.js` to build the plugin.
+
+
+### Configure the Google API
+[![How to configure a Google API](http://i.imgur.com/PY0YyDO.gifv)](https://vimeo.com/160266573)
 - 
 
 
