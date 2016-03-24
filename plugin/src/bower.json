@@ -31,6 +31,7 @@
     "hammerjs": "~2.0.6",
     "velocity": "~1.2.3",
     "jquery-hammerjs": "~2.0.0",
-    "jquery-ui": "~1.11.4"
+    "jquery-ui": "~1.11.4",
+    "requirejs-plugins": "~1.0.3"
   }
 }
