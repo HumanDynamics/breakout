@@ -5,7 +5,7 @@ define(["underscore"], function(underscore) {
     var HEARTBEAT_FREQUENCY = 3000;
 
     var _socket = null;
-    
+
     var heartbeat_id = null;
 
     function send_heartbeat() {
@@ -28,7 +28,8 @@ define(["underscore"], function(underscore) {
         console.log("stopping the heartbeat...");
         _socket.emit('heartbeat-stop',
                     {
-                        hangout_id: window.gapi.hangout.getHangoutId()
+                        hangout_id: window.gapi.hangout.getHangoutId(),
+                        participant_id: window.gapi.hangout.getLocalParticipant().person.id
                     });
     }
 
@@ -66,7 +67,7 @@ define(["underscore"], function(underscore) {
     }
 
     //TODO: How do we handle when someone joins???
-    
+
     function registerHeartbeat(socket) {
         console.log("registering heartbeat listener");
         _socket = socket;

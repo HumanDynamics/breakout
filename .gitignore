@@ -2,3 +2,4 @@ bower_components
 app/.meteor/local
 app/.meteor/meteorite
 plugin-app/bower_components
+*/node_modules
