@@ -17,7 +17,7 @@ define ['d3', 'underscore'], (d3, underscore) ->
 
       # radius of network as a whole
       @radius = 115
-      
+
       @data = data
 
       # determines positions for participant avatars
@@ -98,7 +98,7 @@ define ['d3', 'underscore'], (d3, underscore) ->
     renderNodes: () =>
       @node = @nodesG.selectAll ".node"
         .data @nodes, (d) -> d.participant_id
-        
+
       @nodeG = @node.enter().append "g"
         .attr "class", "node"
         .attr "id", (d) -> d.participant_id
@@ -107,7 +107,7 @@ define ['d3', 'underscore'], (d3, underscore) ->
         .attr "class", "nodeCircle"
         .attr "fill", @nodeColor
         .attr "r", @nodeRadius
-        
+
       @nodeG.append "circle"
         .attr "class", "nodeFill"
         .attr "fill", "#FFFFFF"
@@ -121,7 +121,7 @@ define ['d3', 'underscore'], (d3, underscore) ->
         .attr "transform", @nodeTransform
         .select('circle') # change circle color
         .attr "fill", @nodeColor
-        
+
       # remove nodes that have left
       @node.exit().remove()
 
@@ -160,7 +160,7 @@ define ['d3', 'underscore'], (d3, underscore) ->
         .attr "stroke", "#646464"
         .attr "fill", "none"
         .attr "stroke-opacity", 0.8
-        .attr "stroke-width", 0
+        .attr "stroke-width", 7
         .attr "x1", (d) => @getNodeCoords(d.source)['x']
         .attr "y1", (d) => @getNodeCoords(d.source)['y']
         .attr "x2", (d) => @getNodeCoords(d.target)['x']
@@ -168,13 +168,13 @@ define ['d3', 'underscore'], (d3, underscore) ->
 
       @link.transition().duration(@linkTransitionTime)
         .attr "stroke-width", (d) => @linkStrokeScale d.weight
-        
+
       @link
         .attr "x1", (d) => @getNodeCoords(d.source)['x']
         .attr "y1", (d) => @getNodeCoords(d.source)['y']
         .attr "x2", (d) => @getNodeCoords(d.target)['x']
         .attr "y2", (d) => @getNodeCoords(d.target)['y']
-        
+
       @link.exit().remove()
 
 
@@ -191,7 +191,7 @@ define ['d3', 'underscore'], (d3, underscore) ->
         node_y = coords['y']
         xDist = (node_x - x)
         yDist = (node_y - y)
-        
+
         # transform x and y proportional to the percentage of turns
         # (and use dist/2 to prevent collision)
         x += turn.turns * (xDist / 2)
@@ -228,7 +228,7 @@ define ['d3', 'underscore'], (d3, underscore) ->
       if data.participants.length == @data.participants.length
         @data = data
         @createLinks()
-        
+
         @renderLinks()
         @renderNodes()
       else
@@ -236,7 +236,7 @@ define ['d3', 'underscore'], (d3, underscore) ->
         @data = data
         @nodes = ({'participant_id': p} for p in @data.participants)
         @nodes.push({'participant_id': 'energy'}) # keep the energy ball in the list of nodes
-        
+
         # recompute the color scale for the sphere and angle domain
         @sphereColorScale.domain [0, data.participants.length * 5]
         @angle.domain @data.participants
@@ -253,4 +253,3 @@ define ['d3', 'underscore'], (d3, underscore) ->
           @graphG.transition().duration(100)
             .attr "transform", @constantRotation()
           ), @nodeTransitionTime + 100)
-
