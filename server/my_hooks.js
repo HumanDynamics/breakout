@@ -12,20 +12,19 @@ function date_diff(d1, d2) {
 
 
 // Hooks:
-// 
+//
 // create: Checks to see if there are any times in the recorded
-// speaking times for this hangout / participant combo that end or
+// speaking times for this meeting / participant combo that end or
 // start within 1s of the reported time. If there are, it doesn't
 // insert the event.
 // TODO: This should query the database for talk times that are after, say,
 // 5s before the given start time, to reduce computational load.
 
 function remove_talking_history_repeats(hook, next) {
-    var talkingHistoryService = app.service('/talking_history');
-    app.service('talking_history').find(
+    app.service('utterances').find(
         {
-            query: {hangout_id: hook.data.hangout_id,
-                    participant_id: hook.data.participant_id}
+            query: {meeting: hook.data.meeting_id,
+                    participant: hook.data.participant_id}
         },
         function(error, foundhistory) {
             if (error) {
@@ -63,7 +62,7 @@ function encrypt_hook(keys) {
         function encrypt_ids(data) {
             return json_transform(data, keys, crypto.encrypt);
         }
-        
+
         if (hook.data != null) {
             /* winston.log("debug", "encrypting data:", hook.data); */
             var encrypted_data = encrypt_ids(hook.data);
@@ -101,12 +100,12 @@ function decrypt_hook(keys) {
 }
 
 
-// created and updated times for hangouts
-function configure_hangouts_hooks() {
-    var hangoutService = app.service('hangouts');
+// created and updated times for meetings
+function configure_meetings_hooks() {
+    var meetingService = app.service('meetings');
 
     // check for repeat data in DB before creating.
-    hangoutService.before({
+    meetingService.before({
         create(hook, next) {
             hook.data.start_time = new Date();
             next();
@@ -124,30 +123,33 @@ function configure_hangouts_hooks() {
     });
 }
 
-function configure_hooks() {
-    winston.log("info", "Configuring hooks for feathers services");
-    var participant_keys = ['participant_id', 'participants'];
+function configure_encryption_hooks() {
+    var participant_keys = ['participant', 'participants'];
     var participant_encrypt = encrypt_hook(participant_keys);
     var participant_decrypt = decrypt_hook(participant_keys);
-    
+
     var participant_info_keys = ['name', 'image_url'];
     var participant_info_encrypt = encrypt_hook(participant_info_keys);
     var participant_info_decrypt = decrypt_hook(participant_info_keys);
-        
-    app.service('hangouts').before(participant_encrypt).after(participant_decrypt);
-    app.service('turns').before(participant_encrypt).after(participant_decrypt);
+
+    app.service('meetings').before(participant_encrypt).after(participant_decrypt);
+    app.service('utterances').before(participant_encrypt).after(participant_decrypt);
     app.service('participant_events').before(participant_encrypt).after(participant_decrypt);
     app.service('participants')
-       .before([participant_encrypt, participant_info_encrypt])
-       .after([participant_encrypt, participant_info_decrypt]);
-    app.service('hangout_events').before(participant_encrypt).after(participant_decrypt);
-    
-    app.service('talking_history').before({
+    .before([participant_encrypt, participant_info_encrypt])
+    .after([participant_encrypt, participant_info_decrypt]);
+    app.service('meeting_events').before(participant_encrypt).after(participant_decrypt);
+
+    app.service('utterance_distributions').before({
         all: participant_encrypt,
         create: remove_talking_history_repeats
     }).after(participant_decrypt);
-    
-    configure_hangouts_hooks();
+}
+
+function configure_hooks() {
+    winston.log("info", "Configuring hooks for feathers services");
+    configure_encryption_hooks();
+    configure_meetings_hooks();
 }
 
 module.exports =  {
