@@ -1,6 +1,6 @@
 var talk_time = require('./talk_time');
 var turns = require('./statistics/turns');
-var hu = require('./hangout_utils');
+var mu = require('./meetingUtils');
 var winston = require('winston');
 var _ = require('underscore');
 
@@ -18,7 +18,7 @@ function listenMeetingJoined(socket) {
     socket.on("hangout::joined", function(data) {
         console.log("hangout joined event, data:", data);
 
-        hu.add_user(data.participant_id,
+        mu.add_user(data.participant_id,
                     data.hangout_id,
                     data.participant_image,
                     data.participant_name,
@@ -41,7 +41,7 @@ function listenMeetingJoined(socket) {
                     data.hangout_participants = _.map(data.hangout_participants, function(p) {
                         return p.participant_id;
                     });
-                    hu.createHangout(data);  // create the hangout
+                    mu.createMeeting(data);  // create the hangout
                     talk_time.compute(data.hangout_id);
                     turns.compute(data.hangout_id);
 
@@ -54,7 +54,7 @@ function listenMeetingJoined(socket) {
                                     data.participant_id);
                     } else {
                         winston.log('info', "participant not currently in hangout, updating participants...");
-                        hu.updateHangoutParticipants(found_meeting.hangout_id, data.hangout_participants);
+                        mu.updateHangoutParticipants(found_meeting.hangout_id, data.hangout_participants);
                     }
                 }
             });
@@ -62,7 +62,7 @@ function listenMeetingJoined(socket) {
         // if we now only have one participant, then the hangout started again
         if (data.hangout_participants.length == 1) {
             winston.log("info", "only have one participant now, re-computing talk times...");
-            hu.createHangoutEvent(data.hangout_id, 'start', new Date());
+            mu.createMeetingEvent(data.hangout_id, 'start', new Date());
             talk_time.compute(data.hangout_id, socket);
             turns.compute(data.hangout_id);
         }
@@ -73,7 +73,7 @@ function listenMeetingJoined(socket) {
 var listenParticipantsChanged = function(socket) {
     socket.on("participantsChanged", function(data) {
         winston.log('info', 'Received hangout::participantsChanged event');
-        hu.updateHangoutParticipants(data.hangout_id, data.participants);
+        mu.updateHangoutParticipants(data.hangout_id, data.participants);
     });
 };
 
