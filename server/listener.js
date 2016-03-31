@@ -14,7 +14,7 @@ var app = require('./app');
 // provides data:
 // participantId, hangout_participants, hangout_id, hangout_url, hangout_topic
 // creates a hangout in the db if the hangout doesn't exist
-function listenHangoutJoined(socket) {
+function listenMeetingJoined(socket) {
     socket.on("hangout::joined", function(data) {
         console.log("hangout joined event, data:", data);
 
@@ -25,17 +25,17 @@ function listenHangoutJoined(socket) {
                     data.participant_locale);
 
         winston.log("info", "finding hangout with id:", data.hangout_id);
-        app.service('hangouts').find(
+        app.service('meetings').find(
             {
                 query: {
-                    hangout_id: data.hangout_id
+                    meetingId: data.hangout_id
                 }
             },
-            function(error, found_hangouts) {
-//                winston.log("info", "found ids:", found_hangouts);
+            function(error, found_meetings) {
+//                winston.log("info", "found ids:", found_meetings);
 
                 // hangout doesn't exist
-                if (found_hangouts.length == 0) {
+                if (found_meetings.length == 0) {
                     winston.log('info', "creating a new hangout");
                     // change participants to just their ids
                     data.hangout_participants = _.map(data.hangout_participants, function(p) {
@@ -46,15 +46,15 @@ function listenHangoutJoined(socket) {
                     turns.compute(data.hangout_id);
 
                 } else {  // we have a hangout
-                    var found_hangout = found_hangouts[0];
+                    var found_meeting = found_meetings[0];
                     //winston.log('info', "found a hangout:", found_hangout);
-                    if ( _.contains(found_hangout.participants, data.participant_id )) {
+                    if ( _.contains(found_meeting.participants, data.participant_id )) {
                         winston.log('info', "participant is in the hangout, nothing happened:",
-                                    found_hangout.participants,
+                                    found_meeting.participants,
                                     data.participant_id);
                     } else {
                         winston.log('info', "participant not currently in hangout, updating participants...");
-                        hu.updateHangoutParticipants(found_hangout.hangout_id, data.hangout_participants);
+                        hu.updateHangoutParticipants(found_meeting.hangout_id, data.hangout_participants);
                     }
                 }
             });
@@ -80,22 +80,14 @@ var listenParticipantsChanged = function(socket) {
 var listenConsentChanged = function(socket) {
     socket.on("consentChanged", function(data) {
         winston.log("info", "consent changed for participant:");
-        
+
     });
 };
-
-// var listenTimeSpokenSince = function(socket) {
-//     socket.on("timeSpokenSince", function(data) {
-//         winston.log("info", "received timeSpokenSince event");
-//         talk_time.time_spoken_since(data.from_time, data.participant_ids, data.hangout_id);
-//     });
-// };
-
 
 // LISTENER REGISTER
 
 function listen(socket) {
-    listenHangoutJoined(socket);
+    listenMeetingJoined(socket);
     listenParticipantsChanged(socket);
 }
 

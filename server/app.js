@@ -5,9 +5,9 @@ var rest = require('feathers-rest');
 var socketio = require('feathers-socketio');
 var bodyParser = require('body-parser');
 var winston = require('winston');
+var errors = require('feathers-errors');
 var mongoose = require('mongoose');
 var service = require('feathers-mongoose');
-var MongoClient = require('mongodb').MongoClient;
 
 // export app as module so we can require it later.
 var app = module.exports = feathers();
@@ -42,6 +42,7 @@ app.configure(rest())
             listener.listen(socket);
             heartbeat.listen_heartbeats(socket);
             // do authentication here (eventually)
+            winston.log("info", "client connected!");
 
             socket.on('disconnect', function() {
                 winston.log("info", ">>>>>>>>Client disconnected");
@@ -55,7 +56,7 @@ app.configure(rest())
 mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://localhost:27017/feathers');
 
-app.use('/meetings', service({ Model: models.meeting }));
+app.use('/meetings', service({Model: models.meeting}));
 app.use('/utterances', service({ Model: models.utterance }));
 app.use('/utterance_distributions', service({ Model: models.utteranceDistribution}));
 app.use('/participants', service({ Model: models.participant }));
@@ -67,14 +68,14 @@ app.use('/turns', service({ Model: models.turn }));
 my_hooks.configure_hooks(app);
 filters.configure_filters([filters.crypto_filter],
     [
-        'turns',
-        'talking_history',
-        'hangout_events',
+        'utterances',
+        'utterance_distributions',
+        'meeting_events',
         'participants',
         'participant_events',
-        'hangouts'
+        'meetings'
     ]);
 
 app.use('/', feathers.static(__dirname));
 
-//app.listen(3000);
+app.listen(3000);

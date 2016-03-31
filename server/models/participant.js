@@ -7,7 +7,7 @@ var ParticipantSchema = new Schema({
     name: String,
     meeting: {type: mongoose.Schema.Types.ObjectId, ref: 'Meeting'},
     consent: Boolean,
-    consentDate: Date
+    consentDate: Date,
 });
 
 ParticipantSchema.virtual('participantId').get(
