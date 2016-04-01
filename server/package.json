@@ -20,7 +20,13 @@
     "primus": "^5.0.1",
     "socket.io": "^1.4.5",
     "uberproto": "^1.2.0",
+    "underscore": "^1.8.3",
     "winston": "*",
     "ws": "^1.0.1"
+  },
+  "devDependencies": {
+    "mocha": "^2.4.5",
+    "should": "^8.3.0",
+    "supertest": "^1.2.0"
   }
 }
