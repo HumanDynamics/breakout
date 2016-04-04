@@ -1,0 +1,46 @@
+{
+  "name": "breakout-server",
+  "description": "server for breakout, a measurement and feedback framework for human communication",
+  "version": "0.0.0",
+  "homepage": "",
+  "main": "src/",
+  "keywords": [
+    "feathers"
+  ],
+  "license": "MIT",
+  "repository": {},
+  "author": {},
+  "contributors": [],
+  "bugs": {},
+  "engines": {
+    "node": ">= 0.12.0"
+  },
+  "scripts": {
+    "test": "standard src/ && npm run mocha",
+    "start": "node src/",
+    "mocha": "mocha test/ --recursive"
+  },
+  "dependencies": {
+    "body-parser": "^1.15.0",
+    "compression": "^1.6.1",
+    "cors": "^2.7.1",
+    "feathers": "^2.0.0",
+    "feathers-authentication": "^0.7.0",
+    "feathers-configuration": "^0.2.2",
+    "feathers-errors": "^2.1.0",
+    "feathers-hooks": "^1.5.1",
+    "feathers-mongoose": "^3.3.6",
+    "feathers-rest": "^1.2.4",
+    "feathers-socketio": "^1.3.3",
+    "mongoose": "^4.4.11",
+    "passport": "^0.3.2",
+    "serve-favicon": "^2.3.0",
+    "underscore": "^1.8.3",
+    "winston": "^2.2.0"
+  },
+  "devDependencies": {
+    "standard": "^3.0.0",
+    "mocha": "^2.4.5",
+    "request": "^2.69.0"
+  }
+}
