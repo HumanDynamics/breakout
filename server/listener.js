@@ -16,7 +16,7 @@ var app = require('./app');
 // creates a hangout in the db if the hangout doesn't exist
 function listenMeetingJoined(socket) {
     socket.on("hangout::joined", function(data) {
-        console.log("hangout joined event, data:", data);
+        console.log("meeting joined event, data:", data);
 
         mu.add_user(data.participant_id,
                     data.hangout_id,

@@ -7,7 +7,7 @@ var json_transform = require('./json_utils').json_transform;
 
 // decrypts data being sent out to users on service events.
 function crypto_filter(data, connection) {
-    data = json_transform(data, ['participant_id', 'participants'], crypto.decrypt);
+    data = json_transform(data, ['participant', 'participants'], crypto.decrypt);
     /* data = json_transform(data, 'participants', function(ps){return _.map(ps, crypto.decrypt)});- */
     return data;
 }

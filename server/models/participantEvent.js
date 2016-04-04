@@ -3,8 +3,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var ParticipantEventSchema = new Schema({
-    participants: [{type: mongoose.Schema.Types.ObjectId, ref: 'Participant'}],
-    meeting: {type: mongoose.Schema.Types.ObjectId, ref: 'Meeting'},
+    participants: [{type: String, ref: 'Participant'}],
+    meeting: {type: String, ref: 'Meeting'},
     timestamp: Date
 });
 

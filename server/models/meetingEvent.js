@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var MeetingEventSchema = new Schema({
-    meeting: {type: mongoose.Schema.Types.ObjectId, ref: 'Meeting'},
+    meeting: {type: String, ref: 'Meeting'},
     event: {
         type: String,
         enum: ['end', 'start']

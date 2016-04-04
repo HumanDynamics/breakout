@@ -5,12 +5,12 @@ var Schema = mongoose.Schema;
 var ParticipantSchema = new Schema({
     _id: String,
     name: String,
-    meeting: {type: mongoose.Schema.Types.ObjectId, ref: 'Meeting'},
+    meeting: {type: String, ref: 'Meeting'},
     consent: Boolean,
     consentDate: Date,
 });
 
-ParticipantSchema.virtual('participantId').get(
+ParticipantSchema.virtual('participant_id').get(
     function () {
         return this._id;
     });

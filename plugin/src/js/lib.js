@@ -5,7 +5,7 @@ define(["config", "src/volumeCollector", "src/heartbeat", "src/charts", "src/con
            window.state = {};
            window.state.url = config.serverUrl;
            console.log("connecting to:", window.state.url);
-           
+
            // set up raw socket for custom events.
            var socket = io.connect(window.state.url, {
                'transports': [
@@ -53,7 +53,7 @@ define(["config", "src/volumeCollector", "src/heartbeat", "src/charts", "src/con
                } else {
                    $('#mm-holder-consent').show();
                }
-               
+
            }
 
 
@@ -85,7 +85,7 @@ define(["config", "src/volumeCollector", "src/heartbeat", "src/charts", "src/con
                                };
                            });
            }
-           
+
 
 
            // once the google api is ready...
@@ -93,31 +93,25 @@ define(["config", "src/volumeCollector", "src/heartbeat", "src/charts", "src/con
                console.log('hangout object:',  window.gapi.hangout);
                var thisHangout = window.gapi.hangout;
                console.log("hangoutId:", thisHangout.getHangoutId());
-               
+
                var participants = get_participant_objects(window.gapi.hangout.getParticipants());
-               
+
                var localParticipant = window.gapi.hangout.getLocalParticipant();
 
                volumeCollector.onParticipantsChanged(window.gapi.hangout.getParticipants());
-               
-               socket.emit("hangout::joined",
+
+               socket.emit("meeting::joined",
                            {
                                participant_id: localParticipant.person.id,
                                participant_name: localParticipant.person.displayName,
                                participant_locale: localParticipant.locale,
-                               participant_image: localParticipant.person.image.url,
-                               hangout_participants: participants,
-                               hangout_id: thisHangout.getHangoutId(),
-                               hangout_url: thisHangout.getHangoutUrl(),
-                               hangout_topic: thisHangout.getTopic()
+                               participants: participants,
+                               meeting: thisHangout.getHangoutId(),
                            });
 
-               // the only other thing sent to maybe_start_heartbeat
-               // is a gapi onparticipantsChanged event, so just follow the format...
-               if (participants.length == 1) {
-                   heartbeat.register_heartbeat(socket);
-                   heartbeat.maybe_start_heartbeat([localParticipant]);
-               }
+               // start heartbeat for this participant
+               heartbeat.register_heartbeat(socket);
+               heartbeat.maybe_start_heartbeat([localParticipant]);
 
                function process_consent(consentVal) {
                    console.log("processing consent");
@@ -147,7 +141,7 @@ define(["config", "src/volumeCollector", "src/heartbeat", "src/charts", "src/con
                                        thisHangout.getHangoutId(),
                                        process_consent);
                }, 1000);
-               
+
                $('#post-hoc-consent').on('click.consent', function(evt) {
                    consent.display_consent(process_consent);
                });
@@ -162,16 +156,13 @@ define(["config", "src/volumeCollector", "src/heartbeat", "src/charts", "src/con
                // start collecting volume data
                volumeCollector.startVolumeCollection(socket);
 
-               // start heartbeat listener
-               heartbeat.register_heartbeat(socket);
-               
                window.gapi.hangout.onParticipantsChanged.add(function(participantsChangedEvent) {
                    console.log("participants changed:", participantsChangedEvent.participants);
                    var currentParticipants = get_participant_objects(participantsChangedEvent.participants);
 
                    // send the new participants to the volume collector, to reset volumes etc.
                    volumeCollector.onParticipantsChanged(participantsChangedEvent.participants);
-                   
+
                    console.log("sending:", currentParticipants);
                    socket.emit("participantsChanged",
                                {

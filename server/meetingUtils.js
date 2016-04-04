@@ -80,7 +80,7 @@ function add_user(participant_id, meeting_id, image_url, name, locale) {
         // },
         function(error, data) {
             if (error) {
-                console.log("COULDNT ADD USER");
+                winston.log('info', "COULDNT ADD USER", error);
                 return;
             }
             // // we have to get all the matching records for this

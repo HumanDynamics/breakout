@@ -136,8 +136,9 @@ function configure_encryption_hooks() {
     app.service('utterances').before(participant_encrypt).after(participant_decrypt);
     app.service('participant_events').before(participant_encrypt).after(participant_decrypt);
     app.service('participants')
-    .before([participant_encrypt, participant_info_encrypt])
-    .after([participant_encrypt, participant_info_decrypt]);
+    .before([encrypt_hook('_id'), participant_info_encrypt])
+    .after([decrypt_hook('_id'), participant_info_decrypt]);
+
     app.service('meeting_events').before(participant_encrypt).after(participant_decrypt);
 
     app.service('utterance_distributions').before({

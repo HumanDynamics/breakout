@@ -3,9 +3,9 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var UtteranceDistributionSchema = new Schema({
-    meeting: {type: mongoose.Schema.Types.ObjectId, ref: 'Meeting'},
+    meeting: {type: String, ref: 'Meeting'},
     talkTimes: [{
-        participant: {type: mongoose.Schema.Types.ObjectId, ref: 'Participant'},
+        participant: {type: String, ref: 'Participant'},
         seconds: Number
     }],
     timestamp: Date
