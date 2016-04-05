@@ -1,8 +1,11 @@
 var assert = require('assert');
 var supertest = require('supertest');
 var should = require('should');
+var loadtest = require('loadtest');
 
-var server = supertest.agent('http://localhost:3000');
+var url = 'http://localhost:3000';  // url to run tests on
+
+var server = supertest.agent(url);
 
 // test environment setup
 before(function() {
@@ -99,6 +102,19 @@ describe('Hangouts API', function() {
           });
           done();
         });
+    });
+
+    it('should handle load reasonably well', function(done) {
+      this.timeout(0);
+      loadopts = {
+        url: url+'/hangouts',
+        maxSeconds: 20,
+        concurrency: 10
+      };
+      loadtest.loadTest(loadopts, function(error, results) {
+        console.log(results);
+        done();
+      });
     });
 
   });
